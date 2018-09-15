@@ -7,12 +7,15 @@ All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
 * CUDA 9.0 (Ubuntu 16.04 base)
 * Text editors (like `nano`) and utlities like `git`
 * Python data science packages
-  * numpy, scipy, etc.
-  * matplotlib is pre-cached
-  * Extras also included: NLTK, Gensim, OpenCV, Scikit-Learn
-* TensorFlow and Keras
-* PyTorch
+  * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
+  * `matplotlib` is pre-cached
+  * Extras also included: `nltk`, `gensim`, `opencv`, `scikit-learn`
+* `tensorflow-gpu` and `keras`
+* `pytorch` and `torchvision`
 * Jupyter Notebook and JupyterLab
+  * including `ipywidgets` and `jupyter_contrib_nbextensions`
+
+This image is compatible with JupyterHub.
 
 ## Using this image
 
