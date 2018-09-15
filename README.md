@@ -1,5 +1,7 @@
 # Deep Learning Lab
 
+[![](https://images.microbadger.com/badges/image/tlkh/deeplearning-lab.svg)](https://microbadger.com/images/tlkh/deeplearning-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/tlkh/deeplearning-lab.svg)][![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
 
 ## What's Included
