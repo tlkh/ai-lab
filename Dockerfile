@@ -180,9 +180,8 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
 RUN conda install --quiet --yes \
     'tensorflow-gpu' \
     'keras' \
-    'torch' \
+    'pytorch' \
     'torchvision' \
-    'torchtext' \
     'gpustat' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
