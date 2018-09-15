@@ -124,6 +124,7 @@ RUN conda install --quiet --yes \
 RUN conda install --quiet --yes \
     'conda-forge::blas=*=openblas' \
     'ipywidgets=7.2*' \
+    'jupyter_contrib_nbextensions' \
     'pandas' \
     'numexpr' \
     'matplotlib' \
@@ -153,6 +154,7 @@ RUN conda install --quiet --yes \
     conda clean -tipsy && \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+    jupyter contrib nbextension install --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.37.0 && \
     jupyter labextension install jupyterlab_bokeh@^0.6.0 && \
