@@ -9,7 +9,7 @@
   * numpy, scipy, etc.
   * matplotlib is pre-cached
   * Extras also included: NLTK, OpenCV, Scikit-Learn
-* TensorFlow
+* TensorFlow and Keras
 * PyTorch
 
 ## Using this image
