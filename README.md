@@ -20,7 +20,13 @@ This image is compatible with JupyterHub.
 ## Using this image
 
 ```
-TODO
+DRAFT
+
+Examples:
+
+docker run -p 8888:8888 tlkh/deeplearning-lab:latest
+
+docker run --rm -p 10000:8888 -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:latest
 ```
 
 ## Forked from the Jupyter Docker Stacks
