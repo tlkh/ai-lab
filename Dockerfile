@@ -190,8 +190,6 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN usermod -s /bin/bash $NB_UID
-
 USER root
 
 EXPOSE 8888
@@ -207,6 +205,8 @@ COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
 RUN fix-permissions /etc/jupyter/
+
+RUN usermod -s /bin/bash $NB_USER
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
