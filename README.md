@@ -9,7 +9,7 @@ All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
 * Python data science packages
   * numpy, scipy, etc.
   * matplotlib is pre-cached
-  * Extras also included: NLTK, OpenCV, Scikit-Learn
+  * Extras also included: NLTK, Gensim, OpenCV, Scikit-Learn
 * TensorFlow and Keras
 * PyTorch
 * Jupyter Notebook and JupyterLab
