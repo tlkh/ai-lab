@@ -188,6 +188,8 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+RUN usermod -s /bin/bash $NB_UID
+
 USER root
 
 EXPOSE 8888
