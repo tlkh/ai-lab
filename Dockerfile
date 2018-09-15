@@ -144,6 +144,7 @@ RUN conda install --quiet --yes \
     'h5py' \
     'vincent' \
     'nltk' \
+    'gensim' \
     'opencv' \
     'beautifulsoup4' \
     'protobuf' \

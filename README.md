@@ -1,16 +1,18 @@
-[![docker pulls](https://img.shields.io/docker/pulls/jupyter/base-notebook.svg)](https://hub.docker.com/r/jupyter/base-notebook/) [![docker stars](https://img.shields.io/docker/stars/jupyter/base-notebook.svg)](https://hub.docker.com/r/jupyter/base-notebook/) [![](https://images.microbadger.com/badges/image/jupyter/base-notebook.svg)](https://microbadger.com/images/jupyter/base-notebook "jupyter/base-notebook image metadata")
+# Deep Learning Lab
 
-# NVIDIA + Jupyter + Deep Learning
+All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
 
 ## What's Included
 
 * CUDA 9.0 (Ubuntu 16.04 base)
+* Text editors (like `nano`) and utlities like `git`
 * Python data science packages
   * numpy, scipy, etc.
   * matplotlib is pre-cached
   * Extras also included: NLTK, OpenCV, Scikit-Learn
 * TensorFlow and Keras
 * PyTorch
+* Jupyter Notebook and JupyterLab
 
 ## Using this image
 
