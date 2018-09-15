@@ -185,7 +185,7 @@ RUN conda install --quiet --yes \
     'keras' \
     'pytorch' \
     'torchvision' \
-    'gpustat' && \
+    'tensorboard' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
