@@ -18,7 +18,7 @@ h5py
 vincent
 nltk
 gensim
-opencv
+opencv-contrib-python
 protobuf
 xlrd
 torch
