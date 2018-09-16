@@ -13,7 +13,6 @@ dill
 numba
 bokeh
 sqlalchemy
-hdf5
 h5py
 vincent
 nltk
