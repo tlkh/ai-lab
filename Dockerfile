@@ -130,7 +130,6 @@ RUN conda install --quiet --yes \
     'numexpr' \
     'matplotlib' \
     'scipy' \
-    'seaborn' \
     'scikit-learn' \
     'scikit-image' \
     'sympy' \
@@ -148,7 +147,6 @@ RUN conda install --quiet --yes \
     'nltk' \
     'gensim' \
     'opencv' \
-    'beautifulsoup4' \
     'protobuf' \
     'xlrd'  && \
     conda remove --quiet --yes --force qt pyqt && \
@@ -172,15 +170,14 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 
 RUN conda install --quiet --yes \
-    'tensorflow-gpu' \
-    'keras' \
     'pytorch' \
-    'torchvision' \
-    'tensorboard' && \
+    'torchvision' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+USER $NB_UID
+RUN pip install -U tensorflow-gpu tensorboard keras gpustat && rm -rf ~/.cache
 USER root
 
 EXPOSE 8888
