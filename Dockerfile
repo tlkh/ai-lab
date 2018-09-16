@@ -124,31 +124,7 @@ RUN conda install --quiet --yes \
 
 RUN conda install --quiet --yes \
     'conda-forge::blas=*=openblas' \
-    'ipywidgets=7.2*' \
-    'jupyter_contrib_nbextensions' \
-    'pandas' \
-    'numexpr' \
-    'matplotlib' \
-    'scipy' \
-    'scikit-learn' \
-    'scikit-image' \
-    'sympy' \
-    'cython' \
-    'patsy' \
-    'statsmodels' \
-    'cloudpickle' \
-    'dill' \
-    'numba' \
-    'bokeh' \
-    'sqlalchemy' \
-    'hdf5' \
-    'h5py' \
-    'vincent' \
-    'nltk' \
-    'gensim' \
-    'opencv' \
-    'protobuf' \
-    'xlrd'  && \
+    'ipywidgets=7.2*' && \
     conda remove --quiet --yes --force qt pyqt && \
     conda clean -tipsy && \
     # Activate ipywidgets extension in the environment that runs the notebook server
@@ -164,21 +140,15 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+USER $NB_UID
+COPY requirements.txt /home/$NB_USER/
+RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm requirements.txt
+COPY hello-gpu.ipynb /home/$NB_USER/
+
 # Import matplotlib the first time to build the font cache.
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
-
-RUN conda install --quiet --yes \
-    'pytorch' \
-    'torchvision' && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
-RUN pip install --upgrade --no-cache-dir tensorflow-gpu tensorboard keras gpustat
-COPY hello-gpu.ipynb /home/$NB_USER/
 
 USER root
 
