@@ -145,12 +145,12 @@ COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm requirements.txt
 COPY hello-gpu.ipynb /home/$NB_USER/
 
+USER root
+
 # Import matplotlib the first time to build the font cache.
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
-
-USER root
 
 EXPOSE 8888
 WORKDIR $HOME
