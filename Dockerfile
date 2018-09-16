@@ -142,7 +142,7 @@ RUN conda install --quiet --yes \
 
 USER $NB_UID
 COPY requirements.txt /home/$NB_USER/
-RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm requirements.txt
+RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
 COPY hello-gpu.ipynb /home/$NB_USER/
 
 USER root
