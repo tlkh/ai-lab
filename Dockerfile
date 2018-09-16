@@ -178,6 +178,8 @@ RUN conda install --quiet --yes \
 
 USER $NB_UID
 RUN pip install -U tensorflow-gpu tensorboard keras gpustat && rm -rf ~/.cache
+COPY hello-gpu.ipynb /home/$NB_USER/
+
 USER root
 
 EXPOSE 8888
