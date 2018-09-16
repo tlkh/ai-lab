@@ -177,7 +177,7 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 USER $NB_UID
-RUN pip install -U tensorflow-gpu tensorboard keras gpustat && rm -rf ~/.cache
+RUN pip install --upgrade --no-cache-dir tensorflow-gpu tensorboard keras gpustat
 COPY hello-gpu.ipynb /home/$NB_USER/
 
 USER root
