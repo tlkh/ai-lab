@@ -146,7 +146,7 @@ RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && r
 
 USER root
 COPY install_pygpu.sh install_pygpu.sh
-RUN ./install_pygpu.sh && rm install_pygpu.sh
+RUN chmod +x install_pygpu.sh.sh && ./install_pygpu.sh && rm install_pygpu.sh
 
 USER $NB_UID
 
