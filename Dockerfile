@@ -147,17 +147,10 @@ COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
 
 USER root
-
-RUN apt-get update && apt-get install -yq --no-install-recommends \
-    
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 COPY install_pygpu.sh install_pygpu.sh
 RUN chmod +x install_pygpu.sh && ./install_pygpu.sh && rm install_pygpu.sh
 
 USER $NB_UID
-
 RUN pip install git+https://github.com/Theano/Theano.git#egg=Theano
 
 COPY hello-gpu.ipynb /home/$NB_USER/
