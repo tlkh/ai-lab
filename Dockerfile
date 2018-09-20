@@ -149,6 +149,7 @@ RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && r
 RUN conda install --quiet --yes \
     'theano' \
     'pygpu' \
+    'mkl-service' \
     'mkl' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \

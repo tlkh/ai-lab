@@ -13,7 +13,8 @@ All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
   * `matplotlib` is pre-cached
   * Extras also included: `nltk`, `gensim`, `opencv`, `scikit-learn`
 * `tensorflow-gpu` and `keras`
-* `pytorch` and `torchvision`
+* `theano` without GPU support
+* `pytorch` and `torchvision`, `torchtext`
 * Jupyter Notebook and JupyterLab
   * including `ipywidgets` and `jupyter_contrib_nbextensions`
 
@@ -22,18 +23,18 @@ This image is compatible with JupyterHub.
 ## Using this image
 
 ```
-DRAFT
+# interactive shell
+docker run -it tlkh/deeplearning-lab:latest bash
 
-Examples:
-
-docker run -p 8888:8888 tlkh/deeplearning-lab:latest
-
+# JupyterLab
 docker run --rm -p 10000:8888 -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:latest
 ```
 
-## Forked from the Jupyter Docker Stacks
+## Adapted from the Jupyter Docker Stacks
 
 Please visit the documentation site for help using and contributing to this image and others.
 
 * [Jupyter Docker Stacks on ReadTheDocs](http://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
 * [Selecting an Image :: Core Stacks :: jupyter/base-notebook](http://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-base-notebook)
+
+For high-performance and tested images built from NVIDIA-optimised containers (NGC), see: [https://github.com/tlkh/ngc-2-jupyterhub](https://github.com/tlkh/ngc-2-jupyterhub)
