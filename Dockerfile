@@ -16,11 +16,13 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     sudo \
     locales \
     fonts-liberation \
+    apt-utils \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     build-essential \
+    cmake \
     emacs \
     git \
     inkscape \
@@ -147,7 +149,7 @@ RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && r
 USER root
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
-    cmake \
+    
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
