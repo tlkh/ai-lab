@@ -12,7 +12,6 @@ patsy
 statsmodels
 cloudpickle
 dill
-numba
 bokeh
 sqlalchemy
 h5py

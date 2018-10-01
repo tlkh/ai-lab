@@ -159,6 +159,8 @@ RUN pip install jupyterlab_github && \
 
 RUN conda install --quiet --yes \
     'theano' \
+    'numba' \
+    'cudatoolkit' \
     'pygpu' \
     'mkl-service' \
     'mkl' && \
