@@ -135,6 +135,7 @@ RUN conda install --quiet --yes \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.37.0 && \
     jupyter labextension install jupyterlab_bokeh@^0.6.0 && \
+    jupyter labextension install @jupyterlab/hub-extension && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache/yarn && \
@@ -145,6 +146,16 @@ RUN conda install --quiet --yes \
 USER $NB_UID
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
+
+RUN pip install jupyterlab_github && \
+    jupyter serverextension enable --sys-prefix jupyterlab_github && \
+    jupyter labextension install @jupyterlab/github &&\
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 RUN conda install --quiet --yes \
     'theano' \

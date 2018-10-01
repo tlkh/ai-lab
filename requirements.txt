@@ -1,6 +1,8 @@
+tqdm
 pandas
 numexpr
 matplotlib
+seaborn
 scipy
 scikit-learn
 scikit-image
@@ -23,6 +25,7 @@ xlrd
 torch
 torchvision
 torchtext
+mxnet-cu90
 tensorflow-gpu
 tensorboard
 keras
