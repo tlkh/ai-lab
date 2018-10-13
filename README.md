@@ -2,7 +2,7 @@
 
 [![](https://images.microbadger.com/badges/image/tlkh/deeplearning-lab.svg)](https://microbadger.com/images/tlkh/deeplearning-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/tlkh/deeplearning-lab.svg)](Issues) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
+All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-docker container runtime
 
 ## What's Included
 
@@ -18,7 +18,7 @@ All-in-one Deep Learning with Jupyter Notebook/Lab and nvidia-docker
 * Jupyter Notebook and JupyterLab
   * including `ipywidgets` and `jupyter_contrib_nbextensions`
 
-This image is compatible with JupyterHub.
+This image is can be used standalone or via JupyterHub.
 
 ## Using this image
 
@@ -37,4 +37,4 @@ Please visit the documentation site for help using and contributing to this imag
 * [Jupyter Docker Stacks on ReadTheDocs](http://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
 * [Selecting an Image :: Core Stacks :: jupyter/base-notebook](http://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-base-notebook)
 
-For high-performance and tested images built from NVIDIA-optimised containers (NGC), see: [https://github.com/tlkh/ngc-2-jupyterhub](https://github.com/tlkh/ngc-2-jupyterhub)
+To build your own high-performance and validated images built from NVIDIA-optimised containers (NGC), see: [https://github.com/tlkh/ngc-2-jupyterhub](https://github.com/tlkh/ngc-2-jupyterhub)
