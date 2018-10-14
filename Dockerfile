@@ -45,6 +45,10 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     unzip \
     nano \
     ffmpeg \
+    vim \
+    zip \
+    openssh-server \
+    openssh-client \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -185,6 +189,7 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 
 EXPOSE 8888
+EXPOSE 6006
 WORKDIR $HOME
 
 # Configure container startup
