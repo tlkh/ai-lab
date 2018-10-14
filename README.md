@@ -7,7 +7,7 @@ All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-dock
 ## What's Included
 
 * CUDA 9.0 (Ubuntu 16.04 base)
-* Text editors (like `nano`) and utlities like `git`
+* Text editors (like `nano`/`vim`) and utlities like `git`
 * Python data science packages
   * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
   * `matplotlib` is pre-cached
