@@ -45,6 +45,10 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     unzip \
     nano \
     ffmpeg \
+    vim \
+    zip \
+    openssh-server \
+    openssh-client \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -147,23 +151,6 @@ USER $NB_UID
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
 
-RUN pip install jupyterlab_github && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github &&\
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
-    rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-USER root
-
-RUN jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
-    jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix
-
-USER $NB_UID
-
 RUN conda install --quiet --yes \
     'theano' \
     'numba' \
@@ -175,7 +162,16 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-COPY hello-gpu.ipynb /home/$NB_USER/
+RUN pip install jupyterlab_github jupyter-tensorboard && \
+    jupyter tensorboard enable --user && \
+    jupyter serverextension enable --sys-prefix jupyterlab_github && \
+    jupyter labextension install @jupyterlab/github &&\
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 USER root
 
@@ -185,6 +181,7 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 
 EXPOSE 8888
+EXPOSE 6006
 WORKDIR $HOME
 
 # Configure container startup
