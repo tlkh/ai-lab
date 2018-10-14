@@ -47,6 +47,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     ffmpeg \
     vim \
     zip \
+    openssh-server \
+    openssh-client \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
