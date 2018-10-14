@@ -27,7 +27,6 @@ torchtext
 mxnet-cu90
 tensorflow-gpu
 tensorflow-hub
-tensorflow-model-analysis
 tensorboard
 keras
 gpustat

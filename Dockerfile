@@ -161,11 +161,6 @@ RUN pip install jupyterlab_github && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-USER root
-
-RUN jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
-    jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix
-
 USER $NB_UID
 
 RUN conda install --quiet --yes \
@@ -178,8 +173,6 @@ RUN conda install --quiet --yes \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-COPY hello-gpu.ipynb /home/$NB_USER/
 
 USER root
 
