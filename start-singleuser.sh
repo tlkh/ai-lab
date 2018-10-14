@@ -40,4 +40,6 @@ else
   NOTEBOOK_BIN=jupyterhub-singleuser
 fi
 
+jupyter tensorboard enable
+
 . /usr/local/bin/start.sh $NOTEBOOK_BIN $NOTEBOOK_ARGS $@

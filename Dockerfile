@@ -151,18 +151,6 @@ USER $NB_UID
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
 
-RUN pip install jupyterlab_github && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github &&\
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
-    rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
-
 RUN conda install --quiet --yes \
     'theano' \
     'numba' \
@@ -171,6 +159,17 @@ RUN conda install --quiet --yes \
     'mkl-service' \
     'mkl' && \
     conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN pip install jupyterlab_github jupyter-tensorboard && \
+    jupyter tensorboard enable --user && \
+    jupyter serverextension enable --sys-prefix jupyterlab_github && \
+    jupyter labextension install @jupyterlab/github &&\
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
