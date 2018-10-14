@@ -13,6 +13,7 @@ All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-dock
   * `matplotlib` is pre-cached
   * Extras also included: `nltk`, `gensim`, `opencv`, `scikit-learn`
 * `tensorflow-gpu` and `keras`
+  * `tensorboard` (requires some additional instructions)
 * `theano` without GPU support
 * `pytorch` and `torchvision`, `torchtext`
 * Jupyter Notebook and JupyterLab
@@ -28,6 +29,9 @@ docker run -it tlkh/deeplearning-lab:latest bash
 
 # JupyterLab
 docker run --rm -p 10000:8888 -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:latest
+
+# enable tensorboard inside the container
+jupyter tensorboard enable
 ```
 
 ## Adapted from the Jupyter Docker Stacks
