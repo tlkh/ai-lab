@@ -6,18 +6,19 @@ All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-dock
 
 ## What's Included
 
-* CUDA 9.0 (Ubuntu 16.04 base)
+* CUDA 9.0 + cuDNN 7 (Ubuntu 16.04.5 base)
 * Text editors (like `nano`/`vim`) and utlities like `git`
 * Python data science packages
   * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
-  * `matplotlib` is pre-cached
+  * `matplotlib` fonts are pre-cached
   * Extras also included: `nltk`, `gensim`, `opencv`, `scikit-learn`
 * `tensorflow-gpu` and `keras`
   * `tensorboard` (requires some additional instructions)
-* `theano` without GPU support
+* `theano` (MKL, without GPU support)
 * `pytorch` and `torchvision`, `torchtext`
 * Jupyter Notebook and JupyterLab
   * including `ipywidgets` and `jupyter_contrib_nbextensions`
+  * integrated TensorBoard support
 
 This image is can be used standalone or via JupyterHub.
 
