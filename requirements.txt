@@ -1,5 +1,6 @@
 tqdm
 pandas
+pandas-datareader
 numexpr
 matplotlib
 seaborn
@@ -21,12 +22,8 @@ gensim
 opencv-contrib-python
 protobuf
 xlrd
-torch
-torchvision
-torchtext
-mxnet-cu90
-tensorflow-gpu==1.10.*
+mxnet-cu100
 tensorflow-hub
-tensorboard==1.10.*
+tensorboard
 keras
 gpustat

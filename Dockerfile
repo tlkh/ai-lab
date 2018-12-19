@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -17,10 +17,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     locales \
     fonts-liberation \
     apt-utils \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -yq --no-install-recommends \
     build-essential \
     cmake \
     emacs \
@@ -49,6 +45,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     zip \
     openssh-server \
     openssh-client \
+    libopenmpi-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -85,11 +82,10 @@ USER $NB_UID
 RUN mkdir /home/$NB_USER/work && \
     fix-permissions /home/$NB_USER
 
-# Install conda as jovyan and check the md5 sum provided on the download site
-ENV MINICONDA_VERSION 4.5.4
+# Install conda as jovyan
+ENV MINICONDA_VERSION 4.5.11
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    echo "a946ea1d0c4a642ddf0c3a26a18bb16d *Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
     /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
@@ -118,9 +114,9 @@ RUN conda install --quiet --yes 'tini=0.18.0' && \
 RUN conda install --quiet --yes \
     'notebook=5.6.*' \
     'jupyterhub=0.9.*' \
-    'jupyterlab=0.34.*' && \
+    'jupyterlab=0.35.*' && \
     conda clean -tipsy && \
-    jupyter labextension install @jupyterlab/hub-extension@^0.11.0 && \
+    jupyter labextension install @jupyterlab/hub-extension && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
@@ -137,8 +133,8 @@ RUN conda install --quiet --yes \
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.37.0 && \
-    jupyter labextension install jupyterlab_bokeh@^0.6.0 && \
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    jupyter labextension install jupyterlab_bokeh && \
     jupyter labextension install @jupyterlab/hub-extension && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
@@ -151,7 +147,14 @@ USER $NB_UID
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
 
+RUN conda install --quiet --yes pytorch torchvision cuda100 -c pytorch && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
 RUN conda install --quiet --yes \
+    'tensorflow-gpu' \
+    'torchvision' \
     'theano' \
     'numba' \
     'cudatoolkit' \
@@ -162,8 +165,25 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN pip install jupyterlab_github jupyter-tensorboard && \
-    jupyter tensorboard enable --user && \
+# RAPIDS cuDF
+RUN conda install --quiet --yes -c nvidia -c rapidsai -c numba -c conda-forge -c defaults cudf=0.4.0 && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# RAPIDS cuDF
+RUN conda install --quiet --yes -c nvidia -c rapidsai -c conda-forge -c pytorch -c defaults cuml && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# RAPIDS xgboost
+COPY xgboost/xgboost-0.81-py3-none-any.whl /home/$NB_USER/
+RUN pip install --upgrade --no-cache-dir /home/$NB_USER/xgboost-0.81-py3-none-any.whl && \
+    rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/xgboost-0.81-py3-none-any.whl
+
+RUN pip install jupyterlab_github jupyter-tensorboard torchtext && \
+    jupyter tensorboard enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github &&\
     npm cache clean --force && \
