@@ -1,6 +1,4 @@
 tqdm
-pandas
-pandas-datareader
 numexpr
 matplotlib
 seaborn

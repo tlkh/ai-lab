@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -153,6 +153,8 @@ RUN conda install --quiet --yes pytorch torchvision cuda100 -c pytorch && \
     fix-permissions /home/$NB_USER
 
 RUN conda install --quiet --yes \
+    'cudatoolkit' \
+    'pandas' \
     'tensorflow-gpu' \
     'torchvision' \
     'theano' \
@@ -165,22 +167,19 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# RAPIDS cuDF
-RUN conda install --quiet --yes -c nvidia -c rapidsai -c numba -c conda-forge -c defaults cudf=0.4.0 && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+# RAPIDS
+USER root
+RUN apt-get update && apt-get install -yq \
+    libboost-all-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# RAPIDS cuDF
-RUN conda install --quiet --yes -c nvidia -c rapidsai -c conda-forge -c pytorch -c defaults cuml && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+RUN cd /home/$NB_USER/ && wget https://github.com/Kitware/CMake/releases/download/v3.13.2/cmake-3.13.2-Linux-x86_64.sh && chmod +x *.sh && ./cmake-3.13.2-Linux-x86_64.sh --prefix=/usr/local --skip-license && rm ./cmake-3.13.2-Linux-x86_64.sh
 
-# RAPIDS xgboost
-COPY xgboost/xgboost-0.81-py3-none-any.whl /home/$NB_USER/
-RUN pip install --upgrade --no-cache-dir /home/$NB_USER/xgboost-0.81-py3-none-any.whl && \
-    rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/xgboost-0.81-py3-none-any.whl
+ENV CUDACXX /usr/local/cuda/bin/nvcc
+
+USER $NB_UID
+RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids
 
 RUN pip install jupyterlab_github jupyter-tensorboard torchtext && \
     jupyter tensorboard enable --sys-prefix && \
