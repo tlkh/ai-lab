@@ -18,7 +18,10 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     fonts-liberation \
     apt-utils \
     build-essential \
-    cmake \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+    
+RUN apt-get update && apt-get install -yq --no-install-recommends \
     emacs \
     git \
     inkscape \
@@ -46,8 +49,11 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     openssh-server \
     openssh-client \
     libopenmpi-dev \
+    zlib1g-dev  \
+    lib32z1-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+    
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -79,8 +85,7 @@ RUN groupadd wheel -g 11 && \
 USER $NB_UID
 
 # Setup work directory for backward-compatibility
-RUN mkdir /home/$NB_USER/work && \
-    fix-permissions /home/$NB_USER
+RUN fix-permissions /home/$NB_USER
 
 # Install conda as jovyan
 ENV MINICONDA_VERSION 4.5.11
@@ -112,7 +117,7 @@ RUN conda install --quiet --yes 'tini=0.18.0' && \
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 RUN conda install --quiet --yes \
-    'notebook=5.6.*' \
+    'notebook=5.7.*' \
     'jupyterhub=0.9.*' \
     'jupyterlab=0.35.*' && \
     conda clean -tipsy && \
@@ -153,34 +158,42 @@ RUN conda install --quiet --yes pytorch torchvision cuda100 -c pytorch && \
     fix-permissions /home/$NB_USER
 
 RUN conda install --quiet --yes \
-    'cudatoolkit' \
-    'pandas' \
+    'pandas=0.20.3' \
+    'pandas-datareader' \
     'tensorflow-gpu' \
     'torchvision' \
-    'theano' \
     'numba' \
-    'cudatoolkit' \
-    'pygpu' \
-    'mkl-service' \
-    'mkl' && \
+    'cudatoolkit' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # RAPIDS
-USER root
-RUN apt-get update && apt-get install -yq \
-    libboost-all-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN cd /home/$NB_USER/ && wget https://github.com/Kitware/CMake/releases/download/v3.13.2/cmake-3.13.2-Linux-x86_64.sh && chmod +x *.sh && ./cmake-3.13.2-Linux-x86_64.sh --prefix=/usr/local --skip-license && rm ./cmake-3.13.2-Linux-x86_64.sh
 
 ENV CUDACXX /usr/local/cuda/bin/nvcc
 
-USER $NB_UID
-RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids
+RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    'pytest' \
+    'cmake' \
+    'pyarrow' \
+    'boost' \
+    'zlib' \
+    'cffi' \
+    'distributed' \
+    'cython' && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
+RUN conda install -c rapidsai -c nvidia/label/cuda10.0 -c numba -c conda-forge -c defaults nvstrings --quiet --yes && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+USER root
+RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids && chmod -R 777 /home/$NB_USER
+
+USER $NB_UID
 RUN pip install jupyterlab_github jupyter-tensorboard torchtext && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
