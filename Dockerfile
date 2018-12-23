@@ -46,8 +46,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     ffmpeg \
     vim \
     zip \
-    openssh-server \
-    openssh-client \
     libopenmpi-dev \
     zlib1g-dev  \
     lib32z1-dev \
@@ -157,7 +155,7 @@ ENV CUDACXX /usr/local/cuda/bin/nvcc
 RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --quiet --yes \
     'cudatoolkit' \
     'pytest' \
-    'numba>=0.40.0dev' \
+    'numba>=0.41.0dev' \
     'pandas=0.20.3' \
     'pyarrow=0.10.0' \
     'cmake>=3.12' \
