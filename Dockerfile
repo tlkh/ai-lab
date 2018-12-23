@@ -155,6 +155,7 @@ USER $NB_UID
 ENV CUDACXX /usr/local/cuda/bin/nvcc
 
 RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    'cudatoolkit' \
     'pytest' \
     'numba>=0.40.0dev' \
     'pandas=0.20.3' \
