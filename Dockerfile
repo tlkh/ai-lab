@@ -149,24 +149,6 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 USER $NB_UID
-COPY requirements.txt /home/$NB_USER/
-RUN pip install --upgrade --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
-
-RUN conda install --quiet --yes pytorch torchvision cuda100 -c pytorch && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda install --quiet --yes \
-    'pandas=0.20.3' \
-    'pandas-datareader' \
-    'tensorflow-gpu' \
-    'torchvision' \
-    'numba' \
-    'cudatoolkit' && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
 
 # RAPIDS
 
@@ -174,18 +156,17 @@ ENV CUDACXX /usr/local/cuda/bin/nvcc
 
 RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --quiet --yes \
     'pytest' \
-    'cmake' \
-    'pyarrow' \
+    'numba>=0.40.0dev' \
+    'pandas=0.20.3' \
+    'pyarrow=0.10.0' \
+    'cmake>=3.12' \
+    'bokeh' \
     'boost' \
+    'nvstrings' \
     'zlib' \
-    'cffi' \
-    'distributed' \
-    'cython' && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda install -c rapidsai -c nvidia/label/cuda10.0 -c numba -c conda-forge -c defaults nvstrings --quiet --yes && \
+    'cffi>=1.10.0' \
+    'distributed>=1.23.0' \
+    'cython>=0.29' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -194,7 +175,11 @@ USER root
 RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids && chmod -R 777 /home/$NB_USER
 
 USER $NB_UID
-RUN pip install jupyterlab_github jupyter-tensorboard torchtext && \
+
+COPY requirements.txt /home/$NB_USER/
+RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
+
+RUN pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github &&\
