@@ -1,6 +1,7 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -32,8 +33,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     lmodern \
     netcat \
     pandoc \
-    python-dev \
-    python3-dev \
     htop \
     texlive-fonts-extra \
     texlive-fonts-recommended \
@@ -162,6 +161,7 @@ RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --q
     'bokeh' \
     'boost' \
     'nvstrings' \
+    'faiss-gpu' \
     'zlib' \
     'cffi>=1.10.0' \
     'distributed>=1.23.0' \
@@ -174,6 +174,18 @@ USER root
 RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids && chmod -R 777 /home/$NB_USER
 
 USER $NB_UID
+
+# deep learning
+
+RUN conda install pytorch torchvision -c pytorch --quiet --yes && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN conda install -c anaconda tensorflow-gpu  --quiet --yes && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt

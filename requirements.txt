@@ -20,8 +20,6 @@ protobuf
 xlrd
 mxnet-cu100
 tensorflow-hub
-tensorflow-data-validation
-tensorflow-model-analysis
 tensorboard
 keras
 gpustat
