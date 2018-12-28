@@ -19,7 +19,7 @@ spacy
 opencv-contrib-python
 protobuf
 xlrd
-mxnet-cu100
+mxnet-cu92
 tensorflow-hub
 tensorboard
 keras
