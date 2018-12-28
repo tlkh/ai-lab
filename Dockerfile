@@ -161,11 +161,15 @@ RUN conda install -c nvidia -c numba -c conda-forge -c rapidsai -c defaults  --q
     'bokeh' \
     'boost' \
     'nvstrings' \
-    'faiss-gpu' \
     'zlib' \
     'cffi>=1.10.0' \
     'distributed>=1.23.0' \
     'cython>=0.29' && \
+    conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN conda install -c pytorch faiss-gpu cuda92 --quiet --yes && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

@@ -15,6 +15,7 @@ h5py
 vincent
 nltk
 gensim
+spacy
 opencv-contrib-python
 protobuf
 xlrd
