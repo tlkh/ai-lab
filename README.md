@@ -6,8 +6,8 @@ All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-dock
 
 ## What's Included
 
-* CUDA 9.0 + cuDNN 7 (Ubuntu 16.04.5 base)
-  * CUDA 10.0 + cuDNN 7 (Ubuntu 18.04.1 base) (`0.6-dev`)
+* `0.5`: CUDA 9.0 + cuDNN 7 (Ubuntu 16.04.5 base)
+* `0.6-cuda9.2`: CUDA 9.2 + cuDNN 7 (Ubuntu 18.04.1 base)
 * Text editors (like `nano`/`vim`) and utlities like `git`
 * Python data science packages
   * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
@@ -30,13 +30,13 @@ This image is can be used standalone or via JupyterHub.
 
 ```
 # Run an interactive shell
-docker run -it tlkh/deeplearning-lab:0.5 bash
+docker run -it tlkh/deeplearning-lab:0.6-cuda9.2 bash
 
 # Run Jupyter Notebook at port 8888 and mount /home/user/USER_DIR as working directory
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/deeplearning-lab:0.5
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/deeplearning-lab:0.6-cuda9.2
 
 # Same, but use JupyterLab by default by passing JUPYTER_ENABLE_LAB=yes 
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:0.5
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:0.6-cuda9.2
 
 # Enable tensorboard inside the container
 jupyter tensorboard enable
