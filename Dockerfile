@@ -21,9 +21,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     build-essential \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-    
+
 RUN apt-get update && apt-get install -yq --no-install-recommends \
-    emacs \
     git \
     inkscape \
     jed \
@@ -43,14 +42,20 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     unzip \
     nano \
     ffmpeg \
-    vim \
     zip \
-    libopenmpi-dev \
     zlib1g-dev  \
     lib32z1-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-    
+
+# extras per requests from users
+
+RUN apt-get update && apt-get install -yq \
+    emacs \
+    vim \
+    libopenmpi-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -175,7 +180,11 @@ RUN conda install -c pytorch faiss-gpu cuda92 --quiet --yes && \
     fix-permissions /home/$NB_USER
 
 USER root
-RUN cd /home/$NB_USER/ && git clone --recursive https://github.com/tlkh/build-rapids && cd ./build-rapids/ && bash ./build-rapids.sh && cd .. && rm -rf ./build-rapids && chmod -R 777 /home/$NB_USER
+RUN cd /home/$NB_USER/ && \
+    git clone --recursive https://github.com/tlkh/build-rapids && \
+    cd ./build-rapids/ && bash ./build-rapids.sh && \
+    cd .. && rm -rf ./build-rapids && \
+    fix-permissions /home/$NB_USER
 
 USER $NB_UID
 
@@ -186,13 +195,16 @@ RUN conda install pytorch torchvision -c pytorch --quiet --yes && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN conda install -c anaconda tensorflow-gpu  --quiet --yes && \
+RUN conda install -c anaconda tensorflow-gpu --quiet --yes && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 COPY requirements.txt /home/$NB_USER/
-RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && rm -rf /home/$NB_USER/.cache && rm /home/$NB_USER/requirements.txt
+RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
+    rm -rf /home/$NB_USER/.cache && \
+    rm /home/$NB_USER/requirements.txt && \
+    fix-permissions /home/$NB_USER
 
 RUN pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
