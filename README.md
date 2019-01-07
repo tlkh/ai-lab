@@ -13,7 +13,7 @@ All-in-one Deep Learning Docker image compatible with JupyterHub and nvidia-dock
   * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
   * `matplotlib` fonts are pre-cached
   * Extras also included: `nltk`, `gensim`, `opencv`, `scikit-learn`
-* RAPIDS and XGBoost (`0.6-dev`)
+* RAPIDS and XGBoost (`0.6-cuda9.2`)
 * `tensorflow-gpu` and `keras`
 * `pytorch` and `torchvision`, `torchtext`
 * Jupyter Notebook and JupyterLab
