@@ -29,13 +29,13 @@ This image is can be used standalone or via JupyterHub.
 
 ```
 # Run an interactive shell
-docker run -it tlkh/deeplearning-lab:0.6-cuda9.2 bash
+docker run -it tlkh/deeplearning-lab:latest
 
 # Run Jupyter Notebook at port 8888 and mount /home/user/USER_DIR as working directory
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/deeplearning-lab:0.6-cuda9.2
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/deeplearning-lab:latest
 
 # Same, but use JupyterLab by default by passing JUPYTER_ENABLE_LAB=yes 
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:0.6-cuda9.2
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/deeplearning-lab:latest
 
 # Enable tensorboard inside the container
 jupyter tensorboard enable
