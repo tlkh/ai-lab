@@ -17,6 +17,7 @@ sudo su root
 apt install curl -y
 curl https://getcuda.ml/ubuntu.sh | bash
 # your system will reboot by itself
+# find out more @ getcuda.ml
 ```
 
 ### 0. Interactive shell
