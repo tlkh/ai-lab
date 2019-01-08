@@ -13,7 +13,7 @@ Here, we are demonstrating the usage of the container with a freshly installed U
 ### 0. Interactive shell
 
 ```
-docker run -it tlkh/deeplearning-lab:latest bash
+nvidia-docker run -it tlkh/deeplearning-lab:latest bash
 ```
 
 ### 1. Deep Learning
