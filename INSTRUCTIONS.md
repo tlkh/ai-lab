@@ -20,6 +20,11 @@ docker run -it tlkh/deeplearning-lab:latest bash
 
 ```
 TODO
+
+basically just launch the docker container, connect to jupyter and use as per normal
+
+nvidia-docker run --rm -p 8888:8888 -v /home/USER/FOLDER:/home/jovyan tlkh/deeplearning-lab:latest
+# see breakdown of command detailed in next section
 ```
 
 ### 2. RAPIDS
