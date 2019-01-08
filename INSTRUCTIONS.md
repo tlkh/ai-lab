@@ -10,6 +10,15 @@ docker pull tlkh/deeplearning-lab:latest
 
 Here, we are demonstrating the usage of the container with a freshly installed Ubuntu 18.04 VM with the lightweight XFCE environment. The instructions will apply to any other derivative of Ubuntu 16.04 or Ubuntu 18.04.
 
+Note: You will need to have CUDA, Nvidia drivers, Docker and nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+
+```
+sudo su root
+apt install curl -y
+curl https://getcuda.ml/ubuntu.sh | bash
+# your system will reboot by itself
+```
+
 ### 0. Interactive shell
 
 ```
