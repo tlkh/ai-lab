@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     wget \
     bzip2 \
     ca-certificates \
-    sudo \
     locales \
     fonts-liberation \
     apt-utils \
@@ -32,28 +31,16 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     lmodern \
     netcat \
     pandoc \
-    htop \
     texlive-fonts-extra \
     texlive-fonts-recommended \
     texlive-generic-recommended \
     texlive-latex-base \
     texlive-latex-extra \
     texlive-xetex \
-    unzip \
-    nano \
     ffmpeg \
     zip \
     zlib1g-dev  \
     lib32z1-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# extras per requests from users
-
-RUN apt-get update && apt-get install -yq \
-    emacs \
-    vim \
-    libopenmpi-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -190,12 +177,7 @@ USER $NB_UID
 
 # deep learning
 
-RUN conda install pytorch torchvision -c pytorch --quiet --yes && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda install -c anaconda tensorflow-gpu --quiet --yes && \
+RUN conda install -c anaconda -c pytorch pytorch torchvision tensorflow-gpu=1.11 --quiet --yes && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -224,6 +206,21 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 
+# extras per requests from users
+
+RUN apt-get update && apt-get install -yq \
+    emacs \
+    vim \
+    curl \
+    nano \
+    unzip \
+    htop \
+    libopenmpi-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# end extras
+
 EXPOSE 8888
 EXPOSE 6006
 WORKDIR $HOME
@@ -243,3 +240,4 @@ RUN usermod -s /bin/bash $NB_USER
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
+
