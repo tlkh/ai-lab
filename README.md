@@ -1,6 +1,6 @@
 # AI Lab
 
-[![](https://images.microbadger.com/badges/image/tlkh/deeplearning-lab.svg)](https://microbadger.com/images/tlkh/deeplearning-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/tlkh/deeplearning-lab.svg)](Issues) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 All-in-one AI Docker container compatible with JupyterHub and nvidia-docker GPU-accelerated container runtime
 
@@ -28,16 +28,13 @@ This image is can be used standalone or via JupyterHub.
 
 ```
 # Run an interactive shell
-docker run -it tlkh/ai-lab:latest
+docker run -it tlkh/ai-lab
 
 # Run Jupyter Notebook at port 8888 and mount /home/user/USER_DIR as working directory
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/ai-lab:latest
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ tlkh/ai-lab
 
 # Same, but use JupyterLab by default by passing JUPYTER_ENABLE_LAB=yes 
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/ai-lab:latest
-
-# Enable tensorboard inside the container
-jupyter tensorboard enable
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan/ -e JUPYTER_ENABLE_LAB=yes tlkh/ai-lab
 ```
 
 ## Adapted from the Jupyter Docker Stacks
