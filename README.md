@@ -54,7 +54,7 @@ For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 ## Support
 
 * Core Maintainer: [Timothy Liu (tlkh)](https://github.com/tlkh)
-* **This is not an official NVIDIA product**
+* **This is not an official NVIDIA product!** There is no warranty, liability or support associated with this product. We take no responsibility for any loss or damage resulting from the use of this product.
 * Please open an issue if you encounter problems or have a feature request
 
 **Adapted from the Jupyter Docker Stacks**
