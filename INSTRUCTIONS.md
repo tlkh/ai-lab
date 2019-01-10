@@ -4,15 +4,17 @@ This page will give a brief walkthrough on using this image.
 
 To begin, please pull the latest version of the image with:
 
-```
-docker pull tlkh/deeplearning-lab:latest
+```bash
+docker pull nvaitc/ai-lab:latest
 ```
 
 Here, we are demonstrating the usage of the container with a freshly installed Ubuntu 18.04 VM with the lightweight XFCE environment. The instructions will apply to any other derivative of Ubuntu 16.04 or Ubuntu 18.04.
 
-Note: You will need to have CUDA, Nvidia drivers, Docker and nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+## Pre-requisites
 
-```
+You will need to have CUDA>=9.2, Nvidia drivers=>398, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+
+```bash
 sudo su root
 apt install curl -y
 curl https://getcuda.ml/ubuntu.sh | bash
@@ -22,18 +24,17 @@ curl https://getcuda.ml/ubuntu.sh | bash
 
 ### 0. Interactive shell
 
-```
-nvidia-docker run -it tlkh/deeplearning-lab:latest bash
+```bash
+nvidia-docker run --rm -it nvaitc/ai-lab bash
 ```
 
 ### 1. Deep Learning
 
-```
-TODO
+```bash
+# TODO
+# basically just launch the docker container, connect to jupyter and use as per normal
 
-basically just launch the docker container, connect to jupyter and use as per normal
-
-nvidia-docker run --rm -p 8888:8888 -v /home/USER/FOLDER:/home/jovyan tlkh/deeplearning-lab:latest
+nvidia-docker run --rm -p 8888:8888 -v /home/USER/FOLDER:/home/jovyan nvaitc/ai-lab
 # see breakdown of command detailed in next section
 ```
 
@@ -52,13 +53,13 @@ The dataset (`drive_data`) can be downloaded from [Google Drive](https://drive.g
 
 Launch the container with the working directory as the `RAPIDS-demo` folder using the following command:
 
-```
-nvidia-docker run --rm -p 8888:8888 -v /home/nvaitc/RAPIDS-demo:/home/jovyan tlkh/deeplearning-lab:latest
+```bash
+nvidia-docker run --rm -p 8888:8888 -v /home/nvaitc/RAPIDS-demo:/home/jovyan nvaitc/ai-lab
 ```
 
 **Here is a breakdown of the command**
 
-* Base command: `nvidia-docker run tlkh/deeplearning-lab:latest`
+* Base command: `nvidia-docker run nvaitc/ai-lab`
 * `--rm` flag: remove after container stop
 * `-p 8888:8888` : map port 8888 on container to 8888 on host
 * `-v /home/nvaitc/RAPIDS-demo:/home/jovyan` : map folder `/home/nvaitc/RAPIDS-demo` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.

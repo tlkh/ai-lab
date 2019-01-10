@@ -10,18 +10,19 @@ USER root
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
 ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    apt-utils \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     wget \
     bzip2 \
     ca-certificates \
     locales \
     fonts-liberation \
-    apt-utils \
     build-essential \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -yq --no-install-recommends \
     git \
     inkscape \
     jed \
@@ -222,7 +223,10 @@ RUN apt-get update && apt-get install -yq \
 # end extras
 
 EXPOSE 8888
+EXPOSE 8787
+EXPOSE 8786
 EXPOSE 6006
+
 WORKDIR $HOME
 
 # Configure container startup
