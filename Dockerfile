@@ -94,60 +94,12 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda clean -tipsy && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.cache && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# Install Tini
-
-RUN conda install --quiet --yes 'tini=0.18.0' && \
-    conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# Install Jupyter Notebook, Lab, and Hub
-# Generate a notebook server config
-# Cleanup temporary files
-# Correct permissions
-# Do all this in a single RUN command to avoid duplicating all of the
-# files across image layers when the permissions change
-
-RUN conda install --quiet --yes \
-    'notebook=5.7.*' \
-    'jupyterhub=0.9.*' \
-    'jupyterlab=0.35.*' && \
-    conda clean -tipsy && \
-    jupyter labextension install @jupyterlab/hub-extension && \
-    npm cache clean --force && \
-    jupyter notebook --generate-config && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda install --quiet --yes \
-    'conda-forge::blas=*=openblas' \
-    'jupyter_contrib_nbextensions' \
-    'ipywidgets=7.2*' && \
-    conda clean -tipsy && \
-    # Activate ipywidgets extension in the environment that runs the notebook server
-    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter contrib nbextension install --sys-prefix && \
-    # Also activate ipywidgets extension for JupyterLab
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install @jupyterlab/hub-extension && \
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
-    rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
-
-# RAPIDS
+# RAPIDS dependencies
+# this also downgrades the Python to 3.6
 
 ENV CUDACXX /usr/local/cuda/bin/nvcc
 
@@ -165,8 +117,45 @@ RUN conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c de
     'cffi>=1.10.0' \
     'distributed>=1.23.0' \
     'faiss-gpu' \
+    'blas=*=openblas' \
     'cython>=0.29' && \
     conda clean -tipsy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# Install Jupyter Notebook, Lab, and Hub
+# Generate a notebook server config
+# Cleanup temporary files
+# Correct permissions
+# Do all this in a single RUN command to avoid duplicating all of the
+# files across image layers when the permissions change
+
+# if you don't run this you get:
+# BlockingIOError(11, 'write could not complete without blocking', 69632)
+RUN python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
+
+RUN conda install -c conda-forge --quiet --yes \
+    'notebook=5.7.*' \
+    'jupyterhub=0.9.*' \
+    'jupyterlab=0.35.*' \
+    'jupyter_contrib_nbextensions' \
+    'ipywidgets=7.2*' && \
+    jupyter notebook --generate-config && \
+    # Activate ipywidgets extension in the environment that runs the notebook server
+    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+    jupyter contrib nbextension install --sys-prefix && \
+    # Also activate ipywidgets extension for JupyterLab
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    jupyter labextension install jupyterlab_bokeh && \
+    jupyter labextension install @jupyterlab/hub-extension && \
+    echo "chained conda install: tini" && \
+    conda install --quiet --yes 'tini=0.18.0' && \
+    conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
+    conda clean -tipsy && \
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -191,11 +180,8 @@ RUN conda install -c anaconda -c pytorch pytorch torchvision tensorflow-gpu=1.11
 
 COPY requirements.txt /home/$NB_USER/
 RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    rm -rf /home/$NB_USER/.cache && \
     rm /home/$NB_USER/requirements.txt && \
-    fix-permissions /home/$NB_USER
-
-RUN pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
+    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github &&\

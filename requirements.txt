@@ -24,3 +24,6 @@ tensorflow-hub
 tensorboard
 keras
 gpustat
+pydot
+pyyaml>=4.2b4
+msgpack>=0.6.0
