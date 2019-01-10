@@ -179,7 +179,8 @@ RUN conda install -c anaconda -c pytorch pytorch torchvision tensorflow-gpu=1.11
 # some packages need to be installed via pip
 
 COPY requirements.txt /home/$NB_USER/
-RUN pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
+RUN pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
+    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     rm /home/$NB_USER/requirements.txt && \
     pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \

@@ -1,12 +1,12 @@
 ![](images/ai-lab-header.jpg)
 
-[![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab.svg)
+[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab.svg)](https://snyk.io/test/)
 
 All-in-one AI Docker container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
 
 ## What's Included
 
-* `0.7`: CUDA 9.2 + cuDNN 7 (Ubuntu 18.04.1 base)
+* CUDA 9.2 + cuDNN 7.4 (Ubuntu 18.04.1 base)
 * Text editors (like `nano`/`vim`) and utilities like `git`
 * Python data science packages
   * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
@@ -54,7 +54,7 @@ For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 ## Support
 
 * Core Maintainer: [Timothy Liu (tlkh)](https://github.com/tlkh)
-* **This is not an official NVIDIA product!** There is no warranty, liability or support associated with this product. We take no responsibility for any loss or damage resulting from the use of this product.
+* **This is not an official NVIDIA product!** There is no warranty, liability or support associated with this product. We make no guarantees take no responsibility for any loss or damage resulting from the use of this product.
 * Please open an issue if you encounter problems or have a feature request
 
 **Adapted from the Jupyter Docker Stacks**
