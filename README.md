@@ -1,4 +1,4 @@
-# AI Lab
+![](images/ai-lab-header.jpg)
 
 [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues)
 
@@ -22,7 +22,7 @@ This image can be used standalone on workstation or cloud instances, or via Jupy
 
 * To build your own high-performance and validated images built from NVIDIA-optimised containers (NGC), see: [https://github.com/tlkh/ngc-2-jupyterhub](https://github.com/tlkh/ngc-2-jupyterhub)
 
-## Using this Container
+## Using the AI Lab Container
 
 Pulling the container:
 
