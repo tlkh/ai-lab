@@ -20,8 +20,6 @@ All-in-one AI Docker container, compatible with the nvidia-docker GPU-accelerate
 
 This image can be used standalone on workstation or cloud instances, or via JupyterHub.
 
-* To build your own high-performance and validated images built from NVIDIA-optimised containers (NGC), see: [https://github.com/tlkh/ngc-2-jupyterhub](https://github.com/tlkh/ngc-2-jupyterhub)
-
 ## Using the AI Lab Container
 
 Pulling the container:
