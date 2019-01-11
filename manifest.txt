@@ -25,3 +25,17 @@ gpustat
 pydot
 pyyaml>=4.2b4
 msgpack>=0.6.0
+pytest
+numba>=0.41.0dev
+pandas=0.20.3
+pyarrow=0.10.0
+cmake>=3.12
+bokeh
+boost
+nvstrings
+zlib
+cffi>=1.10.0
+distributed>=1.23.0
+faiss-gpu
+cython>=0.29
+tini==0.18.0

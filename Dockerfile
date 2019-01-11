@@ -8,14 +8,12 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -yq --no-install-recommends \
-    apt-utils \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install all OS dependencies for notebook server
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
+    apt-utils && \
+    apt-get install -yq --no-install-recommends \
+    curl \
     wget \
     bzip2 \
     ca-certificates \
@@ -38,7 +36,10 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-latex-extra \
     texlive-xetex \
     ffmpeg \
+    nano \
     zip \
+    unzip \
+    graphviz\
     zlib1g-dev  \
     lib32z1-dev \
     && apt-get clean && \
@@ -169,17 +170,13 @@ RUN cd /home/$NB_USER/ && \
 
 USER $NB_UID
 
-# deep learning
+# deep learning and misc pip packages
+
+COPY requirements.txt /home/$NB_USER/
 
 RUN conda install -c anaconda -c pytorch pytorch torchvision tensorflow-gpu=1.11 --quiet --yes && \
     conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# some packages need to be installed via pip
-
-COPY requirements.txt /home/$NB_USER/
-RUN pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
+    pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     rm /home/$NB_USER/requirements.txt && \
     pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
@@ -190,6 +187,7 @@ RUN pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
     rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 USER root
@@ -205,11 +203,8 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
 RUN apt-get update && apt-get install -yq \
     emacs \
     vim \
-    curl \
     nano \
-    unzip \
     htop \
-    graphviz \
     libopenmpi-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
