@@ -46,6 +46,16 @@ git clone https://github.com/NVAITC/quickstart-notebooks
 nvidia-docker run --rm -p 8888:8888 -v /home/USER/quickstart-notebooks:/home/jovyan nvaitc/ai-lab
 ```
 
+![start jupyter](images/start_jupyter_qs.jpg)
+
+Copy and paste the URL on the last line into your browser (you'll need to replace the contents of the bracket with `localhost` or your IP address)
+
+![start jupyter](images/jupyter_qs.jpg)
+
+The first notebook you might want to run is the `hello_gpu.ipynb` notebook to check if you can access your GPU properly.
+
+![hello gpu](images/check_gpu.jpg)
+
 **Here is a breakdown of the command**
 
 * Base command: `nvidia-docker run nvaitc/ai-lab`
