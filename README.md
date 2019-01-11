@@ -31,7 +31,7 @@ docker pull nvaitc/ai-lab:latest
 Running an interactive shell (`bash`)
 
 ```bash
-nvidia-docker run --rm -it tlkh/ai-lab bash
+nvidia-docker run --rm -it nvaitc/ai-lab bash
 ```
 
 Run Jupyter Notebook with the following options:
