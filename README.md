@@ -41,13 +41,13 @@ Run Jupyter Notebook with the following options:
 * mount `/home/user/USER_DIR` as the working directory (`/home/jovyan`)
 
 ```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan tlkh/ai-lab
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan nvaitc/ai-lab
 ```
 
 Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`
 
 ```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan -e JUPYTER_ENABLE_LAB=yes tlkh/ai-lab
+nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan -e JUPYTER_ENABLE_LAB=yes nvaitc/ai-lab
 ```
 
 For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
