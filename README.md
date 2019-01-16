@@ -13,6 +13,7 @@ All-in-one AI Docker container, compatible with the nvidia-docker GPU-accelerate
   * NLP and CV Libraries:  `nltk`, `gensim`, `opencv`, `scikit-learn` etc.
 * RAPIDS and XGBoost 
 * `tensorflow-gpu` and `keras`
+* Includes [`autokeras`](https://github.com/jhfjhfj1/autokeras) for neural architecture search (AutoML)
 * `pytorch` and `torchvision`, `torchtext`
 * Jupyter Notebook and JupyterLab
   * including `ipywidgets` and `jupyter_contrib_nbextensions`
