@@ -54,7 +54,8 @@ For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 ## Support
 
 * Core Maintainer: [Timothy Liu (tlkh)](https://github.com/tlkh)
-* **This is not an official NVIDIA product!** There is no warranty, liability or support associated with this product. We make no guarantees take no responsibility for any loss or damage resulting from the use of this product.
+* **This is not an official NVIDIA product!**
+* The website, its software and all content found on it are provided on an “as is” and “as available” basis. NVIDIA/NVAITC does not give any warranties, whether express or implied, as to the suitability or usability of the website, its software or any of its content. NVIDIA/NVAITC will not be liable for any loss, whether such loss is direct, indirect, special or consequential, suffered by any party as a result of their use of the libraries or content. Any usage of the libraries is done at the user’s own risk and the user will be solely responsible for any damage to any computer system or loss of data that results from such activities.
 * Please open an issue if you encounter problems or have a feature request
 
 **Adapted from the Jupyter Docker Stacks**
