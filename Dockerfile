@@ -10,9 +10,10 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install all OS dependencies for notebook server
 
-RUN apt-get update && apt-get install -yq --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -yq --no-install-recommends --no-upgrade \
     apt-utils && \
-    apt-get install -yq --no-install-recommends \
+    apt-get install -yq --no-install-recommends --no-upgrade \
     curl \
     wget \
     bzip2 \
@@ -20,7 +21,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     locales \
     fonts-liberation \
     build-essential \
-    git \
     inkscape \
     jed \
     libsm6 \
@@ -36,12 +36,10 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-latex-extra \
     texlive-xetex \
     ffmpeg \
-    nano \
-    zip \
-    unzip \
     graphviz\
     zlib1g-dev  \
     lib32z1-dev \
+    git \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -190,6 +188,41 @@ RUN conda install -c anaconda -c pytorch pytorch torchvision tensorflow-gpu=1.11
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# extras per requests from users
+
+USER root
+
+RUN apt-get update && apt-get install -yq \
+    emacs \
+    vim \
+    nano \
+    zip \
+    unzip \
+    htop \
+    libsnappy-dev \
+    libopenmpi-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+
+USER $NB_UID
+
+COPY requirements-extra.txt /home/$NB_USER/
+
+RUN pip install --no-cache-dir -r /home/$NB_USER/requirements-extra.txt && \
+    rm /home/$NB_USER/requirements-extra.txt && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
+# autokeras
+
+RUN cd /home/$NB_USER && \
+    pip install --no-cache-dir lightgbm imageio GPUtil && \
+    git clone https://github.com/tlkh/autokeras.git && \
+    cd autokeras/ && python setup.py install && \
+    cd .. && rm -rf autokeras/
+
 USER root
 
 # Import matplotlib the first time to build the font cache
@@ -197,17 +230,6 @@ USER root
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
-
-# extras per requests from users
-
-RUN apt-get update && apt-get install -yq \
-    emacs \
-    vim \
-    nano \
-    htop \
-    libopenmpi-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # end extras
 

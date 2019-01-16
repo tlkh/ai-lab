@@ -1,0 +1,7 @@
+scikit-image
+sympy
+gensim
+spacy
+gpustat
+intake
+seaborn
