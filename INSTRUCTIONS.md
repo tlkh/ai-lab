@@ -67,7 +67,7 @@ The first notebook you might want to run is the `hello_gpu.ipynb` notebook to ch
 
 #### Setup
 
-`git clone https://github.com/tlkh/RAPIDS-demo`
+`git clone https://github.com/tlkh/predictive-hdd-failure`
 
 ![starting](images/start.jpg)
 
@@ -75,10 +75,10 @@ The dataset (`drive_data`) can be downloaded from [Google Drive](https://drive.g
 
 #### Running the sample
 
-Launch the container with the working directory as the `RAPIDS-demo` folder using the following command:
+Launch the container with the working directory as the `predictive-hdd-failure` folder using the following command:
 
 ```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/nvaitc/RAPIDS-demo:/home/jovyan nvaitc/ai-lab
+nvidia-docker run --rm -p 8888:8888 -v /home/USER/predictive-hdd-failure:/home/jovyan nvaitc/ai-lab
 ```
 
 **Here is a breakdown of the command**
@@ -86,7 +86,7 @@ nvidia-docker run --rm -p 8888:8888 -v /home/nvaitc/RAPIDS-demo:/home/jovyan nva
 * Base command: `nvidia-docker run nvaitc/ai-lab`
 * `--rm` flag: remove after container stop
 * `-p 8888:8888` : map port 8888 on container to 8888 on host
-* `-v /home/nvaitc/RAPIDS-demo:/home/jovyan` : map folder `/home/nvaitc/RAPIDS-demo` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
+* `-v /home/USER/predictive-hdd-failure:/home/jovyan` : map folder `/home/USER/predictive-hdd-failure` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
 
 The Jupyter environment will start automatically. You will see the following output. The last line tells you how to access the Jupyter environment from your browser.
 
