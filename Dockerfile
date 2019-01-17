@@ -208,6 +208,8 @@ RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
 
 USER $NB_UID
 
+RUN git config --global core.editor "nano"
+
 COPY requirements-extra.txt /home/$NB_USER/
 
 RUN pip install --no-cache-dir -r /home/$NB_USER/requirements-extra.txt && \
