@@ -161,7 +161,7 @@ RUN conda install -c conda-forge --quiet --yes \
 USER root
 
 RUN cd /home/$NB_USER/ && \
-    git clone --recursive https://github.com/tlkh/build-rapids && \
+    git clone --recursive https://github.com/NVAITC/build-rapids && \
     cd ./build-rapids/ && bash ./build-rapids.sh && \
     cd .. && rm -rf ./build-rapids && \
     fix-permissions /home/$NB_USER
@@ -220,8 +220,9 @@ RUN pip install --no-cache-dir -r /home/$NB_USER/requirements-extra.txt && \
 # autokeras
 
 RUN cd /home/$NB_USER && \
-    pip install --no-cache-dir lightgbm imageio GPUtil && \
-    git clone https://github.com/tlkh/autokeras.git && \
+    pip install --no-cache-dir && \
+    lightgbm==2.2.2 imageio GPUtil librosa==0.6.2 inflect unidecode lws==1.2 && \
+    git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras/
 
