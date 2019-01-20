@@ -12,7 +12,7 @@ Here, we are demonstrating the usage of the container with a freshly installed U
 
 ## Pre-requisites
 
-You will need to have CUDA>=9.2, Nvidia drivers=>398, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+You will need to have CUDA>=9.2, Nvidia drivers>=398, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
 
 ```bash
 sudo su root
@@ -41,10 +41,20 @@ We can clone our `quickstart-notebooks` repository and play around with the samp
 ```bash
 # clone the folder to /home/USER/quickstart-notebooks
 git clone https://github.com/NVAITC/quickstart-notebooks
+```
 
-# launch the container in that folder and map port 8888
+Launch the container in that folder and map port 8888:
+
+```
 nvidia-docker run --rm -p 8888:8888 -v /home/USER/quickstart-notebooks:/home/jovyan nvaitc/ai-lab
 ```
+
+**Here is a breakdown of the command**
+
+* Base command: `nvidia-docker run nvaitc/ai-lab`
+* `--rm` flag: remove after container stop
+* `-p 8888:8888` : map port 8888 on container to 8888 on host
+* `-v /home/USER/quickstart-notebooks:/home/jovyan` : map folder `/home/USER/quickstart-notebooks` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
 
 ![start jupyter](images/start_jupyter_qs.jpg)
 
@@ -55,10 +65,3 @@ Copy and paste the URL on the last line into your browser (you'll need to replac
 The first notebook you might want to run is the `hello_gpu.ipynb` notebook to check if you can access your GPU properly.
 
 ![hello gpu](images/check_gpu.jpg)
-
-**Here is a breakdown of the command**
-
-* Base command: `nvidia-docker run nvaitc/ai-lab`
-* `--rm` flag: remove after container stop
-* `-p 8888:8888` : map port 8888 on container to 8888 on host
-* `-v /home/USER/quickstart-notebooks:/home/jovyan` : map folder `/home/USER/quickstart-notebooks` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
