@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04 
+FROM nvidia/cuda:9.2-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -157,16 +157,6 @@ RUN conda install -c conda-forge --quiet --yes \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-USER root
-
-RUN cd /home/$NB_USER/ && \
-    git clone --recursive https://github.com/NVAITC/build-rapids && \
-    cd ./build-rapids/ && bash ./build-rapids.sh && \
-    cd .. && rm -rf ./build-rapids && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
 
 # deep learning and misc pip packages
 
