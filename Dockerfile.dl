@@ -105,10 +105,8 @@ ENV CUDACXX /usr/local/cuda/bin/nvcc
 RUN conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
     'cudatoolkit' \
     'pytest' \
-    'numba>=0.41.0dev' \
-    'pandas=0.20.3' \
-    'pyarrow=0.10.0' \
-    'cmake>=3.12' \
+    'numba' \
+    'pandas' \
     'bokeh' \
     'boost' \
     'nvstrings' \
@@ -158,6 +156,24 @@ RUN conda install -c conda-forge --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+USER root
+
+RUN apt-get update && apt-get install -yq \
+    emacs \
+    vim \
+    nano \
+    zip \
+    unzip \
+    htop \
+    libsnappy-dev \
+    libopenmpi-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+
+USER $NB_UID
+
 # deep learning and misc pip packages
 
 COPY requirements.txt /home/$NB_USER/
@@ -178,26 +194,6 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-# extras per requests from users
-
-USER root
-
-RUN apt-get update && apt-get install -yq \
-    emacs \
-    vim \
-    nano \
-    zip \
-    unzip \
-    htop \
-    libsnappy-dev \
-    libopenmpi-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
-
-USER $NB_UID
 
 # autokeras
 

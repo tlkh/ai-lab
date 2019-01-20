@@ -166,6 +166,20 @@ RUN cd /home/$NB_USER/ && \
     cd .. && rm -rf ./build-rapids && \
     fix-permissions /home/$NB_USER
 
+RUN apt-get update && apt-get install -yq \
+    emacs \
+    vim \
+    nano \
+    zip \
+    unzip \
+    htop \
+    libsnappy-dev \
+    libopenmpi-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+
 USER $NB_UID
 
 # deep learning and misc pip packages
@@ -188,26 +202,6 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-# extras per requests from users
-
-USER root
-
-RUN apt-get update && apt-get install -yq \
-    emacs \
-    vim \
-    nano \
-    zip \
-    unzip \
-    htop \
-    libsnappy-dev \
-    libopenmpi-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
-
-USER $NB_UID
 
 # autokeras
 
