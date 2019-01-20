@@ -34,7 +34,7 @@ Note that the default user in the container is always `jovyan`. ([Who is Jovyan?
 
 ![bash](images/interactive.jpg)
 
-### 1. Deep Learning
+### 1. Jupyter Notebook
 
 We can clone our `quickstart-notebooks` repository and play around with the sample notebooks for several deep learning frameworks.
 
@@ -62,40 +62,3 @@ The first notebook you might want to run is the `hello_gpu.ipynb` notebook to ch
 * `--rm` flag: remove after container stop
 * `-p 8888:8888` : map port 8888 on container to 8888 on host
 * `-v /home/USER/quickstart-notebooks:/home/jovyan` : map folder `/home/USER/quickstart-notebooks` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
-
-### 2. RAPIDS
-
-#### Setup
-
-`git clone https://github.com/tlkh/predictive-hdd-failure`
-
-![starting](images/start.jpg)
-
-The dataset (`drive_data`) can be downloaded from [Google Drive](https://drive.google.com/file/d/1VFyqGKVVI4t15Xp9zdFdk7068IZYxn84/view?usp=sharing).
-
-#### Running the sample
-
-Launch the container with the working directory as the `predictive-hdd-failure` folder using the following command:
-
-```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/USER/predictive-hdd-failure:/home/jovyan nvaitc/ai-lab
-```
-
-**Here is a breakdown of the command**
-
-* Base command: `nvidia-docker run nvaitc/ai-lab`
-* `--rm` flag: remove after container stop
-* `-p 8888:8888` : map port 8888 on container to 8888 on host
-* `-v /home/USER/predictive-hdd-failure:/home/jovyan` : map folder `/home/USER/predictive-hdd-failure` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
-
-The Jupyter environment will start automatically. You will see the following output. The last line tells you how to access the Jupyter environment from your browser.
-
-![docker run](images/docker_run.jpg)
-
-When you access the URL, you should be able to see the following screen:
-
-![](images/jupyter.jpg)
-
-You can run the sample notebook `simple_sklearn.ipynb` to do a quick test and observe if the GPU is working properly. You may use `nvidia-smi` or `nvtop` ([install instructions](https://github.com/Syllo/nvtop/blob/master/README.markdown))
-
-![](images/run_jupyter.jpg)

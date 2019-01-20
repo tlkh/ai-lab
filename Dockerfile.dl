@@ -170,8 +170,6 @@ RUN apt-get update && apt-get install -yq \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
-
 USER $NB_UID
 
 # deep learning and misc pip packages
@@ -212,6 +210,8 @@ RUN cd /home/$NB_USER && \
 RUN git config --global core.editor "nano"
 
 USER root
+
+RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
 
 # Import matplotlib the first time to build the font cache
 
