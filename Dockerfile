@@ -168,7 +168,6 @@ COPY requirements.txt /home/$NB_USER/
 RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
-    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
@@ -179,6 +178,7 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     jupyter labextension install @jupyterlab/github && \
     echo "Installing fastai library" && \
     conda install -c pytorch -c fastai fastai dataclasses && \
+    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \

@@ -52,6 +52,20 @@ nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan -e JUPYT
 
 For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 
+## FAQ
+
+**1. How does this contrast with NGC containers?**
+
+NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDIA tuned, tested, certified, and maintained containers for deep learning and HPC frameworks that take full advantage of NVIDIA GPUs on supported systems, such as [NVIDIA DGX products](https://www.nvidia.com/en-sg/data-center/dgx-systems/). **We recommend the use of NGC containers for mission critical and production workloads.**
+
+The AI Lab container was designed for students and researchers. The container is primarily designed to create a frictionless experience (by including all frameworks) during the initial prototyping and exploration phase, with a focus on iteration with fast feedback and less focus on deciding on specific approaches or frameworks. **This is not an official NVIDIA product!**
+
+**2. Can I modify/build this container myself?**
+
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source.
+
+If you have any ideas or suggestions, please feel free to open an issue.
+
 ## Support
 
 * Core Maintainer: [Timothy Liu (tlkh)](https://github.com/tlkh)
