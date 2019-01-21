@@ -40,6 +40,17 @@ RUN apt-get update && \
     zlib1g-dev  \
     lib32z1-dev \
     git \
+    emacs \
+    vim \
+    nano \
+    zip \
+    unzip \
+    htop \
+    libopenmpi-dev \
+    libjpeg-dev \
+    libpng-dev \
+    openssh-client \
+    openssh-server \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -83,6 +94,7 @@ RUN fix-permissions /home/$NB_USER
 # Install conda as jovyan
 
 ENV MINICONDA_VERSION 4.5.11
+
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
@@ -92,17 +104,9 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
     $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
-    conda clean -tipsy && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# RAPIDS dependencies
-# this also downgrades the Python to 3.6
-
-ENV CUDACXX /usr/local/cuda/bin/nvcc
-
-RUN conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    echo 'chained install: general dependencies' && \
+    conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    'intake' \
     'cudatoolkit' \
     'pytest' \
     'numba>=0.41.0dev' \
@@ -113,25 +117,22 @@ RUN conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c de
     'boost' \
     'nvstrings' \
     'zlib' \
+    'libgdf_cffi' \
     'cffi>=1.10.0' \
     'distributed>=1.23.0' \
     'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
     conda clean -tipsy && \
+    rm -rf /home/$NB_USER/.cache && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# Install Jupyter Notebook, Lab, and Hub
-# Generate a notebook server config
-# Cleanup temporary files
-# Correct permissions
-# Do all this in a single RUN command to avoid duplicating all of the
-# files across image layers when the permissions change
-
-# if you don't run this you get:
+# if you don't run this you could get:
 # BlockingIOError(11, 'write could not complete without blocking', 69632)
 RUN python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
+
+# Install Jupyter Notebook, Lab, and Hub
 
 RUN conda install -c conda-forge --quiet --yes \
     'notebook=5.7.*' \
@@ -158,29 +159,11 @@ RUN conda install -c conda-forge --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-USER root
+RUN git config --global core.editor "nano"
 
-RUN cd /home/$NB_USER/ && \
-    git clone --recursive https://github.com/NVAITC/build-rapids && \
-    cd ./build-rapids/ && bash ./build-rapids.sh && \
-    cd .. && rm -rf ./build-rapids && \
-    fix-permissions /home/$NB_USER
-
-RUN apt-get update && apt-get install -yq \
-    emacs \
-    vim \
-    nano \
-    zip \
-    unzip \
-    htop \
-    libsnappy-dev \
-    libopenmpi-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
-
-USER $NB_UID
+#USER root
+#RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+#USER $NB_UID
 
 # deep learning and misc pip packages
 
@@ -203,27 +186,107 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# extras
+
+# RAPIDS
+
+USER root
+
+ENV CUDACXX /usr/local/cuda/bin/nvcc
+
+RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH && \
+    ldconfig && \
+    cd /home/$NB_USER/ && \
+    git clone --recursive https://github.com/NVAITC/build-rapids && \
+    cd ./build-rapids/ && bash ./build-rapids.sh && \
+    cd .. && rm -rf ./build-rapids && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
+RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+
+# OpenMPI + Horovod
+
+RUN mkdir /tmp/openmpi && \
+    cd /tmp/openmpi && \
+    wget https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.2.tar.gz && \
+    tar zxf openmpi-3.1.2.tar.gz && \
+    cd openmpi-3.1.2 && \
+    ./configure --enable-orterun-prefix-by-default && \
+    make -j $(nproc) all && \
+    make install && \
+    ldconfig && \
+    rm -rf /tmp/openmpi
+
+RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
+    
+USER $NB_UID
+    
+RUN HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 \
+    pip install --no-cache-dir horovod && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
+USER root
+
+RUN ldconfig && \
+    mv /usr/local/bin/mpirun /usr/local/bin/mpirun.real && \
+    echo '#!/bin/bash' > /usr/local/bin/mpirun && \
+    echo 'mpirun.real --allow-run-as-root "$@"' >> /usr/local/bin/mpirun && \
+    chmod a+x /usr/local/bin/mpirun && \
+    echo "hwloc_base_binding_policy = none" >> /usr/local/etc/openmpi-mca-params.conf && \
+    echo "rmaps_base_mapping_policy = slot" >> /usr/local/etc/openmpi-mca-params.conf && \
+    echo "btl_tcp_if_exclude = lo,docker0" >> /usr/local/etc/openmpi-mca-params.conf && \
+    echo NCCL_DEBUG=INFO >> /etc/nccl.conf && \
+    mkdir -p /var/run/sshd && \
+    cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
+    echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
+    mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
+
+USER $NB_UID
+
 # autokeras
 
 RUN cd /home/$NB_USER && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
-    cd .. && rm -rf autokeras/
+    cd .. && rm -rf autokeras/ && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
 
 # flair
 
 RUN cd /home/$NB_USER && \
     git clone https://github.com/NVAITC/flair.git && \
     cd flair/ && python setup.py install && \
-    cd .. && rm -rf flair/
+    cd .. && rm -rf flair/ && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
 
-RUN git config --global core.editor "nano"
+# fastai
 
-USER root
+RUN pip uninstall pillow -y && \
+    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN conda install -c pytorch -c fastai fastai dataclasses && \
+    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
+    conda clean -tipsy && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN python -c "import fastai.utils.collect_env; fastai.utils.collect_env.check_perf()"
 
 # Import matplotlib the first time to build the font cache
 
+USER root
+
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 

@@ -1,12 +1,12 @@
-tqdm
-numexpr
-matplotlib
+#tqdm
+#numexpr
+#matplotlib
 scipy
 scikit-learn
 patsy
 statsmodels
 cloudpickle
-dill
+#dill
 sqlalchemy
 h5py
 nltk
@@ -22,9 +22,9 @@ msgpack>=0.6.0
 scikit-image
 sympy
 gensim
-spacy
+#spacy
 gpustat
-intake
+#intake
 seaborn
 lightgbm==2.2.2
 imageio
@@ -39,3 +39,5 @@ sqlitedict==1.6.0
 deprecated==1.2.4
 hyperopt==0.1.1
 pytorch-pretrained-bert==0.3.0
+jupyterthemes
+#horovod
