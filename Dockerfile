@@ -161,31 +161,32 @@ RUN conda install -c conda-forge --quiet --yes \
 
 RUN git config --global core.editor "nano"
 
-#USER root
-#RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
-#USER $NB_UID
-
 # deep learning and misc pip packages
 
 COPY requirements.txt /home/$NB_USER/
 
 RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
-    conda clean -tipsy && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
+    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
+    pip uninstall pillow -y && \
+    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
     pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github &&\
+    jupyter labextension install @jupyterlab/github && \
+    echo "Installing fastai library" && \
+    conda install -c pytorch -c fastai fastai dataclasses && \
+    conda clean -tipsy && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
+    
 # extras
 
 # RAPIDS
@@ -202,9 +203,8 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     cd ./build-rapids/ && bash ./build-rapids.sh && \
     cd .. && rm -rf ./build-rapids && \
     rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
 
 # OpenMPI + Horovod
 
@@ -263,23 +263,6 @@ RUN cd /home/$NB_USER && \
     cd .. && rm -rf flair/ && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
-
-# fastai
-
-RUN pip uninstall pillow -y && \
-    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda install -c pytorch -c fastai fastai dataclasses && \
-    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
-    conda clean -tipsy && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN python -c "import fastai.utils.collect_env; fastai.utils.collect_env.check_perf()"
 
 # Import matplotlib the first time to build the font cache
 

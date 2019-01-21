@@ -1,25 +1,25 @@
-![](images/ai-lab-header.jpg)
+![header image](images/ai-lab-header.jpg)
 
-[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/badge/vulnerabilities%20(snyk.io)-0-brightgreen.svg)](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab/test/requirements.txt.svg?label=vulnerabilities%20%28snyk.io%29)
+[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/badge/vulnerabilities%20%28snyk.io%29-0-brightgreen.svg)](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab/test/requirements.txt.svg?label=vulnerabilities%20%28snyk.io%29)
 
-All-in-one AI Docker container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
+All-in-one AI development container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
 
 ## What's Included
 
 * CUDA 9.2 + cuDNN 7.4 (Ubuntu 18.04.1 base)
-* Text editors (like `nano`/`vim`) and utilities like `git`
-* Python data science packages
-  * `pandas`, `numpy`, `numba`, `sympy`, `scipy` etc.
-  * NLP and CV Libraries:  `nltk`, `gensim`, `opencv`, `scikit-learn` etc.
-* RAPIDS and XGBoost 
-* `tensorflow-gpu` and `keras`
-* Includes [`autokeras`](https://github.com/jhfjhfj1/autokeras) for neural architecture search (AutoML)
-* `pytorch` and `torchvision`, `torchtext`
+* Packages and libraries
+  * Data Science: `pandas`, `numpy`, `scipy`, `numba` etc.
+  * Deep Learning: TensorFlow, PyTorch, MXNet, fast.ai, Keras, Autokeras
+  * ML: `scikit-learn`, XGBoost, `lightgbm`
+  * RAPIDS: cuDF, cuML, cuGraph
+  * CV: `opencv-contrib-python`, `scikit-image`, `pillow-simd`
+  * NLP: `nltk`, `spacy`, `flair`
+  * Distributed: OpenMPI, Horovod, Dask
 * Jupyter Notebook and JupyterLab
   * including `ipywidgets` and `jupyter_contrib_nbextensions`
   * integrated TensorBoard support
 
-This image can be used standalone on workstation or cloud instances, or via JupyterHub.
+This image can be used standalone on workstation or cloud instances, or via JupyterHub instances.
 
 ## Using the AI Lab Container
 
@@ -44,7 +44,7 @@ Run Jupyter Notebook with the following options:
 nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan nvaitc/ai-lab
 ```
 
-Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`
+Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`, or replacing `tree` with `lab` in the browser address bar
 
 ```bash
 nvidia-docker run --rm -p 8888:8888 -v /home/user/USER_DIR:/home/jovyan -e JUPYTER_ENABLE_LAB=yes nvaitc/ai-lab

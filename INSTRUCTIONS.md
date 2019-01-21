@@ -12,7 +12,7 @@ Here, we are demonstrating the usage of the container with a freshly installed U
 
 ## Pre-requisites
 
-You will need to have CUDA>=9.2, Nvidia drivers>=398, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+You will need to have CUDA>=9.2, Nvidia drivers>=396, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
 
 ```bash
 sudo su root
