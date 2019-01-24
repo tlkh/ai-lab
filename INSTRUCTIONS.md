@@ -22,6 +22,8 @@ curl https://getcuda.ml/ubuntu.sh | bash
 # find out more @ getcuda.ml
 ```
 
+If you face problems, you may also view a [screen recording](https://www.youtube.com/watch?v=MW2AciaMGg4) of the installation process. The target machine in the recording is a remote instance running on Google Cloud.
+
 ### 0. Interactive shell
 
 You can use the container in interactive mode (command line interface).
@@ -65,3 +67,5 @@ Copy and paste the URL on the last line into your browser (you'll need to replac
 The first notebook you might want to run is the `hello_gpu.ipynb` notebook to check if you can access your GPU properly.
 
 ![hello gpu](images/check_gpu.jpg)
+
+If you are facing problems and would like to view a screen recording of the process, please check out this [screen recording](https://www.youtube.com/watch?v=nrt5NxY5Kbw).
