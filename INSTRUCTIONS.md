@@ -41,14 +41,14 @@ Note that the default user in the container is always `jovyan`. ([Who is Jovyan?
 We can clone our `quickstart-notebooks` repository and play around with the sample notebooks for several deep learning frameworks.
 
 ```bash
-# clone the folder to /home/USER/quickstart-notebooks
+# clone the folder to /home/$USER/quickstart-notebooks
 git clone https://github.com/NVAITC/quickstart-notebooks
 ```
 
 Launch the container in that folder and map port 8888:
 
 ```
-nvidia-docker run --rm -p 8888:8888 -v /home/USER/quickstart-notebooks:/home/jovyan nvaitc/ai-lab
+nvidia-docker run --rm -p 8888:8888 -v /home/$USER/quickstart-notebooks:/home/jovyan nvaitc/ai-lab
 ```
 
 **Here is a breakdown of the command**
@@ -56,7 +56,7 @@ nvidia-docker run --rm -p 8888:8888 -v /home/USER/quickstart-notebooks:/home/jov
 * Base command: `nvidia-docker run nvaitc/ai-lab`
 * `--rm` flag: remove after container stop
 * `-p 8888:8888` : map port 8888 on container to 8888 on host
-* `-v /home/USER/quickstart-notebooks:/home/jovyan` : map folder `/home/USER/quickstart-notebooks` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
+* `-v /home/$USER/quickstart-notebooks:/home/jovyan` : map folder `/home/$USER/quickstart-notebooks` on host to working directory of the container (`/home/jovyan`). Please note that **absolute paths** must be used.
 
 ![start jupyter](images/start_jupyter_qs.jpg)
 
