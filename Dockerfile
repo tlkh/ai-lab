@@ -29,7 +29,7 @@ RUN apt-get update && \
     lmodern \
     netcat \
     pandoc \
-    texlive-fonts-extra \
+    #texlive-fonts-extra \
     texlive-fonts-recommended \
     texlive-generic-recommended \
     texlive-latex-base \
@@ -46,6 +46,8 @@ RUN apt-get update && \
     zip \
     unzip \
     htop \
+    libncurses5-dev \
+    libncursesw5-dev \
     libopenmpi-dev \
     libopenblas-base \
     libomp-dev \
@@ -245,6 +247,17 @@ RUN ldconfig && \
     cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
+
+# nvtop
+
+RUN cd /home/$NB_USER && \
+    git clone https://github.com/Syllo/nvtop.git && \
+    mkdir -p nvtop/build && cd nvtop/build && \
+    cmake .. && \
+    make && make install && \
+    cd .. && rm -rf nvtop && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
 
 USER $NB_UID
 
