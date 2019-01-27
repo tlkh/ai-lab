@@ -47,6 +47,8 @@ RUN apt-get update && \
     unzip \
     htop \
     libopenmpi-dev \
+    libopenblas-base \
+    libomp-dev \
     libjpeg-dev \
     libpng-dev \
     openssh-client \
@@ -159,8 +161,6 @@ RUN conda install -c conda-forge --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN git config --global core.editor "nano"
-
 # deep learning and misc pip packages
 
 COPY requirements.txt /home/$NB_USER/
@@ -172,10 +172,12 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
-    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard && \
+    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
     jupyter tensorboard enable --sys-prefix && \
+    nbdime extensions --enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github && \
+    jupyter labextension install nbdime-jupyterlab && \
     echo "Installing fastai library" && \
     conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
@@ -186,7 +188,7 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-    
+
 # extras
 
 # RAPIDS
@@ -220,9 +222,9 @@ RUN mkdir /tmp/openmpi && \
     rm -rf /tmp/openmpi
 
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
-    
+
 USER $NB_UID
-    
+
 RUN HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 \
     pip install --no-cache-dir horovod && \
     rm -rf /home/$NB_USER/.cache && \
@@ -251,7 +253,7 @@ USER $NB_UID
 RUN cd /home/$NB_USER && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
-    cd .. && rm -rf autokeras/ && \
+    cd .. && rm -rf autokeras && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
@@ -260,9 +262,22 @@ RUN cd /home/$NB_USER && \
 RUN cd /home/$NB_USER && \
     git clone https://github.com/NVAITC/flair.git && \
     cd flair/ && python setup.py install && \
-    cd .. && rm -rf flair/ && \
+    cd .. && rm -rf flair && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
+
+# LASER
+
+RUN cd /home/$NB_USER && \
+    export LASER="/home/$NB_USER/LASER" && \
+    git clone https://github.com/facebookresearch/LASER && \
+    cd LASER && \
+    bash ./install_models.sh && \
+    bash ./install_external_tools.sh && \
+    cd .. && rm -rf LASER && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
 
 # Import matplotlib the first time to build the font cache
 
