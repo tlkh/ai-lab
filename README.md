@@ -52,6 +52,8 @@ nvidia-docker run --rm -p 8888:8888 -v /home/$USER:/home/jovyan -e JUPYTER_ENABL
 
 For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 
+If you have any ideas or suggestions, please feel free to open an issue.
+
 ## FAQ
 
 **1. How does this contrast with NGC containers?**
@@ -62,9 +64,27 @@ The AI Lab container was designed for students and researchers. The container is
 
 **2. Can I modify/build this container myself?**
 
-Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source.
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source. Should you require some extra packages etc, you can build your own Docker image using `nvaitc/ai-lab` as the base image:
 
-If you have any ideas or suggestions, please feel free to open an issue.
+```
+FROM nvaitc/ai-lab:latest
+LABEL maintainer="You <you@yourdomain.com>"
+
+# use root user for apt-get or make install
+USER root
+RUN apt-get update && apt-get install somepackage
+
+# use notebook user for pip/conda
+USER $NB_UID
+RUN pip install libsutd
+
+# always switch back to notebook user at the end
+USER $NB_UID
+```
+
+**3. Do you support multi-node or multi-GPU tasks?**
+
+Kinda. Multi-GPU has been tested and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
 
 ## Support
 
