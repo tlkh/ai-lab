@@ -97,7 +97,7 @@ RUN fix-permissions /home/$NB_USER
 
 # Install conda as jovyan
 
-ENV MINICONDA_VERSION 4.5.11
+ENV MINICONDA_VERSION latest
 
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
@@ -109,10 +109,12 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     echo 'chained install: general dependencies' && \
+    conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
     'intake' \
     'cudatoolkit' \
     'pytest' \
+    'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
     'pandas=0.20.3' \
     'pyarrow=0.10.0' \
@@ -128,6 +130,7 @@ RUN cd /tmp && \
     'blas=*=openblas' \
     'cython>=0.29' && \
     conda clean -tipsy && \
+    conda build purge-all && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -156,6 +159,7 @@ RUN conda install -c conda-forge --quiet --yes \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
+    conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
@@ -184,6 +188,7 @@ RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
     conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
+    conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
@@ -207,6 +212,8 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     cd ./build-rapids/ && bash ./build-rapids.sh && \
     cd .. && rm -rf ./build-rapids && \
     rm -rf /home/$NB_USER/.cache && \
+    conda clean -tipsy && \
+    conda build purge-all && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
