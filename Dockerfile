@@ -97,7 +97,7 @@ RUN fix-permissions /home/$NB_USER
 
 # Install conda as jovyan
 
-ENV MINICONDA_VERSION latest
+ENV MINICONDA_VERSION 4.5.12
 
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
@@ -123,12 +123,26 @@ RUN cd /tmp && \
     'boost' \
     'nvstrings' \
     'zlib' \
-    'libgdf_cffi' \
+    'networkx' \
+    'python-louvain' \
     'cffi>=1.10.0' \
     'distributed>=1.23.0' \
     'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
+    conda install -c gpuopenanalytics/label/cuda9.2 libgdf_cffi && \
+    conda install -c pytorch pytorch torchvision --quiet --yes && \
+    conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
+    pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
+    cd /home/$NB_USER && \
+    wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
+    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
+    pip uninstall pillow -y && \
+    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+    rm /home/$NB_USER/requirements.txt && \
+    echo "Installing fastai library" && \
+    conda install -c pytorch -c fastai fastai dataclasses && \
+    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
     conda build purge-all && \
     rm -rf /home/$NB_USER/.cache && \
@@ -155,38 +169,15 @@ RUN conda install -c conda-forge --quiet --yes \
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab_bokeh && \
     jupyter labextension install @jupyterlab/hub-extension && \
-    echo "chained conda install: tini" && \
-    conda install --quiet --yes 'tini=0.18.0' && \
-    conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
-    conda clean -tipsy && \
-    conda build purge-all && \
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# deep learning and misc pip packages
-
-COPY requirements.txt /home/$NB_USER/
-
-RUN conda install -c pytorch pytorch torchvision --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
-    pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
-    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    pip uninstall pillow -y && \
-    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
-    rm /home/$NB_USER/requirements.txt && \
     pip install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
     jupyter tensorboard enable --sys-prefix && \
     nbdime extensions --enable --sys-prefix && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github && \
     jupyter labextension install nbdime-jupyterlab && \
-    echo "Installing fastai library" && \
-    conda install -c pytorch -c fastai fastai dataclasses && \
-    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
+    echo "chained conda install: tini" && \
+    conda install --quiet --yes 'tini=0.18.0' && \
+    conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
     npm cache clean --force && \

@@ -42,3 +42,4 @@ jupyterthemes
 transliterate
 torchtext
 jieba
+mecab-python3
