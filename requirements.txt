@@ -1,7 +1,6 @@
 tqdm
 numexpr
 matplotlib
-holoview
 plotly
 scipy
 scikit-learn
