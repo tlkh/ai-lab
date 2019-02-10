@@ -55,6 +55,10 @@ RUN apt-get update && \
     libpng-dev \
     openssh-client \
     openssh-server \
+    mecab \
+    mecab-ipadic-utf8 \
+    libmecab-dev \
+    swig \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -89,7 +93,8 @@ RUN groupadd wheel -g 11 && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
     fix-permissions $HOME && \
-    fix-permissions $CONDA_DIR
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /opt
 
 USER $NB_UID
 
@@ -108,11 +113,9 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
     $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
-    echo 'chained install: general dependencies' && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'intake' \
-    'cudatoolkit' \
+    'cudatoolkit=9.2' \
     'pytest' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
@@ -131,7 +134,7 @@ RUN cd /tmp && \
     'blas=*=openblas' \
     'cython>=0.29' && \
     conda install -c gpuopenanalytics/label/cuda9.2 libgdf_cffi && \
-    conda install -c pytorch pytorch torchvision --quiet --yes && \
+    conda install -c pytorch pytorch torchvision cudatoolkit=9.2 --quiet --yes && \
     conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
@@ -140,7 +143,6 @@ RUN cd /tmp && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
-    echo "Installing fastai library" && \
     conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
@@ -276,19 +278,6 @@ RUN cd /home/$NB_USER && \
     cd .. && rm -rf flair && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
-
-# LASER
-
-RUN cd /home/$NB_USER && \
-    export LASER="/home/$NB_USER/LASER" && \
-    git clone https://github.com/facebookresearch/LASER && \
-    cd LASER && \
-    bash ./install_models.sh && \
-    bash ./install_external_tools.sh && \
-    cd .. && rm -rf LASER && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
 
 # Import matplotlib the first time to build the font cache
 

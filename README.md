@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/badge/vulnerabilities%20%28snyk.io%29-0-brightgreen.svg)](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab/test/requirements.txt.svg?label=vulnerabilities%20%28snyk.io%29)
 
-All-in-one AI development container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
+All-in-one AI development container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
 
 ## What's Included
 
@@ -16,7 +16,7 @@ All-in-one AI development container, compatible with the nvidia-docker GPU-accel
   * NLP: `nltk`, `spacy`, `flair`
   * Distributed: OpenMPI, Horovod, Dask
 * Jupyter Notebook and JupyterLab
-  * including `ipywidgets` and `jupyter_contrib_nbextensions`
+  * Useful extensions: `ipywidgets`, `jupyter_contrib_nbextensions`, `nbdiff`
   * integrated TensorBoard support
 
 This image can be used standalone on workstation or cloud instances, or via JupyterHub instances.
@@ -84,7 +84,7 @@ USER $NB_UID
 
 **3. Do you support multi-node or multi-GPU tasks?**
 
-Kinda. Multi-GPU has been tested and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
+Multi-GPU has been tested and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
 
 ## Support
 
