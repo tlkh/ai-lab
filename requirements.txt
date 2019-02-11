@@ -1,6 +1,8 @@
 tqdm
 numexpr
 matplotlib
+holoviews
+bokeh
 plotly
 scipy
 scikit-learn
