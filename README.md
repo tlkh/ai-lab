@@ -9,7 +9,7 @@ All-in-one AI development container, compatible with the nvidia-docker GPU-accel
 * CUDA 9.2 + cuDNN 7.4 (Ubuntu 18.04.1 base)
 * Packages and libraries
   * Data Science: `pandas`, `numpy`, `scipy`, `numba` etc.
-  * Deep Learning: TensorFlow, PyTorch, MXNet, fast.ai, Keras, Autokeras
+  * Deep Learning: TensorFlow, PyTorch, fast.ai, Keras, Autokeras
   * ML: `scikit-learn`, XGBoost, `lightgbm`
   * RAPIDS: cuDF, cuML, cuGraph
   * CV: `opencv-contrib-python`, `scikit-image`, `pillow-simd`
