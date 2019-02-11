@@ -45,7 +45,6 @@ RUN apt-get update && \
     nano \
     zip \
     unzip \
-    htop \
     libncurses5-dev \
     libncursesw5-dev \
     libopenmpi-dev \

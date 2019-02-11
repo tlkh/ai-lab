@@ -13,7 +13,6 @@ h5py
 nltk
 opencv-contrib-python
 xlrd
-mxnet-cu92
 tensorflow-hub
 tensorboard
 keras
@@ -21,12 +20,11 @@ pydot
 pyyaml>=4.2b4
 msgpack>=0.6.0
 scikit-image
-sympy
 gensim
 spacy
 gpustat
 seaborn
-lightgbm==2.2.2
+lightgbm==2.2.3
 imageio==2.4.1
 GPUtil
 librosa==0.6.2
@@ -35,10 +33,10 @@ unidecode
 lws==1.2
 typing==3.6.4
 segtok==1.5.7
-sqlitedict==1.6.0
-deprecated==1.2.4
-hyperopt==0.1.1
-pytorch-pretrained-bert==0.3.0
+sqlitedict>=1.6.0
+deprecated>=1.2.4
+hyperopt>=0.1.1
+pytorch-pretrained-bert==0.4.0
 jupyterthemes
 transliterate
 torchtext
