@@ -44,3 +44,5 @@ transliterate
 torchtext
 jieba
 mecab-python3
+contextlib2
+lxml

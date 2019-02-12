@@ -58,6 +58,7 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     libmecab-dev \
     swig \
+    protobuf-compiler \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -157,6 +158,7 @@ RUN python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETF
 # Install Jupyter Notebook, Lab, and Hub
 
 RUN conda install -c conda-forge --quiet --yes \
+    'tk' \
     'notebook=5.7.*' \
     'jupyterhub=0.9.*' \
     'jupyterlab=0.35.*' \
@@ -176,7 +178,6 @@ RUN conda install -c conda-forge --quiet --yes \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install @jupyterlab/github && \
     jupyter labextension install nbdime-jupyterlab && \
-    echo "chained conda install: tini" && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
