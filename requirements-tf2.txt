@@ -16,7 +16,6 @@ opencv-contrib-python
 xlrd
 tensorflow-hub
 tensorboard
-keras
 pydot
 pyyaml>=4.2b4
 msgpack>=0.6.0
@@ -26,7 +25,7 @@ spacy
 gpustat
 seaborn
 lightgbm==2.2.3
-imageio
+imageio==2.4.1
 GPUtil
 librosa==0.6.2
 inflect
@@ -37,7 +36,6 @@ segtok==1.5.7
 sqlitedict>=1.6.0
 deprecated>=1.2.4
 hyperopt>=0.1.1
-pytorch-pretrained-bert==0.4.0
 jupyterthemes
 transliterate
 torchtext
@@ -45,4 +43,3 @@ jieba
 mecab-python3
 contextlib2
 lxml
-boto3

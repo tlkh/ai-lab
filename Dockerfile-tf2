@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04 
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -40,6 +40,8 @@ RUN apt-get update && \
     zlib1g-dev  \
     lib32z1-dev \
     git \
+    emacs \
+    vim \
     nano \
     zip \
     unzip \
@@ -47,7 +49,6 @@ RUN apt-get update && \
     libncursesw5-dev \
     libopenmpi-dev \
     libopenblas-base \
-    libopenblas-dev \
     libomp-dev \
     libjpeg-dev \
     libpng-dev \
@@ -114,28 +115,20 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'cudatoolkit=9.2' \
-    'tk' \
     'pytest' \
+    'tk' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
     'pandas=0.20.3' \
-    'pyarrow=0.10.0' \
-    'cmake>=3.12' \
     'bokeh' \
     'boost' \
-    'nvstrings' \
     'zlib' \
     'networkx' \
     'python-louvain' \
-    'cffi>=1.10.0' \
     'distributed>=1.23.0' \
-    'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    conda install -c gpuopenanalytics/label/cuda9.2 libgdf_cffi && \
-    conda install -c pytorch pytorch torchvision cudatoolkit=9.2 --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
+    pip install --no-cache-dir tensorflow-gpu==2.0.0-alpha0 && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
@@ -143,7 +136,6 @@ RUN cd /tmp && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
-    conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -186,96 +178,6 @@ RUN conda install -c conda-forge --quiet --yes \
     rm -rf /home/$NB_USER/.cache && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# extras
-
-# RAPIDS
-
-USER root
-
-ENV CUDACXX /usr/local/cuda/bin/nvcc
-
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH && \
-    ldconfig && \
-    cd /home/$NB_USER/ && \
-    git clone --recursive https://github.com/NVAITC/build-rapids && \
-    cd ./build-rapids/ && bash ./build-rapids.sh && \
-    cd .. && rm -rf ./build-rapids && \
-    rm -rf /home/$NB_USER/.cache && \
-    conda clean -tipsy && \
-    conda build purge-all && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# OpenMPI + Horovod
-
-RUN mkdir /tmp/openmpi && \
-    cd /tmp/openmpi && \
-    wget https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.2.tar.gz && \
-    tar zxf openmpi-3.1.2.tar.gz && \
-    cd openmpi-3.1.2 && \
-    ./configure --enable-orterun-prefix-by-default && \
-    make -j $(nproc) all && \
-    make install && \
-    ldconfig && \
-    rm -rf /tmp/openmpi
-
-RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
-
-USER $NB_UID
-
-RUN HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 \
-    pip install --no-cache-dir horovod && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
-USER root
-
-RUN ldconfig && \
-    mv /usr/local/bin/mpirun /usr/local/bin/mpirun.real && \
-    echo '#!/bin/bash' > /usr/local/bin/mpirun && \
-    echo 'mpirun.real --allow-run-as-root "$@"' >> /usr/local/bin/mpirun && \
-    chmod a+x /usr/local/bin/mpirun && \
-    echo "hwloc_base_binding_policy = none" >> /usr/local/etc/openmpi-mca-params.conf && \
-    echo "rmaps_base_mapping_policy = slot" >> /usr/local/etc/openmpi-mca-params.conf && \
-    echo "btl_tcp_if_exclude = lo,docker0" >> /usr/local/etc/openmpi-mca-params.conf && \
-    echo NCCL_DEBUG=INFO >> /etc/nccl.conf && \
-    mkdir -p /var/run/sshd && \
-    cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
-    echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
-    mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
-
-# nvtop
-
-RUN cd /home/$NB_USER && \
-    git clone https://github.com/Syllo/nvtop.git && \
-    mkdir -p nvtop/build && cd nvtop/build && \
-    cmake .. && \
-    make && make install && \
-    cd .. && rm -rf nvtop && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
-
-# autokeras
-
-RUN cd /home/$NB_USER && \
-    git clone https://github.com/NVAITC/autokeras.git && \
-    cd autokeras/ && python setup.py install && \
-    cd .. && rm -rf autokeras && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
-# flair
-
-RUN cd /home/$NB_USER && \
-    git clone https://github.com/NVAITC/flair.git && \
-    cd flair/ && python setup.py install && \
-    cd .. && rm -rf flair && \
-    rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
 # Import matplotlib the first time to build the font cache
