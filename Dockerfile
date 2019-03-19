@@ -41,6 +41,7 @@ RUN apt-get update && \
     lib32z1-dev \
     git \
     nano \
+    htop \
     zip \
     unzip \
     libncurses5-dev \
@@ -60,9 +61,6 @@ RUN apt-get update && \
     protobuf-compiler \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
 
 # Configure environment
 
@@ -85,7 +83,9 @@ ADD fix-permissions /usr/local/bin/fix-permissions
 # Create jovyan user with UID=1000 and in the 'users' group
 # and make sure these dirs are writable by the `users` group.
 
-RUN groupadd wheel -g 11 && \
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen && \  
+    groupadd wheel -g 11 && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p $CONDA_DIR && \
@@ -119,7 +119,7 @@ RUN cd /tmp && \
     'pytest' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
-    'pandas=0.20.3' \
+    'pandas' \
     'pyarrow=0.10.0' \
     'cmake>=3.12' \
     'bokeh' \
@@ -133,9 +133,8 @@ RUN cd /tmp && \
     'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    conda install -c gpuopenanalytics/label/cuda9.2 libgdf_cffi && \
     conda install -c pytorch pytorch torchvision cudatoolkit=9.2 --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.11 --quiet --yes && \
+    conda install -c anaconda tensorflow-gpu=1.12 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
@@ -203,6 +202,11 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     git clone --recursive https://github.com/NVAITC/build-rapids && \
     cd ./build-rapids/ && bash ./build-rapids.sh && \
     cd .. && rm -rf ./build-rapids && \
+    conda install -c nvidia -c rapidsai -c conda-forge -c numba -c pytorch -c defaults cudf cuml python=3.6 && \
+    # fix pytorch and pillow-simd
+    conda install pytorch torchvision cudatoolkit=9.2 -c pytorch && \
+    pip uninstall pillow -y && \
+    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm -rf /home/$NB_USER/.cache && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -290,8 +294,6 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
 # end extras
 
 EXPOSE 8888
-EXPOSE 8787
-EXPOSE 8786
 EXPOSE 6006
 
 WORKDIR $HOME
@@ -307,9 +309,9 @@ COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
-RUN fix-permissions /etc/jupyter/
 
-RUN usermod -s /bin/bash $NB_USER
+RUN fix-permissions /etc/jupyter/ && \
+    usermod -s /bin/bash $NB_USER
 
 # Switch back to jovyan to avoid accidental container runs as root
 
