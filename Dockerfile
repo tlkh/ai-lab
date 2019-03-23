@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04 
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -8,7 +8,7 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install all OS dependencies for notebook server
+# Install all OS dependencies
 
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends --no-upgrade \
@@ -58,8 +58,20 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     libmecab-dev \
     swig \
-    protobuf-compiler \
-    && apt-get clean && \
+    protobuf-compiler && \
+    wget \
+     https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1604-cuda9.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
+    dpkg -i *.deb && \
+    apt-get update && \
+    apt-get install tensorrt -yq && \
+    apt-get install --no-upgrade -yq \
+    libnvinfer5 \
+    libnvinfer-dev \
+    python3-libnvinfer-dev \
+    python3-libnvinfer \
+    uff-converter-tf && \
+    apt-get clean && \
+    rm *.deb && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure environment
@@ -114,7 +126,7 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'cudatoolkit=9.2' \
+    'cudatoolkit=9.0' \
     'tk' \
     'pytest' \
     'numpy>=1.16.1' \
@@ -133,7 +145,7 @@ RUN cd /tmp && \
     'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    conda install -c pytorch pytorch torchvision cudatoolkit=9.2 --quiet --yes && \
+    conda install -c pytorch pytorch torchvision cudatoolkit=9.0 --quiet --yes && \
     conda install -c anaconda tensorflow-gpu=1.12 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
@@ -189,6 +201,71 @@ RUN conda install -c conda-forge --quiet --yes \
 
 # extras
 
+# build TF from source
+
+RUN apt-get update && \
+    apt-get install -yq --no-install-recommends --no-upgrade \
+    pkg-config zip g++ zlib1g-dev unzip python && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PYTHON_BIN_PATH=/opt/conda/bin/python3
+ENV PYTHON_LIB_PATH=/opt/conda/lib/python3.6/site-packages
+ENV CUDA_TOOLKIT_PATH=/usr/local/cuda
+ENV CUDNN_INSTALL_PATH=/usr/local/cuda
+ENV TF_NEED_GCP=0
+ENV TF_NEED_CUDA=1
+ENV TF_CUDA_VERSION=9.0
+ENV TF_CUDA_COMPUTE_CAPABILITIES=7.0,6.1,6.0,3.7
+ENV TF_NEED_HDFS=0
+ENV TF_NEED_OPENCL=0
+ENV TF_NEED_JEMALLOC=1
+ENV TF_ENABLE_XLA=1
+ENV TF_NEED_VERBS=0
+ENV TF_CUDA_CLANG=0
+ENV TF_CUDNN_VERSION=7.4
+ENV TF_NEED_MKL=0
+ENV TF_DOWNLOAD_MKL=0
+ENV TF_NEED_AWS=0
+ENV TF_NEED_MPI=0
+ENV TF_NEED_GDR=0
+ENV TF_NEED_S3=0
+ENV TF_NEED_OPENCL_SYCL=0
+ENV TF_SET_ANDROID_WORKSPACE=0
+ENV TF_NEED_COMPUTECPP=0
+ENV TF_NEED_ROCM=0
+ENV TF_NEED_KAFKA=0
+ENV TF_NEED_TENSORRT=0
+ENV TF_NCCL_VERSION=2.4
+ENV GCC_HOST_COMPILER_PATH=/usr/bin/gcc
+ENV CC_OPT_FLAGS="-march=broadwell"
+
+USER $NB_UID
+
+RUN cd /home/$NB_USER/ && \
+    wget https://github.com/bazelbuild/bazel/releases/download/0.19.2/bazel-0.19.2-installer-linux-x86_64.sh && \
+    chmod +x bazel-0.19.2-installer-linux-x86_64.sh && \
+    ./bazel-0.19.2-installer-linux-x86_64.sh && \
+    rm bazel-0.19.2-installer-linux-x86_64.sh && \
+    bazel && \
+    git clone https://github.com/tensorflow/tensorflow.git && \
+    cd tensorflow && \
+    bazel clean && \
+    git checkout r1.13 && \
+    ./configure && \
+    bazel build \
+        --config=opt \
+        --config=cuda \
+        //tensorflow/tools/pip_package:build_pip_package && \
+    ./bazel-bin/tensorflow/tools/pip_package/build_pip_package \
+        /home/$NB_USER/ && \
+    bazel clean && \
+    cd .. && \
+    pip install --no-cache-dir *.whl && \
+    rm -rf /home/$NB_USER/tensorflow *.whl && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
 # RAPIDS
 
 USER root
@@ -204,7 +281,7 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     cd .. && rm -rf ./build-rapids && \
     conda install -c nvidia -c rapidsai -c conda-forge -c numba -c pytorch -c defaults cudf cuml python=3.6 && \
     # fix pytorch and pillow-simd
-    conda install pytorch torchvision cudatoolkit=9.2 -c pytorch && \
+    conda install pytorch torchvision cudatoolkit=9.0 -c pytorch && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm -rf /home/$NB_USER/.cache && \
