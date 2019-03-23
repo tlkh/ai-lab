@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -59,18 +59,22 @@ RUN apt-get update && \
     pkg-config \
     g++ \
     zlib1g-dev \
-    protobuf-compiler && \
-    wget \
-     https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
+    protobuf-compiler \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget \
+    https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
     dpkg -i *.deb && \
     apt-get update && \
-    apt-get install --no-upgrade -yq \
+    apt-get install --allow-change-held-packages -yq \
+    libcudnn7 \
+    libcudnn7-dev \
     libnvinfer5 \
     libnvinfer-dev \
     python3-libnvinfer-dev \
     python3-libnvinfer \
     uff-converter-tf && \
-    apt-get install tensorrt -yq && \
     apt-get clean && \
     rm *.deb && \
     rm -rf /var/lib/apt/lists/*
@@ -136,7 +140,7 @@ RUN cd /tmp && \
     'blas=*=openblas' \
     'cython>=0.29' && \
     conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.13 --quiet --yes && \
+    conda install -c anaconda tensorflow-gpu=1.12 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \

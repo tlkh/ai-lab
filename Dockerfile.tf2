@@ -119,13 +119,7 @@ RUN cd /tmp && \
     'tk' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
-    'pandas=0.20.3' \
-    'bokeh' \
-    'boost' \
-    'zlib' \
-    'networkx' \
-    'python-louvain' \
-    'distributed>=1.23.0' \
+    'pandas' \
     'blas=*=openblas' \
     'cython>=0.29' && \
     pip install --no-cache-dir tensorflow-gpu==2.0.0-alpha0 && \
