@@ -301,6 +301,18 @@ RUN cd /home/$NB_USER && \
 
 USER $NB_UID
 
+# RAPIDS
+
+RUN pip install --no-cache-dir \
+    cudf-cuda100 \
+    cuml-cuda100 \
+    cugraph-cuda100 \
+    nvstrings-cuda100 \
+    dask-cuml \
+    xgboost && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
 # autokeras
 
 RUN cd /home/$NB_USER && \
