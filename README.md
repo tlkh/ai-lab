@@ -64,13 +64,7 @@ If you have any ideas or suggestions, please feel free to open an issue.
 
 ## FAQ
 
-**1. How does this contrast with NGC containers?**
-
-NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDIA tuned, tested, certified, and maintained containers for deep learning and HPC frameworks that take full advantage of NVIDIA GPUs on supported systems, such as [NVIDIA DGX products](https://www.nvidia.com/en-sg/data-center/dgx-systems/). **We recommend the use of NGC containers for mission critical and production workloads.**
-
-The AI Lab container was designed for students and researchers. The container is primarily designed to create a frictionless experience (by including all frameworks) during the initial prototyping and exploration phase, with a focus on iteration with fast feedback and less focus on deciding on specific approaches or frameworks. **This is not an official NVIDIA product!**
-
-**2. Can I modify/build this container myself?**
+**1. Can I modify/build this container myself?**
 
 Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source. Should you require some extra packages etc, you can build your own Docker image using `nvaitc/ai-lab` as the base image.
 
@@ -92,13 +86,21 @@ RUN pip install --no-cache-dir mxnet-cu92mkl
 USER $NB_UID
 ```
 
+**2. Do you support MXNet/`some-package`?**
+
+See **Point 1** above to see how to add MXNet/`some-package` into the container. I had chosen not to distribute MXNet/`some-package` with the container as it is less widely used and is large in size, and can be easily installed with pip since the environment is already properly configured. If you have a suggestion for a package that you would like to see added, open an issue.
+
 **3. Do you support multi-node or multi-GPU tasks?**
 
-Multi-GPU has been tested and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
+Multi-GPU has been tested with Keras `multi_gpu_model` and Horovod, and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
 
-**4. Do you support MXNet?**
+**4. How does this contrast with NGC containers?**
 
-See **Point 2** above to see how to add MXNet into the container. I have chosen not to distribute MXNet with the container as it is less widely used, and can be easily installed with pip since the environment is already properly configured.
+NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDIA tuned, tested, certified, and maintained containers for deep learning and HPC frameworks that take full advantage of NVIDIA GPUs on supported systems, such as [NVIDIA DGX products](https://www.nvidia.com/en-sg/data-center/dgx-systems/). **We recommend the use of NGC containers for mission critical and production workloads.**
+
+The AI Lab container was designed for students and researchers. The container is primarily designed to create a frictionless experience (by including all frameworks) during the initial prototyping and exploration phase, with a focus on iteration with fast feedback and less focus on deciding on specific approaches or frameworks. **This is not an official NVIDIA product!**
+
+If you would like to use NGC containers in an AI Lab like container, there is an example of how you can build one yourself. Take a look at [`Dockerfile.tf-amp`](Dockerfile.tf-amp). Do note that you are restricted from distributing derivative images from NGC containers in a public Docker registry.
 
 ## Support
 
