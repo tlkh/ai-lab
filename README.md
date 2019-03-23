@@ -56,7 +56,9 @@ nvidia-docker run --rm \
  -e JUPYTER_ENABLE_LAB=yes \
  nvaitc/ai-lab
 ```
-For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md). This will include instructions for deploying on public cloud (GCP/AWS), as well as some specific instructions if you're using PyTorch DataLoader.
+For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
+
+This will include instructions to address common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
 
 If you have any ideas or suggestions, please feel free to open an issue.
 
