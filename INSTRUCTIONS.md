@@ -2,7 +2,7 @@
 
 This page will give a brief walkthrough on using this image.
 
-To begin, please pull the latest version of the image with:
+To begin **please make sure you have the [pre-requisites](#pre-requisites) already configured on your system**. Then, pull the latest version of the image with:
 
 ```bash
 docker pull nvaitc/ai-lab:latest
@@ -12,7 +12,7 @@ Here, we are demonstrating the usage of the container with a freshly installed U
 
 ## Pre-requisites
 
-You will need to have CUDA>=9.2, Nvidia drivers>=396, Docker and the nvidia-docker2 runtime installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+You will need to have CUDA>=9.2, NVIDIA drivers>=396, Docker and the NVIDIA Container Runtime (nvidia-docker) installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
 
 ```bash
 sudo su root
@@ -69,3 +69,52 @@ The first notebook you might want to run is the `hello_gpu.ipynb` notebook to ch
 ![hello gpu](images/check_gpu.jpg)
 
 If you are facing problems and would like to view a screen recording of the process, please check out this [screen recording](https://www.youtube.com/watch?v=nrt5NxY5Kbw).
+
+## Additional Notes
+
+#### Permission Issues
+
+On some setups, you might run into permission issues as the container user (`jovyan`) will run as the first user on the system (`UID=1000`). Hence, if you face such issues, it is recommended to create a "`work`" folder with relaxed permissions and use that folder as the mount point for `/home/jovyan` in the container.
+
+For example:
+
+```
+cd /home/$USER/
+
+# create the folder
+mkdir work
+chmod -R 775 work
+
+# mount folder in container
+nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab
+```
+
+#### PyTorch DataLoader
+
+When using PyTorch DataLoader, Docker's default shared memory allocation is too low to allow for more than a few threads, and results in killed processes. To remedy, you will need to add an additional flag (`--shm-size=1g`) to your `docker run` command to allocate 1GB of shared memory.
+
+The result command would look something like `nvidia-docker run --rm --shm-size=1g -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab` .
+
+#### Public Cloud (GCP / AWS etc.)
+
+Since Jupyter notebook uses a non-standard port (`8888` is used by default), you will need to enable network traffic to that specific port on your cloud instance. This usually involves making some changes to your cloud network/firewall settings, and the instructions vary according to your cloud provider.
+
+**Amazon Web Services (AWS)**
+
+* Make sure that your EC2 instance has a **security group** that allows traffic on TCP port 8888
+* When creating an EC2 instance, you can create a new security group and allow traffic on TCP port 8888. Else, you can edit an existing security group as well.
+* [AWS Documentation on Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html)
+
+**Google Cloud Platform**
+
+* Head over to the 'Firewall rules' page (sidebar: `VPC Network > Firewall rules`)
+* Click `Create Firewall Rule`:
+  * Name the rule (e.g. `default-allow-jupyter`)
+  * Create a **target tag** (e.g. `jupyter`)
+  * Under 'Protocols and ports', enable TCP port 8888
+  * Click `Create` to create the firewall rule
+* Ensure that your GCE instance has that specified network **target tag** (e.g. `jupyter`)
+  * sometimes, you might need to restart your instance for the firewall rules to take effect
+* [GCP Documentation on Using VPC Firewall Rules](https://cloud.google.com/vpc/docs/firewalls#firewall_rules_in)
+* [Guide/Answer on StackOverflow](https://stackoverflow.com/a/21068402)
+
