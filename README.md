@@ -41,13 +41,20 @@ Run Jupyter Notebook with the following options:
 * mount `/home/$USER` as the working directory (`/home/jovyan`)
 
 ```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/$USER:/home/jovyan nvaitc/ai-lab
+nvidia-docker run --rm \
+ -p 8888:8888 \
+ -v /home/$USER:/home/jovyan \
+ nvaitc/ai-lab
 ```
 
 Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`, or replacing `tree` with `lab` in the browser address bar
 
 ```bash
-nvidia-docker run --rm -p 8888:8888 -v /home/$USER:/home/jovyan -e JUPYTER_ENABLE_LAB=yes nvaitc/ai-lab
+nvidia-docker run --rm \
+ -p 8888:8888 \
+ -v /home/$USER:/home/jovyan \
+ -e JUPYTER_ENABLE_LAB=yes \
+ nvaitc/ai-lab
 ```
 For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md). This will include instructions for deploying on public cloud (GCP/AWS), as well as some specific instructions if you're using PyTorch DataLoader.
 
