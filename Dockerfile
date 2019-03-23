@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04 
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -37,8 +37,6 @@ RUN apt-get update && \
     texlive-xetex \
     ffmpeg \
     graphviz\
-    zlib1g-dev  \
-    lib32z1-dev \
     git \
     nano \
     htop \
@@ -58,9 +56,12 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     libmecab-dev \
     swig \
+    pkg-config \
+    g++ \
+    zlib1g-dev \
     protobuf-compiler && \
     wget \
-     https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1604-cuda9.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
+     https://developer.nvidia.com/compute/machine-learning/tensorrt/5.0/GA_5.0.2.6/local_repos/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
     dpkg -i *.deb && \
     apt-get update && \
     apt-get install tensorrt -yq && \
@@ -126,27 +127,16 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'cudatoolkit=9.0' \
+    'cudatoolkit=10.0' \
     'tk' \
     'pytest' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
     'pandas' \
-    'pyarrow=0.10.0' \
-    'cmake>=3.12' \
-    'bokeh' \
-    'boost' \
-    'nvstrings' \
-    'zlib' \
-    'networkx' \
-    'python-louvain' \
-    'cffi>=1.10.0' \
-    'distributed>=1.23.0' \
-    'faiss-gpu' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    conda install -c pytorch pytorch torchvision cudatoolkit=9.0 --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.12 --quiet --yes && \
+    conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
+    conda install -c anaconda tensorflow-gpu=1.13 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
@@ -203,19 +193,13 @@ RUN conda install -c conda-forge --quiet --yes \
 
 # build TF from source
 
-RUN apt-get update && \
-    apt-get install -yq --no-install-recommends --no-upgrade \
-    pkg-config zip g++ zlib1g-dev unzip python && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 ENV PYTHON_BIN_PATH=/opt/conda/bin/python3
 ENV PYTHON_LIB_PATH=/opt/conda/lib/python3.6/site-packages
 ENV CUDA_TOOLKIT_PATH=/usr/local/cuda
 ENV CUDNN_INSTALL_PATH=/usr/local/cuda
 ENV TF_NEED_GCP=0
 ENV TF_NEED_CUDA=1
-ENV TF_CUDA_VERSION=9.0
+ENV TF_CUDA_VERSION=10.0
 ENV TF_CUDA_COMPUTE_CAPABILITIES=7.0,6.1,6.0,3.7
 ENV TF_NEED_HDFS=0
 ENV TF_NEED_OPENCL=0
@@ -264,30 +248,6 @@ RUN cd /home/$NB_USER/ && \
     pip install --no-cache-dir *.whl && \
     rm -rf /home/$NB_USER/tensorflow *.whl && \
     rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
-# RAPIDS
-
-USER root
-
-ENV CUDACXX /usr/local/cuda/bin/nvcc
-
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH && \
-    ldconfig && \
-    cd /home/$NB_USER/ && \
-    git clone --recursive https://github.com/NVAITC/build-rapids && \
-    cd ./build-rapids/ && bash ./build-rapids.sh && \
-    cd .. && rm -rf ./build-rapids && \
-    conda install -c nvidia -c rapidsai -c conda-forge -c numba -c pytorch -c defaults cudf cuml python=3.6 && \
-    # fix pytorch and pillow-simd
-    conda install pytorch torchvision cudatoolkit=9.0 -c pytorch && \
-    pip uninstall pillow -y && \
-    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
-    rm -rf /home/$NB_USER/.cache && \
-    conda clean -tipsy && \
-    conda build purge-all && \
-    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenMPI + Horovod
