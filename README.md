@@ -49,8 +49,7 @@ Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`, or replacing `tree` with `la
 ```bash
 nvidia-docker run --rm -p 8888:8888 -v /home/$USER:/home/jovyan -e JUPYTER_ENABLE_LAB=yes nvaitc/ai-lab
 ```
-
-For detailed instructions and tutorial, see: [INSTRUCTIONS.md](INSTRUCTIONS.md)
+For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md). This will include instructions for deploying on public cloud (GCP/AWS), as well as some specific instructions if you're using PyTorch DataLoader.
 
 If you have any ideas or suggestions, please feel free to open an issue.
 
@@ -64,10 +63,11 @@ The AI Lab container was designed for students and researchers. The container is
 
 **2. Can I modify/build this container myself?**
 
-Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source. Should you require some extra packages etc, you can build your own Docker image using `nvaitc/ai-lab` as the base image:
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source. Should you require some extra packages etc, you can build your own Docker image using `nvaitc/ai-lab` as the base image.
+
+Example to add MXNet into container:
 
 ```
-# example to add MXNet to the Docker image
 FROM nvaitc/ai-lab:latest
 LABEL maintainer="You <you@yourdomain.com>"
 
