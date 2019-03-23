@@ -61,7 +61,7 @@ RUN apt-get update && \
     zlib1g-dev \
     protobuf-compiler && \
     wget \
-     https://developer.nvidia.com/compute/machine-learning/tensorrt/5.0/GA_5.0.2.6/local_repos/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
+     https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
     dpkg -i *.deb && \
     apt-get update && \
     apt-get install tensorrt -yq && \
