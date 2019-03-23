@@ -64,13 +64,13 @@ RUN apt-get update && \
      https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
     dpkg -i *.deb && \
     apt-get update && \
-    apt-get install tensorrt -yq && \
     apt-get install --no-upgrade -yq \
     libnvinfer5 \
     libnvinfer-dev \
     python3-libnvinfer-dev \
     python3-libnvinfer \
     uff-converter-tf && \
+    apt-get install tensorrt -yq && \
     apt-get clean && \
     rm *.deb && \
     rm -rf /var/lib/apt/lists/*
@@ -191,6 +191,31 @@ RUN conda install -c conda-forge --quiet --yes \
 
 # extras
 
+# nvtop
+
+RUN cd /home/$NB_USER && \
+    git clone https://github.com/Syllo/nvtop.git && \
+    mkdir -p nvtop/build && cd nvtop/build && \
+    cmake .. && \
+    make && make install && \
+    cd .. && rm -rf nvtop && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
+USER $NB_UID
+
+# RAPIDS
+
+RUN pip install --no-cache-dir \
+    cudf-cuda100 \
+    cuml-cuda100 \
+    cugraph-cuda100 \
+    nvstrings-cuda100 \
+    dask-cuml \
+    xgboost && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
 # build TF from source
 
 ENV PYTHON_BIN_PATH=/opt/conda/bin/python3
@@ -200,7 +225,7 @@ ENV CUDNN_INSTALL_PATH=/usr/local/cuda
 ENV TF_NEED_GCP=0
 ENV TF_NEED_CUDA=1
 ENV TF_CUDA_VERSION=10.0
-ENV TF_CUDA_COMPUTE_CAPABILITIES=7.0,6.1,6.0,3.7
+ENV TF_CUDA_COMPUTE_CAPABILITIES=7.5,7.0,6.1,6.0,3.7
 ENV TF_NEED_HDFS=0
 ENV TF_NEED_OPENCL=0
 ENV TF_NEED_JEMALLOC=1
@@ -287,31 +312,6 @@ RUN ldconfig && \
     cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
-
-# nvtop
-
-RUN cd /home/$NB_USER && \
-    git clone https://github.com/Syllo/nvtop.git && \
-    mkdir -p nvtop/build && cd nvtop/build && \
-    cmake .. && \
-    make && make install && \
-    cd .. && rm -rf nvtop && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
-
-# RAPIDS
-
-RUN pip install --no-cache-dir \
-    cudf-cuda100 \
-    cuml-cuda100 \
-    cugraph-cuda100 \
-    nvstrings-cuda100 \
-    dask-cuml \
-    xgboost && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
 
 # autokeras
 
