@@ -21,6 +21,7 @@ RUN apt-get update && \
     locales \
     fonts-liberation \
     build-essential \
+    cmake \
     inkscape \
     jed \
     libsm6 \
@@ -108,7 +109,7 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    fix-permissions $HOME && \
+    fix-permissions /home/$NB_USER && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /opt
 
@@ -140,7 +141,6 @@ RUN cd /tmp && \
     'blas=*=openblas' \
     'cython>=0.29' && \
     conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
-    conda install -c anaconda tensorflow-gpu=1.12 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
@@ -197,6 +197,8 @@ RUN conda install -c conda-forge --quiet --yes \
 
 # nvtop
 
+USER root
+
 RUN cd /home/$NB_USER && \
     git clone https://github.com/Syllo/nvtop.git && \
     mkdir -p nvtop/build && cd nvtop/build && \
@@ -215,7 +217,12 @@ RUN pip install --no-cache-dir \
     cuml-cuda100 \
     cugraph-cuda100 \
     nvstrings-cuda100 \
-    dask-cuml \
+    dask \
+    dask-ml \
+    dask-cuda \
+    #dask-cudf \
+    #dask-cuml \
+    dask-xgboost \
     xgboost && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
@@ -275,7 +282,7 @@ RUN cd /home/$NB_USER/ && \
     bazel clean && \
     cd .. && \
     pip install --no-cache-dir *.whl && \
-    rm -rf /home/$NB_USER/tensorflow *.whl && \
+    rm -rf /home/$NB_USER/tensorflow /home/$NB_USER/*.whl && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
