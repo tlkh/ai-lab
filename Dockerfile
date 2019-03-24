@@ -234,13 +234,15 @@ RUN pip install --no-cache-dir \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL TBD
+ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tf-cu100-cudnn75-broadwell-xla.whl \
+    TENSORFLOW_FILENAME=tensorflow-1.13.1-cp36-cp36m-manylinux1_x86_64.whl
 
 RUN cd /home/$NB_USER/ && \
-    #wget ${TENSORFLOW_URL} -o tensorflow.whl && \
-    #pip install --no-cache-dir tensorflow.whl && \
-    pip install --no-cache-dir tensorflow && \
-    #rm -rf /home/$NB_USER/tensorflow.whl && \
+    echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
+    wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
+    pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
+    #pip install --no-cache-dir tensorflow && \
+    rm -rf /home/$NB_USER/${TENSORFLOW_FILENAME} && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
