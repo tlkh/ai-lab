@@ -3,15 +3,6 @@
 echo '[INFO ] Building Base Image'
 docker build . -f build/Dockerfile.build.base-cu100-cudnn75 -t nvaitc/ai-lab:build-base-cu100-cudnn75
 
-echo '[INFO ] Building Main Image'
-docker build . -t nvaitc/ai-lab:0.7-test
-
-echo '[INFO ] Building TF-AMP Image'
-docker build . -f Dockerfile.tf-amp -t nvaitc/ai-lab:tf-amp
-
-echo '[INFO ] Building TF 2.0 Image'
-docker build . -f Dockerfile.tf2 -t nvaitc/ai-lab:tf2
-
 echo '[INFO ] Building TensorFlow with XLA'
 docker build . -f build/Dockerfile.build.tf-cu100-cudnn75-broadwell-xla -t nvaitc/ai-lab:build-tf-cu100-cudnn75-broadwell-xla
 

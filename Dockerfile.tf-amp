@@ -86,14 +86,15 @@ RUN groupadd wheel -g 11 && \
     mkdir /home/$NB_USER/work && \
     fix-permissions /home/$NB_USER
 
-COPY get-pip.py get-pip.py
-RUN python3 get-pip.py && rm get-pip.py
+RUN curl https://bootstrap.pypa.io/get-pip.py | python3
 
 COPY requirements.txt /home/$NB_USER/
 
 RUN pip3 uninstall jupyter-client jupyter-core jupyterlab jupyterlab-server notebook -y && \
+    pip3 install --no-cache-dir jupyter notebook jupyterhub jupyterlab jupyter_contrib_nbextensions ipywidgets && \
     pip3 install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     pip3 install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
+    pip3 uninstall torch pytorch-pretrained-bert -y && \
     rm -rf /home/$NB_USER/.cache && \
     rm -Rf /home/$NB_USER/requirements.txt /home/$NB_USER/.pip
 
