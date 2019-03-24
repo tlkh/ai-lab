@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04 
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -77,6 +77,7 @@ RUN wget \
     python3-libnvinfer \
     uff-converter-tf && \
     apt-get clean && \
+    ldconfig && \
     rm *.deb && \
     rm -rf /var/lib/apt/lists/*
 
@@ -227,62 +228,16 @@ RUN pip install --no-cache-dir \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
-# build TF from source
-
-ENV PYTHON_BIN_PATH=/opt/conda/bin/python3
-ENV PYTHON_LIB_PATH=/opt/conda/lib/python3.6/site-packages
-ENV CUDA_TOOLKIT_PATH=/usr/local/cuda
-ENV CUDNN_INSTALL_PATH=/usr/local/cuda
-ENV TF_NEED_GCP=0
-ENV TF_NEED_CUDA=1
-ENV TF_CUDA_VERSION=10.0
-ENV TF_CUDA_COMPUTE_CAPABILITIES=7.5,7.0,6.1,6.0,3.7
-ENV TF_NEED_HDFS=0
-ENV TF_NEED_OPENCL=0
-ENV TF_NEED_JEMALLOC=1
-ENV TF_ENABLE_XLA=1
-ENV TF_NEED_VERBS=0
-ENV TF_CUDA_CLANG=0
-ENV TF_CUDNN_VERSION=7.4
-ENV TF_NEED_MKL=0
-ENV TF_DOWNLOAD_MKL=0
-ENV TF_NEED_AWS=0
-ENV TF_NEED_MPI=0
-ENV TF_NEED_GDR=0
-ENV TF_NEED_S3=0
-ENV TF_NEED_OPENCL_SYCL=0
-ENV TF_SET_ANDROID_WORKSPACE=0
-ENV TF_NEED_COMPUTECPP=0
-ENV TF_NEED_ROCM=0
-ENV TF_NEED_KAFKA=0
-ENV TF_NEED_TENSORRT=0
-ENV TF_NCCL_VERSION=2.4
-ENV GCC_HOST_COMPILER_PATH=/usr/bin/gcc
-ENV CC_OPT_FLAGS="-march=broadwell"
+# install our own build of TensorFlow
 
 USER $NB_UID
 
+ENV TENSORFLOW_URL TBD
+
 RUN cd /home/$NB_USER/ && \
-    wget https://github.com/bazelbuild/bazel/releases/download/0.19.2/bazel-0.19.2-installer-linux-x86_64.sh && \
-    chmod +x bazel-0.19.2-installer-linux-x86_64.sh && \
-    ./bazel-0.19.2-installer-linux-x86_64.sh && \
-    rm bazel-0.19.2-installer-linux-x86_64.sh && \
-    bazel && \
-    git clone https://github.com/tensorflow/tensorflow.git && \
-    cd tensorflow && \
-    bazel clean && \
-    git checkout r1.13 && \
-    ./configure && \
-    bazel build \
-        --config=opt \
-        --config=cuda \
-        //tensorflow/tools/pip_package:build_pip_package && \
-    ./bazel-bin/tensorflow/tools/pip_package/build_pip_package \
-        /home/$NB_USER/ && \
-    bazel clean && \
-    cd .. && \
-    pip install --no-cache-dir *.whl && \
-    rm -rf /home/$NB_USER/tensorflow /home/$NB_USER/*.whl && \
+    wget ${TENSORFLOW_URL} -o tensorflow.whl && \
+    pip install --no-cache-dir tensorflow.whl && \
+    rm -rf /home/$NB_USER/tensorflow.whl && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
