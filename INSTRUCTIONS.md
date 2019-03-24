@@ -122,3 +122,7 @@ Since Jupyter notebook uses a non-standard port (`8888` is used by default), you
 * [GCP Documentation on Using VPC Firewall Rules](https://cloud.google.com/vpc/docs/firewalls#firewall_rules_in)
 * [Guide/Answer on StackOverflow](https://stackoverflow.com/a/21068402)
 
+#### Horovod
+
+Horovod works fine, but you should add `--privileged` to avoid some warning messages.
+
