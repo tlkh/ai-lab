@@ -95,6 +95,8 @@ RUN pip3 uninstall jupyter-client jupyter-core jupyterlab jupyterlab-server note
     pip3 install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     pip3 install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
     pip3 uninstall torch pytorch-pretrained-bert -y && \
+    npm cache clean --force && \
+    rm -rf /home/$NB_USER/.node-gyp && \
     rm -rf /home/$NB_USER/.cache && \
     rm -Rf /home/$NB_USER/requirements.txt /home/$NB_USER/.pip
 
