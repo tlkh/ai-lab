@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.0-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -8,7 +8,7 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install all OS dependencies for notebook server
+# Install all OS dependencies
 
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends --no-upgrade \
@@ -21,6 +21,7 @@ RUN apt-get update && \
     locales \
     fonts-liberation \
     build-essential \
+    cmake \
     inkscape \
     jed \
     libsm6 \
@@ -37,18 +38,16 @@ RUN apt-get update && \
     texlive-xetex \
     ffmpeg \
     graphviz\
-    zlib1g-dev  \
-    lib32z1-dev \
     git \
-    emacs \
-    vim \
     nano \
+    htop \
     zip \
     unzip \
     libncurses5-dev \
     libncursesw5-dev \
     libopenmpi-dev \
     libopenblas-base \
+    libopenblas-dev \
     libomp-dev \
     libjpeg-dev \
     libpng-dev \
@@ -58,12 +57,30 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     libmecab-dev \
     swig \
+    pkg-config \
+    g++ \
+    zlib1g-dev \
     protobuf-compiler \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+RUN apt-get update && \
+    apt-get install --allow-change-held-packages -yq \
+    python3 \
+    libcudnn7 \
+    libcudnn7-dev \
+    libnccl2 \
+    libnccl-dev && \
+    wget \
+    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt.zip && \
+    unzip trt.zip && cd trt \
+    ls trt && \
+    dpkg -i *.deb && \
+    echo 'Installed TensorRT' && \
+    apt-get clean && \
+    ldconfig && \
+    rm *.deb && cd .. && rm -rf trt.zip trt && \
+    rm -rf /var/lib/apt/lists/*
 
 # Configure environment
 
@@ -86,13 +103,15 @@ ADD fix-permissions /usr/local/bin/fix-permissions
 # Create jovyan user with UID=1000 and in the 'users' group
 # and make sure these dirs are writable by the `users` group.
 
-RUN groupadd wheel -g 11 && \
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen && \  
+    groupadd wheel -g 11 && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    fix-permissions $HOME && \
+    fix-permissions /home/$NB_USER && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /opt
 
@@ -124,7 +143,6 @@ RUN cd /tmp && \
     'pandas' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    pip install --no-cache-dir tensorflow-gpu==2.0.0-alpha0 && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
@@ -132,6 +150,7 @@ RUN cd /tmp && \
     pip uninstall pillow -y && \
     CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
+    conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -143,72 +162,12 @@ RUN cd /tmp && \
 # BlockingIOError(11, 'write could not complete without blocking', 69632)
 RUN python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
 
-# Install Jupyter Notebook, Lab, and Hub
-
-RUN conda install -c conda-forge --quiet --yes \
-    'notebook=5.7.*' \
-    'jupyterhub=0.9.*' \
-    'jupyterlab=0.35.*' \
-    'jupyter_contrib_nbextensions' \
-    'ipywidgets=7.2*' && \
-    jupyter notebook --generate-config && \
-    # Activate ipywidgets extension in the environment that runs the notebook server
-    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter contrib nbextension install --sys-prefix && \
-    # Also activate ipywidgets extension for JupyterLab
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install @jupyterlab/hub-extension && \
-    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
-    jupyter tensorboard enable --sys-prefix && \
-    nbdime extensions --enable --sys-prefix && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github && \
-    jupyter labextension install nbdime-jupyterlab && \
-    conda install --quiet --yes 'tini=0.18.0' && \
-    conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
-    conda clean -tipsy && \
-    conda build purge-all && \
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# Import matplotlib the first time to build the font cache
-
 USER root
 
-ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
-
-RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
-    fix-permissions /home/$NB_USER
-
-# end extras
-
-EXPOSE 8888
-EXPOSE 8787
-EXPOSE 8786
-EXPOSE 6006
-
-WORKDIR $HOME
-
-# Configure container startup
-
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start-notebook.sh"]
-
-# Add local files as late as possible to avoid cache busting
-
-COPY start.sh /usr/local/bin/
-COPY start-notebook.sh /usr/local/bin/
-COPY start-singleuser.sh /usr/local/bin/
-COPY jupyter_notebook_config.py /etc/jupyter/
-RUN fix-permissions /etc/jupyter/
-
-RUN usermod -s /bin/bash $NB_USER
-
-# Switch back to jovyan to avoid accidental container runs as root
-
-USER $NB_UID
+RUN cd /home/$NB_USER/ && \
+    wget https://github.com/bazelbuild/bazel/releases/download/0.19.2/bazel-0.19.2-installer-linux-x86_64.sh && \
+    chmod +x bazel-0.19.2-installer-linux-x86_64.sh && \
+    ./bazel-0.19.2-installer-linux-x86_64.sh && \
+    rm bazel-0.19.2-installer-linux-x86_64.sh && \
+    bazel
+    

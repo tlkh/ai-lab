@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.0-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -64,21 +64,22 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget \
-    https://s3-ap-southeast-1.amazonaws.com/deeplearning-mat/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt5.0.2.6-ga-20181009_1-1_amd64.deb && \
-    dpkg -i *.deb && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install --allow-change-held-packages -yq \
+    python3 \
     libcudnn7 \
     libcudnn7-dev \
-    libnvinfer5 \
-    libnvinfer-dev \
-    python3-libnvinfer-dev \
-    python3-libnvinfer \
-    uff-converter-tf && \
+    libnccl2 \
+    libnccl-dev && \
+    wget \
+    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt.zip && \
+    unzip trt.zip && cd trt \
+    ls trt && \
+    dpkg -i *.deb && \
+    echo 'Installed TensorRT' && \
     apt-get clean && \
     ldconfig && \
-    rm *.deb && \
+    rm *.deb && cd .. && rm -rf trt.zip trt && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure environment
@@ -133,6 +134,7 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    'python=3.6' \
     'cudatoolkit=10.0' \
     'tk' \
     'pytest' \
@@ -203,7 +205,7 @@ USER root
 RUN cd /home/$NB_USER && \
     git clone https://github.com/Syllo/nvtop.git && \
     mkdir -p nvtop/build && cd nvtop/build && \
-    cmake .. && \
+    cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
     make && make install && \
     cd .. && rm -rf nvtop && \
     rm -rf /home/$NB_USER/.cache && \
@@ -235,13 +237,16 @@ USER $NB_UID
 ENV TENSORFLOW_URL TBD
 
 RUN cd /home/$NB_USER/ && \
-    wget ${TENSORFLOW_URL} -o tensorflow.whl && \
-    pip install --no-cache-dir tensorflow.whl && \
-    rm -rf /home/$NB_USER/tensorflow.whl && \
+    #wget ${TENSORFLOW_URL} -o tensorflow.whl && \
+    #pip install --no-cache-dir tensorflow.whl && \
+    pip install --no-cache-dir tensorflow && \
+    #rm -rf /home/$NB_USER/tensorflow.whl && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
 # OpenMPI + Horovod
+
+USER root
 
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
@@ -256,10 +261,11 @@ RUN mkdir /tmp/openmpi && \
 
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
 
-USER $NB_UID
+ENV HOROVOD_GPU_ALLREDUCE=NCCL \
+    HOROVOD_WITH_TENSORFLOW=1 \
+    HOROVOD_WITH_PYTORCH=1
 
-RUN HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 \
-    pip install --no-cache-dir horovod && \
+RUN pip install --no-cache-dir horovod && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
