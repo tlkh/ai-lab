@@ -211,7 +211,9 @@ USER $NB_UID
 
 # RAPIDS
 
-RUN pip install --no-cache-dir \
+RUN conda install -c nvidia -c rapidsai -c conda-forge -c pytorch -c defaults \
+    cuml && \
+    pip install --no-cache-dir \
     cudf-cuda100 \
     cuml-cuda100 \
     cugraph-cuda100 \
@@ -223,6 +225,8 @@ RUN pip install --no-cache-dir \
     #dask-cuml \
     dask-xgboost \
     xgboost && \
+    conda clean -tipsy && \
+    conda build purge-all && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 

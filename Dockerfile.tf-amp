@@ -61,9 +61,6 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
-
 # Configure environment
 ENV SHELL=/bin/bash \
     NB_USER=jovyan \
@@ -72,12 +69,14 @@ ENV SHELL=/bin/bash \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
+
 ENV HOME=/home/$NB_USER
 
 ADD fix-permissions /usr/local/bin/fix-permissions
-# Create jovyan user with UID=1000 and in the 'users' group
-# and make sure these dirs are writable by the `users` group.
-RUN groupadd wheel -g 11 && \
+
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen && \
+    groupadd wheel -g 11 && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     chmod g+w /etc/passwd && \
@@ -91,9 +90,9 @@ RUN curl https://bootstrap.pypa.io/get-pip.py | python3
 COPY requirements.txt /home/$NB_USER/
 
 RUN pip3 uninstall jupyter-client jupyter-core jupyterlab jupyterlab-server notebook -y && \
-    pip3 install --no-cache-dir jupyter notebook jupyterhub jupyterlab jupyter_contrib_nbextensions ipywidgets && \
+    pip3 install --no-cache-dir jupyter notebook jupyterhub jupyterlab==1.0.0a1 jupyter_contrib_nbextensions ipywidgets && \
     pip3 install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    pip3 install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
+    pip3 install --no-cache-dir jupyter-tensorboard && \
     pip3 uninstall torch pytorch-pretrained-bert -y && \
     npm cache clean --force && \
     rm -rf /home/$NB_USER/.node-gyp && \
@@ -116,12 +115,7 @@ RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install @jupyterlab/hub-extension && \
     jupyter tensorboard enable --sys-prefix && \
-    nbdime extensions --enable --sys-prefix && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github && \
-    jupyter labextension install nbdime-jupyterlab && \
     npm cache clean --force && \
     rm -rf /home/$NB_USER/.cache/yarn && \
     rm -rf /home/$NB_USER/.node-gyp && \

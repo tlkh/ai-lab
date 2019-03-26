@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.0-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -8,7 +8,7 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install all OS dependencies for notebook server
+# Install all OS dependencies
 
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends --no-upgrade \
@@ -21,6 +21,7 @@ RUN apt-get update && \
     locales \
     fonts-liberation \
     build-essential \
+    cmake \
     inkscape \
     jed \
     libsm6 \
@@ -37,18 +38,16 @@ RUN apt-get update && \
     texlive-xetex \
     ffmpeg \
     graphviz\
-    zlib1g-dev  \
-    lib32z1-dev \
     git \
-    emacs \
-    vim \
     nano \
+    htop \
     zip \
     unzip \
     libncurses5-dev \
     libncursesw5-dev \
     libopenmpi-dev \
     libopenblas-base \
+    libopenblas-dev \
     libomp-dev \
     libjpeg-dev \
     libpng-dev \
@@ -58,12 +57,30 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     libmecab-dev \
     swig \
+    pkg-config \
+    g++ \
+    zlib1g-dev \
     protobuf-compiler \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+RUN apt-get update && \
+    apt-get install --allow-change-held-packages -yq \
+    python3 \
+    libcudnn7 \
+    libcudnn7-dev \
+    libnccl2 \
+    libnccl-dev && \
+    wget \
+    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt.zip && \
+    unzip trt.zip && cd trt \
+    ls trt && \
+    dpkg -i *.deb && \
+    echo 'Installed TensorRT' && \
+    apt-get clean && \
+    ldconfig && \
+    rm *.deb && cd .. && rm -rf trt.zip trt && \
+    rm -rf /var/lib/apt/lists/*
 
 # Configure environment
 
@@ -86,13 +103,15 @@ ADD fix-permissions /usr/local/bin/fix-permissions
 # Create jovyan user with UID=1000 and in the 'users' group
 # and make sure these dirs are writable by the `users` group.
 
-RUN groupadd wheel -g 11 && \
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen && \  
+    groupadd wheel -g 11 && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    fix-permissions $HOME && \
+    fix-permissions /home/$NB_USER && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /opt
 
@@ -151,6 +170,7 @@ RUN conda install -c conda-forge --quiet --yes \
     'jupyterlab=0.35.*' \
     'jupyter_contrib_nbextensions' \
     'ipywidgets=7.2*' && \
+    pip install --no-cache-dir jupyterlab==1.0.0a1 && \
     jupyter notebook --generate-config && \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
@@ -158,13 +178,8 @@ RUN conda install -c conda-forge --quiet --yes \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install @jupyterlab/hub-extension && \
-    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
+    pip install --no-cache-dir jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
-    nbdime extensions --enable --sys-prefix && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github && \
-    jupyter labextension install nbdime-jupyterlab && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
