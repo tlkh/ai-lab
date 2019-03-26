@@ -1,0 +1,62 @@
+# nvidia/cuda
+# https://hub.docker.com/r/nvidia/cuda
+FROM nvaitc/ai-lab:build-base-cu100-cudnn75
+
+LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# build TF from source
+
+ENV PYTHON_BIN_PATH=/opt/conda/bin/python3 \ 
+    PYTHON_LIB_PATH=/opt/conda/lib/python3.6/site-packages \ 
+    CUDA_TOOLKIT_PATH=/usr/local/cuda \ 
+    CUDNN_INSTALL_PATH=/usr/local/cuda \ 
+    TF_NEED_GCP=0 \ 
+    TF_NEED_CUDA=1 \ 
+    TF_CUDA_VERSION=10.0 \ 
+    TF_CUDA_COMPUTE_CAPABILITIES=7.5,7.0,6.1,6.0,3.7 \ 
+    TF_NEED_HDFS=0 \ 
+    TF_NEED_OPENCL=0 \ 
+    TF_NEED_JEMALLOC=1 \ 
+    TF_ENABLE_XLA=1 \ 
+    TF_NEED_VERBS=0 \ 
+    TF_CUDA_CLANG=0 \ 
+    TF_CUDNN_VERSION=7.5 \ 
+    TF_NEED_MKL=0 \ 
+    TF_DOWNLOAD_MKL=0 \ 
+    TF_NEED_AWS=0 \ 
+    TF_NEED_MPI=0 \ 
+    TF_NEED_GDR=0 \ 
+    TF_NEED_S3=0 \ 
+    TF_NEED_OPENCL_SYCL=0 \ 
+    TF_SET_ANDROID_WORKSPACE=0 \ 
+    TF_NEED_COMPUTECPP=0 \ 
+    TF_NEED_ROCM=0 \ 
+    TF_NEED_KAFKA=0 \ 
+    TF_NEED_TENSORRT=0 \ 
+    TF_NCCL_VERSION=2.4 \ 
+    GCC_HOST_COMPILER_PATH=/usr/bin/gcc \ 
+    CC_OPT_FLAGS="-march=broadwell"
+
+RUN cd /home/jovyan && \
+    pip install tensorflow-gpu && \
+    git clone https://github.com/tensorflow/tensorflow.git && \
+    cd tensorflow && \
+    git checkout r2.0
+
+RUN cd /home/jovyan/tensorflow && \
+    bazel clean && \
+    ./configure && \
+    bazel build \
+    --config=opt \
+    --config=cuda \
+    //tensorflow/tools/pip_package:build_pip_package && \
+    ./bazel-bin/tensorflow/tools/pip_package/build_pip_package \
+    /output
+
+RUN cd /output && \
+    mv *.whl tf-cu100-cudnn75-broadwell-xla.whl
+    
