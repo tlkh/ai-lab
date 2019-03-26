@@ -171,6 +171,7 @@ RUN conda install -c conda-forge --quiet --yes \
     'jupyterlab=0.35.*' \
     'jupyter_contrib_nbextensions' \
     'ipywidgets=7.2*' && \
+    pip install --no-cache-dir jupyterlab==1.0.0a1 && \
     jupyter notebook --generate-config && \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
@@ -178,13 +179,8 @@ RUN conda install -c conda-forge --quiet --yes \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install @jupyterlab/hub-extension && \
-    pip install --no-cache-dir jupyterlab_github jupyter-tensorboard nbdime && \
+    pip install --no-cache-dir jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
-    nbdime extensions --enable --sys-prefix && \
-    jupyter serverextension enable --sys-prefix jupyterlab_github && \
-    jupyter labextension install @jupyterlab/github && \
-    jupyter labextension install nbdime-jupyterlab && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
