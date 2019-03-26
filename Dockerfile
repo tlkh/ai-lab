@@ -148,8 +148,6 @@ RUN cd /tmp && \
     cd /home/$NB_USER && \
     wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
     pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    pip uninstall pillow -y && \
-    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     rm /home/$NB_USER/requirements.txt && \
     conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
@@ -211,20 +209,18 @@ USER $NB_UID
 
 # RAPIDS
 
-RUN conda install -c nvidia -c rapidsai -c conda-forge -c pytorch -c defaults \
-    cuml && \
-    pip install --no-cache-dir \
-    cudf-cuda100 \
-    cuml-cuda100 \
-    cugraph-cuda100 \
-    nvstrings-cuda100 \
-    dask \
-    dask-ml \
-    dask-cuda \
-    #dask-cudf \
-    #dask-cuml \
-    dask-xgboost \
-    xgboost && \
+RUN pip install --no-cache-dir \
+    dask-xgboost xgboost && \
+    conda install -c nvidia/label/cuda10.0 -c rapidsai/label/cuda10.0 \
+    -c numba -c conda-forge -c defaults \
+    python=3.6 \
+    cudf \
+    dask-cudf \
+    nvstrings \
+    cuml \
+    cugraph && \
+    pip uninstall pillow -y && \
+    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     conda clean -tipsy && \
     conda build purge-all && \
     rm -rf /home/$NB_USER/.cache && \
