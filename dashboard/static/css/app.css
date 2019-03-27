@@ -90,6 +90,10 @@ body {
     border-radius: 0px;
 }
 
+.btn-secondary {
+    color: whitesmoke !important;
+}
+
 .form-control {
     border-radius: 0px;
 }

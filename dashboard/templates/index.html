@@ -31,12 +31,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" target="_blank" href="https://nvaitc.github.io/ai-lab/">
-                                <i class="fas fa-external-link-alt"></i> Quick Guide
+                                <i class="fas fa-external-link-alt"></i> Quick-start
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" target="_blank" href="https://nvaitc.github.io/ai-lab/">
-                                <i class="fas fa-external-link-alt"></i> Help
+                                <i class="fas fa-external-link-alt"></i> Walkthrough
                             </a>
                         </li>
                         <li class="nav-item">
@@ -61,21 +61,23 @@
                     <div class="col-sm">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fab fa-docker"></i> Container Status</h5>
-                                
+                                <h5 class="card-title"><i class="fab fa-docker"></i> Container Status <span
+                                        id="display_state" class="badge badge-secondary"></span></h5>
+                                <p><b>Port Binding</b>:&nbsp;&nbsp;<span id="display_port"></span></p>
+                                <p><b>Volume Mount</b>:&nbsp;&nbsp;<span id="display_vol"></span></p>
                             </div>
                         </div>
                         <br>
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title"><i class="fas fa-server"></i> Quick Actions</h5>
-                                <button type="button" class="btn btn-secondary btn-block"><i
-                                        class="fas fa-external-link-alt"></i> Launch Jupyter Notebook</button>
-                                <button type="button" class="btn btn-secondary btn-block"><i
-                                        class="fas fa-external-link-alt"></i> Launch JupyterLab</button>
-                                        <hr>
-                                        <button id="stopContainer" type="button" class="btn btn-outline-danger btn-block"><i
-                                                class="far fa-stop-circle"></i> Stop Container</button>
+                                <a id="open_nb" role="button" target="_blank" class="btn btn-secondary btn-block"><i
+                                        class="fas fa-external-link-alt"></i> Launch Jupyter Notebook</a>
+                                <a id="open_lab" role="button" target="_blank" class="btn btn-secondary btn-block"><i
+                                        class="fas fa-external-link-alt"></i> Launch JupyterLab</a>
+                                <hr>
+                                <button id="stopContainer" type="button" class="btn btn-outline-danger btn-block"><i
+                                        class="far fa-stop-circle"></i> Stop Container</button>
                             </div>
                         </div>
                     </div>
@@ -106,6 +108,19 @@
                                     <small id="launchHelp" class="form-text text-muted">Warning: Relaunching the
                                         container will reset the current runtime</small>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-terminal"></i> Container Output</h5>
+                                <span id="display_output"></span>
                             </div>
                         </div>
                     </div>

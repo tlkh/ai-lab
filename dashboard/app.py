@@ -24,11 +24,7 @@ def start_server():
 
         container = dctl.start_cnt(port, vol, tag)
 
-        print("[INFO  ] Started container:")
-        print(container.attrs)
-        print("[INFO  ] Port binding:", container.attrs["HostConfig"]["PortBindings"]["8888/tcp"])
-        print("[INFO  ] Volume mount:", container.attrs["HostConfig"]["Binds"])
-
+        print("[INFO  ] Started container")
 
     except Exception as e:
         print("[ERROR ] "+str(e))
@@ -46,6 +42,38 @@ def end_server():
         print("[ERROR ] "+str(e))
 
     return render_template("index.html")
+
+
+@app.route('/query', methods=["GET"])
+def get_server_data():
+    try:
+        container = dctl.get_cnt()
+
+        #print("\n",container.attrs,"\n")
+
+        port_binding = container.attrs["HostConfig"]["PortBindings"]["8888/tcp"][0]["HostPort"]
+        vol_mount = container.attrs["HostConfig"]["Binds"]
+        state = container.attrs["State"]["Status"]
+
+        logs = str(container.logs())
+
+        print("[INFO  ] Container state:", state)
+        print("[INFO  ] Port binding:", port_binding)
+        print("[INFO  ] Volume mount:", vol_mount)
+
+        response = {"state": state,
+                    "port": port_binding,
+                    "vol": vol_mount,
+                    "logs": logs}
+
+    except Exception as e:
+        response = {"state": "Not running",
+                    "port": "Not running",
+                    "vol": "Not running",
+                    "logs": "No logs", 
+                    "error": str(e)}
+
+    return flask.jsonify(response)
 
 
 if __name__ == "__main__":
