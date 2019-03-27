@@ -53,7 +53,7 @@
                 </div>
             </nav>
 
-            <main role="main" class="col-md-9 col-lg-10 px-4">
+            <main role="main">
 
                 <h2 class="page-lead">Container Control Panel</h2>
 
@@ -61,21 +61,28 @@
                     <div class="col-sm">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fab fa-docker"></i> Container Status <span
-                                        id="display_state" class="badge badge-secondary"></span></h5>
-                                <p><b>Port Binding</b>:&nbsp;&nbsp;<span id="display_port"></span></p>
-                                <p><b>Volume Mount</b>:&nbsp;&nbsp;<span id="display_vol"></span></p>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="card shadow-sm">
-                            <div class="card-body">
+                                <h5 class="card-title"><i class="fab fa-docker"></i> Container Status </h5>
+                                <ul class="list-unstyled">
+                                    <li>Container Status <span class="badge badge-secondary"
+                                            id="display_state">none</span></li>
+                                    <li>Runtime Type <span class="badge badge-secondary"
+                                            id="display_runtime">none</span></li>
+                                    <li>Image Version <span class="badge badge-secondary" id="display_image">none</span>
+                                    </li>
+                                    <li>Libraries <span class="badge badge-secondary" id="display_cuda"></span> <span
+                                            class="badge badge-secondary" id="display_nccl"></span>
+                                    </li>
+                                    <li>Port Binding <span class="badge badge-secondary" id="display_port">none</span>
+                                    </li>
+                                    <li>Volume Mount <span class="badge badge-secondary" id="display_vol">none</span>
+                                    </li>
+                                </ul>
+                                <hr>
                                 <h5 class="card-title"><i class="fas fa-server"></i> Quick Actions</h5>
                                 <a id="open_nb" role="button" target="_blank" class="btn btn-secondary btn-block"><i
                                         class="fas fa-external-link-alt"></i> Launch Jupyter Notebook</a>
                                 <a id="open_lab" role="button" target="_blank" class="btn btn-secondary btn-block"><i
                                         class="fas fa-external-link-alt"></i> Launch JupyterLab</a>
-                                <hr>
                                 <button id="stopContainer" type="button" class="btn btn-outline-danger btn-block"><i
                                         class="far fa-stop-circle"></i> Stop Container</button>
                             </div>
@@ -88,19 +95,19 @@
                                 <form name="launcher">
                                     <div class="form-group">
                                         <input type="number" class="form-control" id="inputport1"
-                                            aria-describedby="portHelp" placeholder="8888">
+                                            aria-describedby="portHelp" placeholder="default: 8888">
                                         <small id="portHelp" class="form-text text-muted">Your machine's port to expose
                                             the Jupyter server on. E.g. <code>8888</code></small>
                                         <br>
                                         <input type="text" class="form-control" id="inputvolume1"
-                                            placeholder="Enter desired path" aria-describedby="volHelp">
+                                            placeholder="Full path to folder" aria-describedby="volHelp">
                                         <small id="volHelp" class="form-text text-muted">Full path to mount into the
                                             container. E.g. <code>/home/user/work</code></small>
                                         <br>
-                                        <input type="text" class="form-control" id="inputtag1" placeholder="latest"
-                                            aria-describedby="tagHelp">
+                                        <input type="text" class="form-control" id="inputtag1"
+                                            placeholder="default: latest" aria-describedby="tagHelp">
                                         <small id="tagHelp" class="form-text text-muted">Version of the container to
-                                            use. Default is <code>Latest</code></small>
+                                            use. Default is <code>latest</code></small>
                                     </div>
                                     <button type="button" id="startContainer"
                                         class="btn btn-outline-success btn-block"><i class="far fa-play-circle"></i>
@@ -119,8 +126,9 @@
                     <div class="col-sm">
                         <div class="card">
                             <div class="card-body">
+                                <p>Equivalent terminal command to create the current container:<br><span id="display_cmd"></span></p>
                                 <h5 class="card-title"><i class="fas fa-terminal"></i> Container Output</h5>
-                                <span id="display_output"></span>
+                                <div class="container-output"><span id="display_output"></span></div>
                             </div>
                         </div>
                     </div>

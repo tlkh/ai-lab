@@ -70,10 +70,23 @@ body {
    * Content
    */
 
+@media (min-width: 767.98px) {
+    [role="main"] {
+        margin-left: 160px;
+        width: 80%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    [role="main"] {
+        width: 100%;
+    }
+}
 
 [role="main"] {
-    margin-top: 80px;
-    margin-left: 160px;
+    margin-top: 50px;
+    margin-right: 20px;
+    padding: 1.5em;
 }
 
 .page-lead {
@@ -96,6 +109,12 @@ body {
 
 .form-control {
     border-radius: 0px;
+}
+
+.container-output {
+    width: auto;
+    height: 270px;
+    overflow-x: hidden;
 }
 
 /*
