@@ -3,3 +3,4 @@
 *.log
 .ipy*
 build/*.whl
+dashboard/__pycache__/*
