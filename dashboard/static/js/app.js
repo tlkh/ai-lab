@@ -69,11 +69,11 @@ function update_display() {
         var response = JSON.parse(Http.responseText);
         display_port.innerHTML = response["port"];
         port = response["port"];
-        open_nb.href = "http://localhost:" + port + "/tree"
-        open_lab.href = "http://localhost:" + port + "/lab"
+        open_nb.href = "http://" + window.location.hostname + ":" + port + "/tree"
+        open_lab.href = "http://" + window.location.hostname + ":" + port + "/lab"
 
         var volume_mount = response["vol"].toString();
-        display_vol.innerHTML =  volume_mount.split(":")[0];
+        display_vol.innerHTML = volume_mount.split(":")[0];
 
         var logs = response["logs"].toString().replace(/'/g, "").replace(/\\n/g, "<br>");
         display_output.innerHTML = "<pre><code>" + logs.substring(logs.length - 4000, logs.length) + "</code></pre>";
@@ -109,7 +109,7 @@ function update_display() {
         var image = response["image"];
         display_image.innerHTML = image;
 
-        if (volume_mount=="none") {
+        if (volume_mount == "none") {
             display_cmd.innerHTML = "No container running";
         } else {
             display_cmd.innerHTML = "<code>nvidia-docker run --rm -p " + port + ":8888 -v " + volume_mount.split(":")[0] + ":/home/jovyan " + image + "</code>";
@@ -117,7 +117,7 @@ function update_display() {
 
         display_cuda.innerHTML = response["cuda"];
         display_nccl.innerHTML = response["nccl"];
-        
+
     }
 }
 

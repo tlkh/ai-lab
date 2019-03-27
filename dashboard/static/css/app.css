@@ -1,5 +1,6 @@
 body {
     font-size: .875rem;
+    overflow-y: hidden;
 }
 
 /*
@@ -84,7 +85,7 @@ body {
 }
 
 [role="main"] {
-    margin-top: 50px;
+    margin-top: 40px;
     margin-right: 20px;
     padding: 1.5em;
 }
@@ -113,7 +114,7 @@ body {
 
 .container-output {
     width: auto;
-    height: 270px;
+    height: 260px;
     overflow-x: hidden;
 }
 
