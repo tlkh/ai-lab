@@ -18,6 +18,13 @@ var display_nccl = document.getElementById("display_nccl");
 var open_nb = document.getElementById("open_nb");
 var open_lab = document.getElementById("open_lab");
 
+// icons/spinner
+
+var play_icon = document.getElementById("play_icon");
+var play_spinner = document.getElementById("play_spinner");
+var stop_icon = document.getElementById("stop_icon");
+var stop_spinner = document.getElementById("stop_spinner");
+
 var port;
 
 function post(path, method) {
@@ -32,6 +39,8 @@ function post(path, method) {
 }
 
 document.getElementById("startContainer").onclick = function () {
+    play_icon.style.display = "none";
+    play_spinner.style.display = "inline-block";
     console.log("Starting container");
     var path = "/start";
     var port_mount = inputport1.value;
@@ -53,6 +62,9 @@ document.getElementById("startContainer").onclick = function () {
 }
 
 document.getElementById("stopContainer").onclick = function () {
+    stop_icon.style.display = "none";
+    stop_spinner.style.display = "inline-block";
+    var form = document.createElement("form");    
     console.log("Stopping container");
     var path = "/stop";
     console.log(path);

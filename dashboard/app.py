@@ -94,4 +94,9 @@ def get_server_data():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+    import threading, webbrowser
+    port = 5050
+    url = "http://0.0.0.0:"+str(port)
+    threading.Timer(1.25, lambda: webbrowser.open(url) ).start()
+    app.run(debug=True, port=port, host='0.0.0.0')
+

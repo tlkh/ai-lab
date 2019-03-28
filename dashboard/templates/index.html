@@ -84,7 +84,11 @@
                                 <a id="open_lab" role="button" target="_blank" class="btn btn-secondary btn-block"><i
                                         class="fas fa-external-link-alt"></i> Launch JupyterLab</a>
                                 <button id="stopContainer" type="button" class="btn btn-outline-danger btn-block"><i
-                                        class="far fa-stop-circle"></i> Stop Container</button>
+                                        id="stop_icon" class="far fa-stop-circle"></i>
+                                    <div id="stop_spinner" class="spinner-border spinner-border-sm text-light"
+                                        style="display:none;margin-bottom:0.15em;" role="status"></div> Stop
+                                    Container
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -110,8 +114,12 @@
                                             use. Default is <code>latest</code></small>
                                     </div>
                                     <button type="button" id="startContainer"
-                                        class="btn btn-outline-success btn-block"><i class="far fa-play-circle"></i>
-                                        Launch Container</button>
+                                        class="btn btn-outline-success btn-block"><i id="play_icon"
+                                            class="far fa-play-circle"></i>
+                                        <div id="play_spinner" class="spinner-border spinner-border-sm text-light"
+                                            style="display:none;margin-bottom:0.15em;" role="status"></div>
+                                        Launch Container
+                                    </button>
                                     <small id="launchHelp" class="form-text text-muted">Warning: Relaunching the
                                         container will reset the current runtime</small>
                                 </form>
@@ -129,7 +137,8 @@
                                 <p>Equivalent terminal command to create the current container:<br><span
                                         id="display_cmd"></span></p>
                                 <h5 class="card-title"><i class="fas fa-terminal"></i> Container Output</h5>
-                                <div class="container-output"><small><span id="display_output"></span></small></div>
+                                <div class="container-output"><small><span id="display_output"></span></small><div
+                                    class="spinner-grow spinner-grow-sm" style="margin-bottom:0.3em;" role="status"></div></div>
                             </div>
                         </div>
                     </div>
