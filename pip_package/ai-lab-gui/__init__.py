@@ -1,2 +1,0 @@
-name = "ai-lab-gui"
-

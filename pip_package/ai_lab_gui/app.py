@@ -1,7 +1,46 @@
 import flask
 from flask import Flask, render_template
 
-from dockerctl import DockerCTL
+import docker
+
+
+class DockerCTL(object):
+
+    def __init__(self, cnt_name="nvaitc/ai-lab"):
+        self.cnt_name = cnt_name
+        self.client = docker.from_env()
+
+    def pull_cnt(self, tag):
+        self.client.images.pull(self.cnt_name+":"+tag)
+
+    def start_cnt(self, port, vol, tag):
+        try:
+            container = self.client.containers.get("ai-lab-gui")
+            self.stop_cnt()
+        except Exception as e:
+            print("[INFO  ] Expected: ", str(e),
+                  " i.e. Container does not exist")
+
+        cnt_name = self.cnt_name+":"+tag
+        ports_dict = {'8888/tcp': port}
+        vols_dict = {vol: {'bind': '/home/jovyan', 'mode': 'rw'}}
+        container = self.client.containers.run(cnt_name, auto_remove=True, detach=True,
+                                               name="ai-lab-gui",
+                                               ports=ports_dict, remove=True, shm_size="1g",
+                                               volumes=vols_dict)
+        return container
+
+    def stop_cnt(self):
+        container = self.client.containers.get("ai-lab-gui")
+        container.stop()
+
+    def get_cnt(self):
+        try:
+            container = self.client.containers.get("ai-lab-gui")
+        except Exception:
+            container = None
+        return container
+
 
 app = Flask(__name__)
 
@@ -43,6 +82,7 @@ def end_server():
 
     return render_template("index.html")
 
+
 @app.route('/query', methods=["GET"])
 def get_server_data():
     try:
@@ -61,9 +101,9 @@ def get_server_data():
         nccl_version = "unknown"
         for item in env:
             if "CUDA_VERSION" in item:
-                cuda_version = item.replace("_VERSION","")
+                cuda_version = item.replace("_VERSION", "")
             elif "NCCL_VERSION" in item:
-                nccl_version = item.replace("_VERSION","")
+                nccl_version = item.replace("_VERSION", "")
 
         logs = str(container.logs())
 
@@ -93,13 +133,17 @@ def get_server_data():
     return flask.jsonify(response)
 
 
-if __name__ == "__main__":
-    import threading, webbrowser
+def main():
+    import threading
+    import webbrowser
     port = 5050
     url = "http://0.0.0.0:"+str(port)
     try:
-        threading.Timer(1.25, lambda: webbrowser.open(url) ).start()
+        threading.Timer(1.25, lambda: webbrowser.open(url)).start()
     except Exception as e:
         print("[ERROR ] "+str(e))
-    app.run(debug=True, port=port, host='0.0.0.0')
+    app.run(debug=False, port=port, host='0.0.0.0')
 
+
+if __name__ == "__main__":
+    main()
