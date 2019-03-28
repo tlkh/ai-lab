@@ -1,0 +1,3 @@
+# AI Lab GUI
+
+The beginner's GUI for AI Lab (`nvaitc/ai-lab`) is an all-in-one AI development container for rapid prototyping. What does that mean? It means that this container (as supporting software) has been painstakingly tailored to provide you with the best out of the box experience to use various Machine Learning and Deep Learning frameworks. These include the usual Python libraries (numpy, pandas), ML libraries (scikit-learn, [xgboost](https://github.com/dmlc/xgboost) and [RAPIDS](https://rapids.ai/)), and Deep Learning frameworks ([TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/)). Where possible, all libraries are GPU-accelerated and optimised for performance.

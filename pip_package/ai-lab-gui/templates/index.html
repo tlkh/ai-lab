@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Timothy Liu">
+    <title>AI Lab Web Dashboard</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/all.min.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 bg-black">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/"><b>NVAITC</b> AI Lab&nbsp;&nbsp;|&nbsp;&nbsp;<span
+                class="navbar-text-light">Web Dashboard</span></a>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/">
+                                <i class="fas fa-cube"></i> Container
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" target="_blank" href="https://nvaitc.github.io/ai-lab/QUICKSTART">
+                                <i class="fas fa-external-link-alt"></i> Quick-start
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" target="_blank" href="https://nvaitc.github.io/ai-lab/WALKTHROUGH">
+                                <i class="fas fa-external-link-alt"></i> Walkthrough
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" target="_blank" href="https://hub.docker.com/r/nvaitc/ai-lab/tags">
+                                <i class="fas fa-external-link-alt"></i> View Tags
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" target="_blank" href="https://nvaitc.github.io/ai-lab/">
+                                <i class="fas fa-external-link-alt"></i> About AI Lab
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main role="main">
+
+                <h2 class="page-lead">Container Control Panel</h2>
+
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fab fa-docker"></i> Container Status </h5>
+                                <ul class="list-unstyled">
+                                    <li>Container Status <span class="badge badge-secondary"
+                                            id="display_state">none</span></li>
+                                    <li>Runtime Type <span class="badge badge-secondary"
+                                            id="display_runtime">none</span></li>
+                                    <li>Image Version <span class="badge badge-secondary" id="display_image">none</span>
+                                    </li>
+                                    <li>Libraries <span class="badge badge-secondary" id="display_cuda"></span> <span
+                                            class="badge badge-secondary" id="display_nccl"></span>
+                                    </li>
+                                    <li>Port Binding <span class="badge badge-secondary" id="display_port">none</span>
+                                    </li>
+                                    <li>Volume Mount <span class="badge badge-secondary" id="display_vol">none</span>
+                                    </li>
+                                </ul>
+                                <hr>
+                                <h5 class="card-title"><i class="fas fa-server"></i> Quick Actions</h5>
+                                <a id="open_nb" role="button" target="_blank" class="btn btn-secondary btn-block"><i
+                                        class="fas fa-external-link-alt"></i> Launch Jupyter Notebook</a>
+                                <a id="open_lab" role="button" target="_blank" class="btn btn-secondary btn-block"><i
+                                        class="fas fa-external-link-alt"></i> Launch JupyterLab</a>
+                                <button id="stopContainer" type="button" class="btn btn-outline-danger btn-block"><i
+                                        id="stop_icon" class="far fa-stop-circle"></i>
+                                    <div id="stop_spinner" class="spinner-border spinner-border-sm text-light"
+                                        style="display:none;margin-bottom:0.15em;" role="status"></div> Stop
+                                    Container
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-cog"></i> Container Configuration</h5>
+                                <form name="launcher">
+                                    <div class="form-group">
+                                        <input type="number" class="form-control" id="inputport1"
+                                            aria-describedby="portHelp" placeholder="default: 8888">
+                                        <small id="portHelp" class="form-text text-muted">Your machine's port to expose
+                                            the Jupyter server on. E.g. <code>8888</code></small>
+                                        <br>
+                                        <input type="text" class="form-control" id="inputvolume1"
+                                            placeholder="Full path to folder" aria-describedby="volHelp">
+                                        <small id="volHelp" class="form-text text-muted">Full path to mount into the
+                                            container. E.g. <code>/home/user/work</code></small>
+                                        <br>
+                                        <input type="text" class="form-control" id="inputtag1"
+                                            placeholder="default: latest" aria-describedby="tagHelp">
+                                        <small id="tagHelp" class="form-text text-muted">Version of the container to
+                                            use. Default is <code>latest</code></small>
+                                    </div>
+                                    <button type="button" id="startContainer"
+                                        class="btn btn-outline-success btn-block"><i id="play_icon"
+                                            class="far fa-play-circle"></i>
+                                        <div id="play_spinner" class="spinner-border spinner-border-sm text-light"
+                                            style="display:none;margin-bottom:0.15em;" role="status"></div>
+                                        Launch Container
+                                    </button>
+                                    <small id="launchHelp" class="form-text text-muted">Warning: Relaunching the
+                                        container will reset the current runtime</small>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card">
+                            <div class="card-body">
+                                <p>Equivalent terminal command to create the current container:<br><span
+                                        id="display_cmd"></span></p>
+                                <h5 class="card-title"><i class="fas fa-terminal"></i> Container Output</h5>
+                                <div class="container-output"><small><span id="display_output"></span></small><div
+                                    class="spinner-grow spinner-grow-sm" style="margin-bottom:0.3em;" role="status"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
