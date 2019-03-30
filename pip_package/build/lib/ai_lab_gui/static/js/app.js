@@ -39,10 +39,14 @@ function post(path, method) {
 }
 
 document.getElementById("startContainer").onclick = function () {
+    var launch_button_text = document.getElementById("startContainer_text");
+    var progbar = document.getElementById("progbar");
+
     play_icon.style.display = "none";
     play_spinner.style.display = "inline-block";
-    console.log("Starting container");
-    var path = "/start";
+    launch_button_text.innerHTML = "Pulling image (might take a while)";
+    progbar.style.opacity = "1.0";
+    var path_root = "/start";
     var port_mount = inputport1.value;
     if (port_mount == "") {
         port_mount = "8888";
@@ -55,16 +59,25 @@ document.getElementById("startContainer").onclick = function () {
     if (volume_mount == "") {
         alert("Volume mount cannot be empty");
     } else {
-        path = path + "?port=" + port_mount + "&vol=" + volume_mount + "&tag=" + tag_version;
+        var Http = new XMLHttpRequest();
+        var path = "/pull?tag=" + tag_version;
         console.log(path);
-        post(path);
+        Http.open("POST", path);
+        Http.send();
+        Http.onreadystatechange = (e) => {
+            var response = JSON.parse(Http.responseText);
+            launch_button_text.innerHTML = "Launching container"
+            var path = path_root + "?port=" + port_mount + "&vol=" + volume_mount + "&tag=" + tag_version;
+            console.log(path);
+            post(path);
+        }
     }
 }
 
 document.getElementById("stopContainer").onclick = function () {
     stop_icon.style.display = "none";
     stop_spinner.style.display = "inline-block";
-    var form = document.createElement("form");    
+    var form = document.createElement("form");
     console.log("Stopping container");
     var path = "/stop";
     console.log(path);
@@ -79,13 +92,13 @@ function update_display() {
     Http.onreadystatechange = (e) => {
         //console.log(Http.responseText)
         var response = JSON.parse(Http.responseText);
-        display_port.innerHTML = response["port"];
+        display_port.innerHTML = "port:"+response["port"];
         port = response["port"];
         open_nb.href = "http://" + window.location.hostname + ":" + port + "/tree"
         open_lab.href = "http://" + window.location.hostname + ":" + port + "/lab"
 
         var volume_mount = response["vol"].toString();
-        display_vol.innerHTML = volume_mount.split(":")[0];
+        display_vol.innerHTML = "volume mount:"+volume_mount.split(":")[0];
 
         var logs = response["logs"].toString().replace(/'/g, "").replace(/\\n/g, "<br>");
         display_output.innerHTML = "<pre><code>" + logs.substring(logs.length - 4000, logs.length) + "</code></pre>";

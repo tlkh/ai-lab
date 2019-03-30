@@ -83,6 +83,24 @@ def end_server():
     return render_template("index.html")
 
 
+@app.route('/pull', methods=["POST"])
+def pull_image():
+    print("[INFO  ] Pulling image")
+    try:
+        tag = flask.request.args.get("tag")
+
+        dctl.pull_cnt(tag)
+
+        print("[INFO  ] Pulled image")
+        response = {"status": "ok"}
+
+    except Exception as e:
+        print("[ERROR ] "+str(e))
+        response = {"status": str(e)}
+
+    return flask.jsonify(response)
+
+
 @app.route('/query', methods=["GET"])
 def get_server_data():
     try:
@@ -105,7 +123,7 @@ def get_server_data():
             elif "NCCL_VERSION" in item:
                 nccl_version = item.replace("_VERSION", "")
 
-        logs = str(container.logs())
+        logs = str(container.logs())[-4000:]
 
         print("[INFO  ] Container state:", state)
         print("[INFO  ] Port binding:", port_binding)

@@ -15,8 +15,8 @@
 
 <body>
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 bg-black">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/"><b>NVAITC</b> AI Lab&nbsp;&nbsp;|&nbsp;&nbsp;<span
-                class="navbar-text-light">Web Dashboard</span></a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/"><i class="fas fa-cubes" style="color:#76B900;"></i>
+            <b>NVAITC</b> AI Lab&nbsp;&nbsp;|&nbsp;&nbsp;<span class="navbar-text-light">Web Dashboard</span></a>
     </nav>
 
     <div class="container-fluid">
@@ -72,9 +72,8 @@
                                     <li>Libraries <span class="badge badge-secondary" id="display_cuda"></span> <span
                                             class="badge badge-secondary" id="display_nccl"></span>
                                     </li>
-                                    <li>Port Binding <span class="badge badge-secondary" id="display_port">none</span>
-                                    </li>
-                                    <li>Volume Mount <span class="badge badge-secondary" id="display_vol">none</span>
+                                    <li>Host Bindings <span class="badge badge-secondary" id="display_port">none</span> 
+                                        <span class="badge badge-secondary" id="display_vol">none</span>
                                     </li>
                                 </ul>
                                 <hr>
@@ -118,8 +117,13 @@
                                             class="far fa-play-circle"></i>
                                         <div id="play_spinner" class="spinner-border spinner-border-sm text-light"
                                             style="display:none;margin-bottom:0.15em;" role="status"></div>
-                                        Launch Container
+                                        <span id="startContainer_text">Launch Container</span>
                                     </button>
+                                    <div class="progress" id="progbar" style="opacity: 0.0;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                            id="progbar_prog" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                            aria-valuemax="100" style="width: 100%"></div>
+                                    </div>
                                     <small id="launchHelp" class="form-text text-muted">Warning: Relaunching the
                                         container will reset the current runtime</small>
                                 </form>
@@ -137,8 +141,10 @@
                                 <p>Equivalent terminal command to create the current container:<br><span
                                         id="display_cmd"></span></p>
                                 <h5 class="card-title"><i class="fas fa-terminal"></i> Container Output</h5>
-                                <div class="container-output"><small><span id="display_output"></span></small><div
-                                    class="spinner-grow spinner-grow-sm" style="margin-bottom:0.3em;" role="status"></div></div>
+                                <div class="container-output"><small><span id="display_output"></span></small>
+                                    <div class="spinner-grow spinner-grow-sm" style="margin-bottom:0.3em;"
+                                        role="status"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
