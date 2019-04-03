@@ -10,7 +10,10 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install all OS dependencies
 
-RUN apt-get update && \
+RUN sed -i 's|deb http://security|# deb http://security|g' /etc/apt/sources.list && \
+    sed -i 's|http://|http://sg.|g' /etc/apt/sources.list && \
+    cat /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -yq --no-install-recommends --no-upgrade \
     apt-utils && \
     apt-get install -yq --no-install-recommends --no-upgrade \
@@ -51,6 +54,8 @@ RUN apt-get update && \
     libomp-dev \
     libjpeg-dev \
     libpng-dev \
+    libboost-all-dev \
+    libsdl2-dev \
     openssh-client \
     openssh-server \
     mecab \
@@ -61,6 +66,9 @@ RUN apt-get update && \
     g++ \
     zlib1g-dev \
     protobuf-compiler \
+    libosmesa6-dev \
+    patchelf \
+    xvfb \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -123,8 +131,11 @@ RUN fix-permissions /home/$NB_USER
 
 ENV MINICONDA_VERSION 4.5.12
 
-RUN cd /tmp && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
+WORKDIR /home/$NB_USER
+
+ADD requirements.txt requirements.txt
+
+RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
@@ -143,12 +154,11 @@ RUN cd /tmp && \
     'pandas' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
     pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
-    cd /home/$NB_USER && \
-    wget https://raw.githubusercontent.com/NVAITC/ai-lab/master/requirements.txt && \
-    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
+    pip install --no-cache-dir -r requirements.txt && \
     rm /home/$NB_USER/requirements.txt && \
+    conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
+    pip install --no-cache-dir pytorch-pretrained-bert && \
     conda install -c pytorch -c fastai fastai dataclasses && \
     pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     conda clean -tipsy && \
@@ -237,7 +247,7 @@ RUN cd /home/$NB_USER/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
-    #pip install --no-cache-dir tensorflow && \
+    pip install --no-cache-dir tensorflow-hub && \
     rm -rf /home/$NB_USER/${TENSORFLOW_FILENAME} && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER

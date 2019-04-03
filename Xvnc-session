@@ -1,0 +1,11 @@
+#!/bin/bash
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+xsetroot -solid grey
+xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+
+#startx
+#startx /usr/bin/startxfce4
+#xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command -t string -sa xfwm4
+exec startxfce4
