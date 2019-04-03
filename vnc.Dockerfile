@@ -27,7 +27,10 @@ RUN apt-get update && \
     novnc supervisor xinit \
     xubuntu-desktop \
     && \
-    apt-get purge libreoffice* thunderbird* -y && \
+    apt-get purge -yq \
+    libreoffice* thunderbird* pidgin* \
+    gnome-* blueman unity-* cups* \
+    && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

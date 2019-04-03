@@ -34,7 +34,6 @@ segtok==1.5.7
 sqlitedict>=1.6.0
 deprecated>=1.2.4
 hyperopt>=0.1.1
-jupyterthemes
 transliterate
 torchtext
 jieba
@@ -45,8 +44,9 @@ boto3
 keras
 keras-rl
 pyopengl
-gym[all]
-hyperopt
+gym[atari]
+gym[box2d]
+gym[classic_control]
 hyperas
 ray
 ray[debug]

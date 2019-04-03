@@ -43,6 +43,8 @@ RUN sed -i 's|deb http://security|# deb http://security|g' /etc/apt/sources.list
     graphviz\
     git \
     nano \
+    vim \
+    emacs \
     htop \
     zip \
     unzip \
@@ -80,14 +82,14 @@ RUN apt-get update && \
     libnccl2 \
     libnccl-dev && \
     wget \
-    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt.zip && \
-    unzip trt.zip && cd trt \
-    ls trt && \
+    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt-cuda100.zip && \
+    unzip trt-cuda100.zip && cd trt \
+    ls trt-cuda100 && \
     dpkg -i *.deb && \
     echo 'Installed TensorRT' && \
     apt-get clean && \
     ldconfig && \
-    rm *.deb && cd .. && rm -rf trt.zip trt && \
+    rm *.deb && cd .. && rm -rf trt-cuda100.zip trt-cuda100 && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure environment
@@ -179,16 +181,21 @@ RUN conda install -c conda-forge --quiet --yes \
     'jupyterlab=0.35.*' \
     'jupyter_contrib_nbextensions' \
     'ipywidgets=7.2*' && \
+    pip install --no-cache-dir nbresuse jupyterthemes && \
     pip install --no-cache-dir jupyterlab==1.0.0a1 && \
     jupyter notebook --generate-config && \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+    jupyter serverextension enable --py nbresuse --sys-prefix && \
+    jupyter nbextension install --py nbresuse --sys-prefix && \
+    jupyter nbextension enable --py nbresuse --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab_bokeh && \
     pip install --no-cache-dir jupyter-tensorboard && \
     jupyter tensorboard enable --sys-prefix && \
+    jupyter labextension install jupyterlab_tensorboard && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
