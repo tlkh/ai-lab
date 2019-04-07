@@ -1,6 +1,6 @@
-## Detailed Usage Instructions
+# Detailed Usage Instructions
 
-This page will give a brief walkthrough on using this image.
+This page will give a more detailed walkthroughs on using this image.
 
 To begin **please make sure you have the [pre-requisites](#pre-requisites) already configured on your system**. Then, pull the latest version of the image with:
 
@@ -8,7 +8,18 @@ To begin **please make sure you have the [pre-requisites](#pre-requisites) alrea
 docker pull nvaitc/ai-lab:latest
 ```
 
-Here, we are demonstrating the usage of the container with a freshly installed Ubuntu 18.04 VM with the lightweight XFCE environment. The instructions will apply to any other derivative of Ubuntu 16.04 or Ubuntu 18.04.
+These instructions will apply to any workstation/server running Ubuntu 16.04 or Ubuntu 18.04 or close derivative distros.
+
+**Contents**
+
+* [Pre-requisites](#pre-requisites)
+* [Interactive Shell (CLI)](#0-interactive-shell-cli)
+* [Jupyter Notebook/Lab](#1-jupyter-notebook)
+* Additional Notes on specific issues
+  * [Permission Issues](#permission-issues)
+  * [PyTorch Dataloader](#pytorch-dataloader)
+  * [Public Cloud (GCP/AWS etc.)](#public-cloud-gcp--aws-etc)
+  * [Horovod](#horovod)
 
 ## Pre-requisites
 
@@ -24,7 +35,7 @@ curl https://getcuda.ml/ubuntu.sh | bash
 
 If you face problems, you may also view a [screen recording](https://www.youtube.com/watch?v=MW2AciaMGg4) of the installation process. The target machine in the recording is a remote instance running on Google Cloud.
 
-### 0. Interactive shell
+### 0. Interactive shell (CLI)
 
 You can use the container in interactive mode (command line interface).
 
