@@ -3,8 +3,7 @@ unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 [ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
 xsetroot -solid grey
-xterm -geometry 80x24+10+10 -ls -title "VNC Desktop" &
+xterm -geometry 80x24+10+10 -ls -title "Terminal 1" &
+sleep 1s
+dbus-launch startxfce4 &
 
-exec startxfce4 &
-sleep 2s
-startxfce4 &

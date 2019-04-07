@@ -71,15 +71,8 @@ RUN apt-get update && \
     libcudnn7-dev \
     libnccl2 \
     libnccl-dev && \
-    wget \
-    https://s3-ap-southeast-1.amazonaws.com/trt-deb/trt.zip && \
-    unzip trt.zip && cd trt \
-    ls trt && \
-    dpkg -i *.deb && \
-    echo 'Installed TensorRT' && \
     apt-get clean && \
     ldconfig && \
-    rm *.deb && cd .. && rm -rf trt.zip trt && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure environment
