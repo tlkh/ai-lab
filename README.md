@@ -2,24 +2,23 @@
 
 [![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/badge/vulnerabilities%20%28snyk.io%29-0-brightgreen.svg)](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab/test/requirements.txt.svg?label=vulnerabilities%20%28snyk.io%29)
 
-All-in-one AI development container, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with machine learning and deep learning just by pulling and running the container on your workstation, on the cloud or within JupyterHub.
+All-in-one AI development container for rapid prototyping, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with a wide range of machine learning and deep learning tasks by pulling and running the container on your workstation, on the cloud or within JupyterHub.
 
 ## What's Included
 
-* CUDA 9.2 + cuDNN 7.4 (Ubuntu 18.04.1 base)
+* CUDA 10.0 + cuDNN 7.5 (Ubuntu 18.04.1 base)
 * Packages and libraries
-  * Data Science: `pandas`, `numpy`, `scipy`, `numba` etc.
   * Deep Learning: TensorFlow, PyTorch, fast.ai, Keras, Autokeras
   * ML: `scikit-learn`, XGBoost, `lightgbm`
   * RAPIDS: cuDF, cuML, cuGraph
-  * CV: `opencv-contrib-python`, `scikit-image`, `pillow-simd`
-  * NLP: `nltk`, `spacy`, `flair`
+  * CV & NLP: `opencv-contrib-python`, `nltk`, `spacy`, `flair`
   * Distributed: OpenMPI, Horovod, Dask
 * Jupyter Notebook and JupyterLab
-  * Useful extensions: `ipywidgets`, `jupyter_contrib_nbextensions`, `nbdiff`
-  * integrated TensorBoard support
+  * Useful extensions + integrated TensorBoard support
+* VNC edition with full desktop environment and various RL libraries
+  * Virtual desktop (VNC) is access through Jupyter web interface, no VNC client required
 
-This image can be used standalone on workstation or cloud instances, or via JupyterHub instances.
+This image can be used with NVIDIA GPUs on workstation or cloud instances, and via JupyterHub deployments.
 
 ## Using the AI Lab Container
 
@@ -27,6 +26,7 @@ Pulling the container:
 
 ```bash
 docker pull nvaitc/ai-lab:latest
+# 0.6 is the last version supporting driver < 410
 ```
 
 Running an interactive shell (`bash`)
@@ -66,15 +66,17 @@ If you have any ideas or suggestions, please feel free to open an issue.
 
 **1. Can I modify/build this container myself?**
 
-Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source. Should you require some extra packages etc, you can build your own Docker image using `nvaitc/ai-lab` as the base image.
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source.
 
-Example to add MXNet into container:
+Should you only require some extra packages, you can build your own Docker image using `nvaitc/ai-lab` as the base image. For example, to add the MXNet framework into container:
 
-```
+```Dockerfile
+# create and build this Dockerfile
+
 FROM nvaitc/ai-lab:latest
 LABEL maintainer="You <you@yourdomain.com>"
 
-# you may use root user for apt-get or make install
+# you need to use root user for apt-get or make install
 #USER root
 #RUN apt-get update && apt-get install some-package
 
@@ -100,7 +102,7 @@ NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDI
 
 The AI Lab container was designed for students and researchers. The container is primarily designed to create a frictionless experience (by including all frameworks) during the initial prototyping and exploration phase, with a focus on iteration with fast feedback and less focus on deciding on specific approaches or frameworks. **This is not an official NVIDIA product!**
 
-If you would like to use NGC containers in an AI Lab like container, there is an example of how you can build one yourself. Take a look at [`Dockerfile.tf-amp`](Dockerfile.tf-amp). Do note that you are restricted from distributing derivative images from NGC containers in a public Docker registry.
+If you would like to use NGC containers in an AI Lab like container, there is an example of how you can build one yourself. Take a look at [`tf-amp.Dockerfile`](tf-amp.Dockerfile). Do note that you are restricted from distributing derivative images from NGC containers in a public Docker registry.
 
 ## Support
 
