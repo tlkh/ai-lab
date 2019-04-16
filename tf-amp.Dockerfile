@@ -121,6 +121,15 @@ RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions /home/$NB_USER
 
+# autokeras
+
+RUN cd /home/$NB_USER && \
+    git clone https://github.com/NVAITC/autokeras.git && \
+    cd autokeras/ && python setup.py install && \
+    cd .. && rm -rf autokeras && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions /home/$NB_USER
+
 USER root
 
 # Import matplotlib the first time to build the font cache.
