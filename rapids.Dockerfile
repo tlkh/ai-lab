@@ -63,16 +63,26 @@ RUN source activate rapids && \
     'jupyter_contrib_nbextensions' \
     'ipywidgets=7.2*' && \
     pip install --no-cache-dir \
-    jupyterlab==1.0.0a1 \
-    tqdm gpustat \
+    tqdm gpustat matplotlib \
+    nbresuse jupyterthemes \
     && \
     jupyter notebook --generate-config && \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
+    jupyter serverextension enable --py nbresuse --sys-prefix && \
+    jupyter nbextension install --py nbresuse --sys-prefix && \
+    jupyter nbextension enable --py nbresuse --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    jupyter labextension install jupyterlab-topbar-extension && \
     jupyter labextension install jupyterlab_bokeh && \
+    jupyter labextension install jupyterlab-server-proxy && \
+    jupyter labextension install jupyterlab-system-monitor && \
+    pip install --no-cache-dir dask_labextension nbgitpuller && \
+    jupyter serverextension enable --py nbgitpuller --sys-prefix && \
+    jupyter labextension install @jupyterlab/hub-extension && \
+    jupyter labextension install dask-labextension && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> /conda/conda-meta/pinned && \
     conda clean -tipsy && \

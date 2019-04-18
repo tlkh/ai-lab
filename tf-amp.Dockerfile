@@ -124,8 +124,8 @@ RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
 # autokeras
 
 RUN cd /home/$NB_USER && \
-    git clone https://github.com/NVAITC/autokeras.git && \
-    cd autokeras/ && python setup.py install && \
+    git clone --depth 1 https://github.com/NVAITC/autokeras.git && \
+    cd autokeras/ && python3 setup.py install && \
     cd .. && rm -rf autokeras && \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
