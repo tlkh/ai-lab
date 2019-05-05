@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvaitc/ai-lab:0.7
+FROM nvaitc/ai-lab:0.8
 #FROM nvaitc/ai-lab:latest
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
@@ -108,10 +108,6 @@ RUN pip install --no-cache-dir \
     jupyter-vscode-server==0.0.4 pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
-    cd /home/$NB_USER && \
-    git clone --depth 1 https://github.com/openai/spinningup.git && \
-    cd spinningup && pip install --no-cache-dir -e . && \
-    cd /home/$NB_USER && rm -rf spinningup \
     rm -rf /home/$NB_USER/.cache && \
     fix-permissions /home/$NB_USER
 
@@ -142,8 +138,8 @@ RUN jupyter serverextension enable  --py --sys-prefix nbnovnc && \
 
 USER root
 
-ENV CODESERVER_URL="https://github.com/codercom/code-server/releases/download/1.696-vsc1.33.0/code-server1.696-vsc1.33.0-linux-x64.tar.gz" \
-    CODESERVER="code-server1.696-vsc1.33.0-linux-x64"
+ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.939-vsc1.33.1/code-server1.939-vsc1.33.1-linux-x64.tar.gz" \
+    CODESERVER="code-server1.939-vsc1.33.1-linux-x64"
 
 RUN wget ${CODESERVER_URL} && \
     tar xvf ${CODESERVER}.tar.gz && \

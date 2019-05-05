@@ -1,3 +1,0 @@
-[console_scripts]
-ai_lab = ai_lab_gui.app:main
-

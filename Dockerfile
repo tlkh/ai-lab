@@ -66,6 +66,8 @@ RUN apt-get update && \
     libosmesa6-dev \
     patchelf \
     xvfb \
+    zsh \
+    sudo \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -117,7 +119,7 @@ RUN fix-permissions /home/$NB_USER
 
 # Install conda as jovyan
 
-ENV MINICONDA_VERSION 4.5.12
+ENV MINICONDA_VERSION 4.6.14
 
 WORKDIR /home/$NB_USER
 
@@ -137,21 +139,15 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     'python=3.6' \
     'cudatoolkit=10.0' \
     'tk' \
-    'pytest' \
     'numpy>=1.16.1' \
     'numba>=0.41.0dev' \
     'pandas' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    pip install --ignore-installed --no-cache-dir 'pyyaml>=4.2b4' && \
     pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
     rm /home/$NB_USER/requirements.txt && \
     pip uninstall opencv-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
-    conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
-    pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
-    conda install -c pytorch -c fastai fastai dataclasses && \
-    pip install --ignore-installed --no-cache-dir 'msgpack>=0.6.0' && \
     # Install Jupyter Notebook, Lab, and Hub
     conda install -c conda-forge --quiet --yes \
     'notebook=5.7.*' \
@@ -170,15 +166,11 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     jupyter labextension install jupyterlab-topbar-extension && \
-    jupyter labextension install jupyterlab_bokeh && \
     jupyter labextension install jupyterlab-server-proxy && \
     jupyter labextension install jupyterlab-system-monitor && \
-    pip install --no-cache-dir jupyter-tensorboard dask_labextension nbgitpuller && \
+    pip install --no-cache-dir nbgitpuller && \
     jupyter serverextension enable --py nbgitpuller --sys-prefix && \
-    jupyter tensorboard enable --sys-prefix && \
-    jupyter labextension install jupyterlab_tensorboard && \
     jupyter labextension install @jupyterlab/hub-extension && \
-    jupyter labextension install dask-labextension && \
     conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
@@ -192,6 +184,47 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
 
 # extras
 
+# pytorch
+
+RUN conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
+    pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
+    conda install -c pytorch -c fastai fastai dataclasses && \
+    conda clean -tipsy && \
+    conda build purge-all && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# apex
+
+RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
+    cd apex && \
+    pip install -v --no-cache-dir \
+     --global-option="--cpp_ext" --global-option="--cuda_ext" \
+     . && \
+    cd .. && rm -rf apex && \
+    rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# facet
+
+USER root
+
+RUN cd /opt/ && git clone --depth 1 https://github.com/PAIR-code/facets
+
+USER $NB_UID
+
+RUN cd /opt/facets/ && jupyter nbextension install facets-dist/ --sys-prefix && \
+    export PYTHONPATH=$PYTHONPATH:/opt/facets/facets_overview/python/ && \
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+
 # nvtop
 
 USER root
@@ -203,6 +236,7 @@ RUN cd /home/$NB_USER && \
     make && make install && \
     cd .. && rm -rf nvtop && \
     rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 USER $NB_UID
@@ -210,38 +244,58 @@ USER $NB_UID
 # RAPIDS
 
 RUN pip install --no-cache-dir \
-    dask-xgboost xgboost && \
+      dask-xgboost xgboost dask_labextension && \
     conda install -c nvidia/label/cuda10.0 -c rapidsai/label/cuda10.0 \
-    -c numba -c conda-forge -c defaults \
-    python=3.6 \
-    cudf \
-    cuml \
-    cugraph \
-    dask-cuda \
-    dask-cudf \
-    dask-cuml \
-    nvstrings && \
+      -c numba -c conda-forge -c defaults \
+      python=3.6 \
+      dask \
+      cudf \
+      cuml \
+      cugraph \
+      dask-cuda \
+      dask-cudf \
+      dask-cuml \
+      nvstrings && \
     pip uninstall pillow -y && \
-    CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+    jupyter labextension install dask-labextension && \
     conda clean -tipsy && \
     conda build purge-all && \
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # install our own build of TensorFlow
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tf-cu100-cudnn75-broadwell-xla.whl \
-    TENSORFLOW_FILENAME=tensorflow-1.13.1-cp36-cp36m-manylinux1_x86_64.whl
+ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tensorflow_gpu-1.13.1%2Bnv-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow_gpu-1.13.1+nv-cp36-cp36m-linux_x86_64.whl
 
 RUN cd /home/$NB_USER/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
-    pip install --no-cache-dir tensorflow-hub && \
+    pip install --no-cache-dir --ignore-installed PyYAML \
+      jupyter-tensorboard \
+      tensorflow-hub \
+      tensorflow-data-validation \
+      tensorflow-model-analysis \
+      && \
+    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+    jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
+    jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix && \
     rm -rf /home/$NB_USER/${TENSORFLOW_FILENAME} && \
+    jupyter tensorboard enable --sys-prefix && \
+    jupyter labextension install jupyterlab_tensorboard && \
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenMPI + Horovod
@@ -267,6 +321,7 @@ ENV HOROVOD_GPU_ALLREDUCE=NCCL \
 
 RUN pip install --no-cache-dir horovod && \
     rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 RUN ldconfig && \
@@ -285,11 +340,14 @@ RUN ldconfig && \
 
 # autokeras
 
+USER $NB_UID
+
 RUN cd /home/$NB_USER && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras && \
     rm -rf /home/$NB_USER/.cache && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # Import matplotlib the first time to build the font cache
@@ -299,6 +357,7 @@ USER root
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # end extras
@@ -313,6 +372,9 @@ ENTRYPOINT ["tini", "-g", "--"]
 CMD ["start-notebook.sh"]
 
 # Add local files as late as possible to avoid cache busting
+
+COPY user_setup /opt/user_setup
+ENV USER_SETUP /opt/user_setup/setup.sh
 
 COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/

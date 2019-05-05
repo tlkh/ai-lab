@@ -5,10 +5,11 @@ plotly
 scipy
 scikit-learn
 h5py
+pytest
 nltk
 pydot
-pyyaml>=4.2b4
-msgpack>=0.6.0
+pyyaml
+msgpack
 scikit-image
 gensim
 spacy
@@ -42,3 +43,5 @@ flashtext
 delorean
 missingno
 callgraph
+pymagnitude
+keras-mri
