@@ -86,6 +86,7 @@ RUN apt-get update && \
 ENV CONDA_DIR=/opt/conda \
     SHELL=/bin/bash \
     NB_USER=jovyan \
+    NB_PW=jovyan \
     NB_UID=1000 \
     NB_GID=100 \
     LC_ALL=en_US.UTF-8 \
@@ -110,18 +111,19 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    fix-permissions /home/$NB_USER && \
+    echo $NB_PW | passwd --stdin $NB_USER && \
+    fix-permissions $HOME && \
     fix-permissions $CONDA_DIR
 
 USER $NB_UID
 
-RUN fix-permissions /home/$NB_USER
+RUN fix-permissions $HOME
 
 # Install conda as jovyan
 
 ENV MINICONDA_VERSION 4.6.14
 
-WORKDIR /home/$NB_USER
+WORKDIR $HOME
 
 ADD requirements.txt requirements.txt
 
@@ -139,13 +141,13 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     'python=3.6' \
     'cudatoolkit=10.0' \
     'tk' \
-    'numpy>=1.16.1' \
+    'numpy=1.15.4' \
     'numba>=0.41.0dev' \
     'pandas' \
     'blas=*=openblas' \
     'cython>=0.29' && \
-    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    rm /home/$NB_USER/requirements.txt && \
+    pip install --no-cache-dir -r $HOME/requirements.txt && \
+    rm $HOME/requirements.txt && \
     pip uninstall opencv-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
     # Install Jupyter Notebook, Lab, and Hub
@@ -154,7 +156,7 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     'jupyterhub=0.9.*' \
     'jupyterlab=0.35.*' \
     'jupyter_contrib_nbextensions' \
-    'ipywidgets=7.2*' && \
+    'ipywidgets=7.4.*' && \
     pip install --no-cache-dir nbresuse jupyterthemes && \
     jupyter notebook --generate-config && \
     # Activate ipywidgets extension in the environment that runs the notebook server
@@ -177,10 +179,11 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # extras
 
@@ -191,9 +194,11 @@ RUN conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes 
     conda install -c pytorch -c fastai fastai dataclasses && \
     conda clean -tipsy && \
     conda build purge-all && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # apex
 
@@ -203,9 +208,11 @@ RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
      --global-option="--cpp_ext" --global-option="--cuda_ext" \
      . && \
     cd .. && rm -rf apex && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # facet
 
@@ -219,25 +226,28 @@ RUN cd /opt/facets/ && jupyter nbextension install facets-dist/ --sys-prefix && 
     export PYTHONPATH=$PYTHONPATH:/opt/facets/facets_overview/python/ && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 
 # nvtop
 
 USER root
 
-RUN cd /home/$NB_USER && \
+RUN cd $HOME && \
     git clone https://github.com/Syllo/nvtop.git && \
     mkdir -p nvtop/build && cd nvtop/build && \
     cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
     make && make install && \
     cd .. && rm -rf nvtop && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 USER $NB_UID
 
@@ -263,10 +273,11 @@ RUN pip install --no-cache-dir \
     conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # install our own build of TensorFlow
 
@@ -275,7 +286,7 @@ USER $NB_UID
 ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tensorflow_gpu-1.13.1%2Bnv-cp36-cp36m-linux_x86_64.whl \
     TENSORFLOW_FILENAME=tensorflow_gpu-1.13.1+nv-cp36-cp36m-linux_x86_64.whl
 
-RUN cd /home/$NB_USER/ && \
+RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
@@ -288,15 +299,16 @@ RUN cd /home/$NB_USER/ && \
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
     jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix && \
-    rm -rf /home/$NB_USER/${TENSORFLOW_FILENAME} && \
+    rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # OpenMPI + Horovod
 
@@ -311,7 +323,12 @@ RUN mkdir /tmp/openmpi && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
-    rm -rf /tmp/openmpi
+    rm -rf /tmp/openmpi && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
 
@@ -320,9 +337,11 @@ ENV HOROVOD_GPU_ALLREDUCE=NCCL \
     HOROVOD_WITH_PYTORCH=1
 
 RUN pip install --no-cache-dir horovod && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 RUN ldconfig && \
     mv /usr/local/bin/mpirun /usr/local/bin/mpirun.real && \
@@ -342,23 +361,25 @@ RUN ldconfig && \
 
 USER $NB_UID
 
-RUN cd /home/$NB_USER && \
+RUN cd $HOME && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # Import matplotlib the first time to build the font cache
 
 USER root
 
-ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+ENV XDG_CACHE_HOME $HOME/.cache/
 
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # end extras
 
