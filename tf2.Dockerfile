@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-devel-ubuntu18.04 
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -24,7 +24,6 @@ RUN apt-get update && \
     fonts-liberation \
     build-essential \
     cmake \
-    inkscape \
     jed \
     libsm6 \
     libxext-dev \
@@ -71,21 +70,12 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-RUN apt-get update && \
-    apt-get install --allow-change-held-packages -yq \
-    libcudnn7 \
-    libcudnn7-dev \
-    libnccl2 \
-    libnccl-dev && \
-    apt-get clean && \
-    ldconfig && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
 # Configure environment
 
 ENV CONDA_DIR=/opt/conda \
     SHELL=/bin/bash \
     NB_USER=jovyan \
+    NB_PW=jovyan \
     NB_UID=1000 \
     NB_GID=100 \
     LC_ALL=en_US.UTF-8 \
@@ -105,23 +95,24 @@ ADD fix-permissions /usr/local/bin/fix-permissions
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen && \  
     groupadd wheel -g 11 && \
-    echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
+    echo "auth sufficient pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    usermod -aG sudo $NB_USER && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    fix-permissions /home/$NB_USER && \
+    fix-permissions $HOME && \
     fix-permissions $CONDA_DIR
+
+RUN ["/bin/bash", "-c", "echo -e '$NB_PW\n$NB_PW' | passwd $NB_USER"]
 
 USER $NB_UID
 
-RUN fix-permissions /home/$NB_USER
-
-# Install conda as jovyan
+RUN fix-permissions $HOME
 
 ENV MINICONDA_VERSION 4.6.14
 
-WORKDIR /home/$NB_USER
+WORKDIR $HOME
 
 ADD requirements.txt requirements.txt
 
@@ -136,66 +127,71 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     echo "Installing packages" && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'python=3.6' \
-    'cudatoolkit=10.0' \
-    'tk' \
-    'numpy>=1.16.1' \
-    'numba>=0.41.0dev' \
-    'pandas' \
-    'blas=*=openblas' \
-    'cython>=0.29' && \
-    pip install --no-cache-dir -r /home/$NB_USER/requirements.txt && \
-    rm /home/$NB_USER/requirements.txt && \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'cudatoolkit=10.0' \
+      'tk' \
+      'tini' \
+      'blas=*=openblas' \
+      'notebook=5.7.*' \
+      'jupyterhub=0.9.*' \
+      'jupyterlab=0.35.*' \
+      'jupyter_contrib_nbextensions' \
+      'ipywidgets=7.4.*' && \
+    pip install --no-cache-dir -r $HOME/requirements.txt && \
+    rm $HOME/requirements.txt && \
     pip uninstall opencv-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
-    # Install Jupyter Notebook, Lab, and Hub
-    conda install -c conda-forge --quiet --yes \
-    'notebook=5.7.*' \
-    'jupyterhub=0.9.*' \
-    'jupyterlab=0.35.*' \
-    'jupyter_contrib_nbextensions' \
-    'ipywidgets=7.2*' && \
-    pip install --no-cache-dir nbresuse jupyterthemes && \
+    pip uninstall pillow -y && \
+      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     jupyter notebook --generate-config && \
-    # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter serverextension enable --py nbresuse --sys-prefix && \
-    jupyter nbextension install --py nbresuse --sys-prefix && \
-    jupyter nbextension enable --py nbresuse --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
-    # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    jupyter labextension install jupyterlab-topbar-extension && \
     jupyter labextension install jupyterlab-server-proxy && \
-    jupyter labextension install jupyterlab-system-monitor && \
     pip install --no-cache-dir nbgitpuller && \
     jupyter serverextension enable --py nbgitpuller --sys-prefix && \
     jupyter labextension install @jupyterlab/hub-extension && \
-    conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # extras
 
 # pytorch
 
-RUN conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
+USER $NB_UID
+
+RUN conda install -c pytorch --quiet --yes \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'pytorch' \
+      'torchvision' \
+      'cudatoolkit=10.0' && \
+    conda install -c pytorch -c fastai --quiet --yes \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'fastai' \
+      'dataclasses' && \
     pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
-    conda install -c pytorch -c fastai fastai dataclasses && \
     conda clean -tipsy && \
     conda build purge-all && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # apex
+
+USER $NB_UID
 
 RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
@@ -203,9 +199,11 @@ RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
      --global-option="--cpp_ext" --global-option="--cuda_ext" \
      . && \
     cd .. && rm -rf apex && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # facet
 
@@ -219,54 +217,56 @@ RUN cd /opt/facets/ && jupyter nbextension install facets-dist/ --sys-prefix && 
     export PYTHONPATH=$PYTHONPATH:/opt/facets/facets_overview/python/ && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
+    fix-permissions $HOME
 
 # nvtop
 
 USER root
 
-RUN cd /home/$NB_USER && \
+RUN cd $HOME && \
     git clone https://github.com/Syllo/nvtop.git && \
     mkdir -p nvtop/build && cd nvtop/build && \
     cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
     make && make install && \
     cd .. && rm -rf nvtop && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-USER $NB_UID
+    fix-permissions $HOME
 
 # RAPIDS
+
+USER $NB_UID
 
 RUN pip install --no-cache-dir \
       dask-xgboost xgboost dask_labextension && \
     conda install -c nvidia/label/cuda10.0 -c rapidsai/label/cuda10.0 \
       -c numba -c conda-forge -c defaults \
-      python=3.6 \
-      dask \
-      cudf \
-      cuml \
-      cugraph \
-      dask-cuda \
-      dask-cudf \
-      dask-cuml \
-      nvstrings && \
-    pip uninstall pillow -y && \
-      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'dask' \
+      'cudf' \
+      'cuml' \
+      'cugraph' \
+      'dask-cuda' \
+      'dask-cudf' \
+      'dask-cuml' \
+      'nvstrings' && \
     jupyter labextension install dask-labextension && \
     conda clean -tipsy && \
     conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # install our own build of TensorFlow
 
@@ -275,28 +275,27 @@ USER $NB_UID
 ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tensorflow-2.0.0a0-cp36-cp36m-linux_x86_64.whl \
     TENSORFLOW_FILENAME=tensorflow-2.0.0a0-cp36-cp36m-linux_x86_64.whl
 
-RUN cd /home/$NB_USER/ && \
+RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
       jupyter-tensorboard \
+      tensorflow_datasets \
       tensorflow-hub \
-      tensorflow-data-validation \
-      tensorflow-model-analysis \
       && \
-    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
-    jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix && \
-    rm -rf /home/$NB_USER/${TENSORFLOW_FILENAME} && \
+    rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \
+    conda clean -tipsy && \
+    conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache && \
-    rm -rf /home/$NB_USER/.node-gyp && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # OpenMPI + Horovod
 
@@ -311,7 +310,12 @@ RUN mkdir /tmp/openmpi && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
-    rm -rf /tmp/openmpi
+    rm -rf /tmp/openmpi && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
 
@@ -320,9 +324,11 @@ ENV HOROVOD_GPU_ALLREDUCE=NCCL \
     HOROVOD_WITH_PYTORCH=1
 
 RUN pip install --no-cache-dir horovod && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 RUN ldconfig && \
     mv /usr/local/bin/mpirun /usr/local/bin/mpirun.real && \
@@ -342,23 +348,15 @@ RUN ldconfig && \
 
 USER $NB_UID
 
-RUN cd /home/$NB_USER && \
+RUN cd $HOME && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras && \
-    rm -rf /home/$NB_USER/.cache && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# Import matplotlib the first time to build the font cache
-
-USER root
-
-ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
-
-RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions $HOME
 
 # end extras
 
@@ -387,4 +385,3 @@ RUN fix-permissions /etc/jupyter/ && \
 # Switch back to jovyan to avoid accidental container runs as root
 
 USER $NB_UID
-

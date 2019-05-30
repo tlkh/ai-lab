@@ -1,6 +1,6 @@
 # nvidia/cuda
 # https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.0-devel-ubuntu18.04 
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -24,7 +24,6 @@ RUN apt-get update && \
     fonts-liberation \
     build-essential \
     cmake \
-    inkscape \
     jed \
     libsm6 \
     libxext-dev \
@@ -71,16 +70,6 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-RUN apt-get update && \
-    apt-get install --allow-change-held-packages -yq \
-    libcudnn7 \
-    libcudnn7-dev \
-    libnccl2 \
-    libnccl-dev && \
-    apt-get clean && \
-    ldconfig && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
 # Configure environment
 
 ENV CONDA_DIR=/opt/conda \
@@ -106,20 +95,21 @@ ADD fix-permissions /usr/local/bin/fix-permissions
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen && \  
     groupadd wheel -g 11 && \
-    echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
+    echo "auth sufficient pam_wheel.so use_uid" >> /etc/pam.d/su && \
     useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    usermod -aG sudo $NB_USER && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    echo $NB_PW | passwd --stdin $NB_USER && \
     fix-permissions $HOME && \
     fix-permissions $CONDA_DIR
+
+RUN echo "user ALL=(jovyan) NOPASSWD:ALL" > /etc/sudoers.d/user && \
+    chmod 0440 /etc/sudoers.d/user
 
 USER $NB_UID
 
 RUN fix-permissions $HOME
-
-# Install conda as jovyan
 
 ENV MINICONDA_VERSION 4.6.14
 
@@ -138,42 +128,31 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     echo "Installing packages" && \
     conda install -n root conda-build && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
-    'python=3.6' \
-    'cudatoolkit=10.0' \
-    'tk' \
-    'numpy=1.15.4' \
-    'numba>=0.41.0dev' \
-    'pandas' \
-    'blas=*=openblas' \
-    'cython>=0.29' && \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'cudatoolkit=10.0' \
+      'tk' \
+      'tini' \
+      'blas=*=openblas' \
+      'notebook=5.7.*' \
+      'jupyterhub=0.9.*' \
+      'jupyterlab=0.35.*' \
+      'jupyter_contrib_nbextensions' \
+      'ipywidgets=7.4.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
     pip uninstall opencv-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
-    # Install Jupyter Notebook, Lab, and Hub
-    conda install -c conda-forge --quiet --yes \
-    'notebook=5.7.*' \
-    'jupyterhub=0.9.*' \
-    'jupyterlab=0.35.*' \
-    'jupyter_contrib_nbextensions' \
-    'ipywidgets=7.4.*' && \
-    pip install --no-cache-dir nbresuse jupyterthemes && \
+    pip uninstall pillow -y && \
+      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     jupyter notebook --generate-config && \
-    # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter serverextension enable --py nbresuse --sys-prefix && \
-    jupyter nbextension install --py nbresuse --sys-prefix && \
-    jupyter nbextension enable --py nbresuse --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
-    # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    jupyter labextension install jupyterlab-topbar-extension && \
     jupyter labextension install jupyterlab-server-proxy && \
-    jupyter labextension install jupyterlab-system-monitor && \
     pip install --no-cache-dir nbgitpuller && \
     jupyter serverextension enable --py nbgitpuller --sys-prefix && \
     jupyter labextension install @jupyterlab/hub-extension && \
-    conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -189,9 +168,20 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
 
 # pytorch
 
-RUN conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes && \
+USER $NB_UID
+
+RUN conda install -c pytorch --quiet --yes \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'pytorch' \
+      'torchvision' \
+      'cudatoolkit=10.0' && \
+    conda install -c pytorch -c fastai --quiet --yes \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'fastai' \
+      'dataclasses' && \
     pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
-    conda install -c pytorch -c fastai fastai dataclasses && \
     conda clean -tipsy && \
     conda build purge-all && \
     rm -rf /tmp/* && \
@@ -201,6 +191,8 @@ RUN conda install -c pytorch pytorch torchvision cudatoolkit=10.0 --quiet --yes 
     fix-permissions $HOME
 
 # apex
+
+USER $NB_UID
 
 RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
@@ -232,7 +224,6 @@ RUN cd /opt/facets/ && jupyter nbextension install facets-dist/ --sys-prefix && 
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-
 # nvtop
 
 USER root
@@ -249,25 +240,24 @@ RUN cd $HOME && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-USER $NB_UID
-
 # RAPIDS
+
+USER $NB_UID
 
 RUN pip install --no-cache-dir \
       dask-xgboost xgboost dask_labextension && \
     conda install -c nvidia/label/cuda10.0 -c rapidsai/label/cuda10.0 \
       -c numba -c conda-forge -c defaults \
-      python=3.6 \
-      dask \
-      cudf \
-      cuml \
-      cugraph \
-      dask-cuda \
-      dask-cudf \
-      dask-cuml \
-      nvstrings && \
-    pip uninstall pillow -y && \
-      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'dask' \
+      'cudf' \
+      'cuml' \
+      'cugraph' \
+      'dask-cuda' \
+      'dask-cudf' \
+      'dask-cuml' \
+      'nvstrings' && \
     jupyter labextension install dask-labextension && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -292,16 +282,16 @@ RUN cd $HOME/ && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
       jupyter-tensorboard \
+      tensorflow_datasets \
       tensorflow-hub \
-      tensorflow-data-validation \
-      tensorflow-model-analysis \
+      tensorflow-probability \
+      tensorflow-model-optimization \
       && \
-    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter nbextension install --py --symlink tensorflow_model_analysis --sys-prefix && \
-    jupyter nbextension enable --py tensorflow_model_analysis --sys-prefix && \
     rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \
+    conda clean -tipsy && \
+    conda build purge-all && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /tmp/* && \
@@ -362,22 +352,15 @@ RUN ldconfig && \
 USER $NB_UID
 
 RUN cd $HOME && \
+    pip uninstall urllib3 -y && \
     git clone https://github.com/NVAITC/autokeras.git && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras && \
+    pip uninstall requests urllib3 -y && \
+    pip install requests urllib3 && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
-
-# Import matplotlib the first time to build the font cache
-
-USER root
-
-ENV XDG_CACHE_HOME $HOME/.cache/
-
-RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 

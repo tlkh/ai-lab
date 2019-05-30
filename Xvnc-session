@@ -5,5 +5,8 @@ unset DBUS_SESSION_BUS_ADDRESS
 xsetroot -solid grey
 xterm -geometry 80x24+10+10 -ls -title "Terminal 1" &
 sleep 1s
+xset s off
+xset s noblank
+xset -dpms
 dbus-launch startxfce4 &
 

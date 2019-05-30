@@ -55,8 +55,11 @@ RUN git clone --depth 1 --branch="${LIBGLVND_VERSION}" https://github.com/NVIDIA
     echo '/usr/local/lib/i386-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
     ldconfig && \
     rm -rf /opt/libglvnd && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 ENV LD_LIBRARY_PATH /usr/local/lib/x86_64-linux-gnu:/usr/local/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
@@ -84,11 +87,15 @@ RUN apt-get update && \
         -O https://svwh.dl.sourceforge.net/project/virtualgl/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb \
         -O https://svwh.dl.sourceforge.net/project/virtualgl/${VIRTUALGL_VERSION}/virtualgl32_${VIRTUALGL_VERSION}_amd64.deb && \
     dpkg -i *.deb && \
-    rm -f /tmp/*.deb && \
     sed -i 's/$host:/unix:/g' /opt/TurboVNC/bin/vncserver && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 RUN /opt/VirtualGL/bin/vglserver_config -config +s +f +t
 
@@ -108,8 +115,11 @@ RUN pip install --no-cache-dir \
     jupyter-vscode-server==0.0.4 pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 USER root
 
@@ -126,27 +136,37 @@ RUN cd /home/$NB_USER && \
     rm -rf /home/$NB_USER/.cache *.whl && \
     cd /home/$NB_USER && \
     rm -rf websockify nbnovnc && \
-    fix-permissions /home/$NB_USER
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 USER $NB_USER
 
 RUN jupyter serverextension enable  --py --sys-prefix nbnovnc && \
     jupyter nbextension     install --py --sys-prefix nbnovnc && \
     jupyter nbextension     enable  --py --sys-prefix nbnovnc && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 USER root
 
-ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.939-vsc1.33.1/code-server1.939-vsc1.33.1-linux-x64.tar.gz" \
-    CODESERVER="code-server1.939-vsc1.33.1-linux-x64"
+ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1119-vsc1.33.1/code-server1.1119-vsc1.33.1-linux-x64.tar.gz" \
+    CODESERVER="code-server1.1119-vsc1.33.1-linux-x64"
 
 RUN wget ${CODESERVER_URL} && \
     tar xvf ${CODESERVER}.tar.gz && \
     mv ${CODESERVER}/code-server /usr/local/bin/ && \
     rm -rf code-server* && \
-    rm -rf /home/$NB_USER/.cache && \
-    fix-permissions /home/$NB_USER
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 COPY Xvnc-session /etc/X11/
 
