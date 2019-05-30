@@ -25,7 +25,7 @@ This image can be used with NVIDIA GPUs on workstation or cloud instances, and v
 Pulling the container:
 
 ```bash
-docker pull nvaitc/ai-lab:latest
+docker pull nvaitc/ai-lab:0.8
 # 0.6 is the last version supporting driver < 410
 ```
 
@@ -44,7 +44,7 @@ Run Jupyter Notebook with the following options:
 nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER:/home/jovyan \
- nvaitc/ai-lab
+ nvaitc/ai-lab:0.8
 ```
 
 Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`, or replacing `tree` with `lab` in the browser address bar
@@ -54,7 +54,7 @@ nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER:/home/jovyan \
  -e JUPYTER_ENABLE_LAB=yes \
- nvaitc/ai-lab
+ nvaitc/ai-lab:0.8
 ```
 For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
 
@@ -73,7 +73,7 @@ Should you only require some extra packages, you can build your own Docker image
 ```Dockerfile
 # create and build this Dockerfile
 
-FROM nvaitc/ai-lab:latest
+FROM nvaitc/ai-lab:0.8
 LABEL maintainer="You <you@yourdomain.com>"
 
 # you need to use root user for apt-get or make install

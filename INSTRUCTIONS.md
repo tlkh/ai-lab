@@ -5,7 +5,7 @@ This page will give a more detailed walkthroughs on using this image.
 To begin **please make sure you have the [pre-requisites](#pre-requisites) already configured on your system**. Then, pull the latest version of the image with:
 
 ```bash
-docker pull nvaitc/ai-lab:latest
+docker pull nvaitc/ai-lab:0.8
 ```
 
 These instructions will apply to any workstation/server running Ubuntu 16.04 or Ubuntu 18.04 or close derivative distros.
@@ -41,7 +41,7 @@ If you face problems, you may also view a [screen recording](https://www.youtube
 You can use the container in interactive mode (command line interface).
 
 ```bash
-nvidia-docker run --rm -it nvaitc/ai-lab bash
+nvidia-docker run --rm -it nvaitc/ai-lab:0.8 bash
 ```
 
 Note that the default user in the container is always `jovyan`. ([Who is Jovyan?](https://github.com/jupyter/docker-stacks/issues/358)) 
@@ -63,7 +63,7 @@ Launch the container in that folder and map port 8888:
 nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER/quickstart-notebooks:/home/jovyan \
- nvaitc/ai-lab
+ nvaitc/ai-lab:0.8
 ```
 
 **Here is a breakdown of the command**
@@ -126,7 +126,7 @@ mkdir work
 chmod -R 775 work
 
 # mount folder in container
-nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab
+nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab:0.8
 ```
 
 #### PyTorch DataLoader
