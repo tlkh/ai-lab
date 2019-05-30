@@ -104,9 +104,6 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     fix-permissions $HOME && \
     fix-permissions $CONDA_DIR
 
-RUN echo "user ALL=(jovyan) NOPASSWD:ALL" > /etc/sudoers.d/user && \
-    chmod 0440 /etc/sudoers.d/user
-
 USER $NB_UID
 
 RUN fix-permissions $HOME
@@ -387,6 +384,10 @@ COPY jupyter_notebook_config.py /etc/jupyter/
 
 RUN fix-permissions /etc/jupyter/ && \
     usermod -s /bin/bash $NB_USER
+
+USER root
+
+RUN echo "jovyan\njovyan\n" | (passwd jovyan)
 
 # Switch back to jovyan to avoid accidental container runs as root
 
