@@ -97,11 +97,14 @@ docker pull nvaitc/ai-lab:0.8-vnc
 Next, you will need to start the image as per normal
 
 ```bash
-nvidia-docker run --rm \
+nvidia-docker run --rm --ipc=host \
   -p 8888:8888 \
   -v /home/$USER/work:/home/jovyan
   nvaitc/ai-lab:0.8-vnc
 ``` 
+
+The `--ipc=host` flag is needed for certain applications, such as Firefox, to function properly.
+
 You will be able to access the Jupyter notebook interface at `localhost:8888` as per normal, but now under "New", you will have an additional option for "VNC Desktop". Click on that, and a new browser tab will open with your virtual desktop interface.
 
 ![new desktop](images/new_desktop.jpg)
@@ -126,7 +129,7 @@ LABEL maintainer="You <you@yourdomain.com>"
 
 USER root
 
-RUN echo "jovyan\njovyan\n" | (passwd jovyan)
+RUN echo "new_password\nnew_password\n" | (passwd jovyan)
 
 # Switch back to jovyan to avoid accidental container runs as root
 
