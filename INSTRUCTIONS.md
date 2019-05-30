@@ -104,7 +104,11 @@ nvidia-docker run --rm \
 ``` 
 You will be able to access the Jupyter notebook interface at `localhost:8888` as per normal, but now under "New", you will have an additional option for "VNC Desktop". Click on that, and a new browser tab will open with your virtual desktop interface.
 
+![new desktop](images/new_desktop.jpg)
+
 **Please note that first start-up can take a while.** It might appear to freeze at a black screen. After about 1 min you will get your virtual desktop.
+
+![virtual desktop](images/desktop.jpg)
 
 ## Additional Notes
 
