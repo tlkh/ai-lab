@@ -15,6 +15,7 @@ These instructions will apply to any workstation/server running Ubuntu 16.04 or 
 * [Pre-requisites](#pre-requisites)
 * [Interactive Shell (CLI)](#0-interactive-shell-cli)
 * [Jupyter Notebook/Lab](#1-jupyter-notebook)
+* [Virtual Desktop](#2-virtual-desktop)
 * Additional Notes on specific issues
   * [Permission Issues](#permission-issues)
   * [PyTorch Dataloader](#pytorch-dataloader)
@@ -84,6 +85,26 @@ The first notebook you might want to run is the `hello_gpu.ipynb` notebook to ch
 ![hello gpu](images/check_gpu.jpg)
 
 If you are facing problems and would like to view a screen recording of the process, please check out this [screen recording](https://www.youtube.com/watch?v=nrt5NxY5Kbw).
+
+### 2. Virtual Desktop
+
+For virtual desktop, you will need to pull the latest VNC version of the container image
+
+```bash
+docker pull nvaitc/ai-lab:0.8-vnc
+```
+
+Next, you will need to start the image as per normal
+
+```bash
+nvidia-docker run --rm \
+  -p 8888:8888 \
+  -v /home/$USER/work:/home/jovyan
+  nvaitc/ai-lab:0.8-vnc
+``` 
+You will be able to access the Jupyter notebook interface at `localhost:8888` as per normal, but now under "New", you will have an additional option for "VNC Desktop". Click on that, and a new browser tab will open with your virtual desktop interface.
+
+**Please note that first start-up can take a while.** It might appear to freeze at a black screen. After about 1 min you will get your virtual desktop.
 
 ## Additional Notes
 
