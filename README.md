@@ -6,33 +6,32 @@ All-in-one AI development container for rapid prototyping, compatible with the n
 
 ## What's Included
 
-* CUDA 10.0 + cuDNN 7.5 (Ubuntu 18.04.1 base)
+* CUDA 10.0 + cuDNN 7 (Ubuntu 18.04 base)
 * Packages and libraries
-  * Deep Learning: TensorFlow, PyTorch, fast.ai, Keras, Autokeras
-  * ML: `scikit-learn`, XGBoost, `lightgbm`
-  * RAPIDS: cuDF, cuML, cuGraph
-  * CV & NLP: `opencv-contrib-python`, `nltk`, `spacy`, `flair`
+  * DL/ML: TensorFlow/Keras, PyTorch, fast.ai, RAPIDS, XGBoost etc.
+  * CV & NLP: `opencv`, `nltk`, `spacy` etc.
   * Distributed: OpenMPI, Horovod, Dask
 * Jupyter Notebook and JupyterLab
   * Useful extensions + integrated TensorBoard support
 * VNC edition with full desktop environment and various RL libraries
-  * Virtual desktop (VNC) is access through Jupyter web interface, no VNC client required
+  * Virtual desktop (VNC) is accessed through web interface, no VNC client required
 
 This image can be used with NVIDIA GPUs on workstation or cloud instances, and via JupyterHub deployments.
 
 ## Using the AI Lab Container
 
-Pulling the container:
+For full instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
+
+**Quick Start**
+
+Pull and run interactive shell (CLI):
 
 ```bash
 docker pull nvaitc/ai-lab:0.8
 # 0.6 is the last version supporting driver < 410
-```
-
-Running an interactive shell (`bash`)
 
 ```bash
-nvidia-docker run --rm -it nvaitc/ai-lab bash
+nvidia-docker run --rm -it nvaitc/ai-lab:0.8 bash
 ```
 
 Run Jupyter Notebook with the following options:
@@ -56,9 +55,8 @@ nvidia-docker run --rm \
  -e JUPYTER_ENABLE_LAB=yes \
  nvaitc/ai-lab:0.8
 ```
-For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
 
-This will include instructions to address common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
+[INSTRUCTIONS.md](INSTRUCTIONS.md) contains full instructions and addresses common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
 
 If you have any ideas or suggestions, please feel free to open an issue.
 
