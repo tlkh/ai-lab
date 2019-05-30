@@ -14,7 +14,7 @@ All-in-one AI development container for rapid prototyping, compatible with the n
 * Jupyter Notebook and JupyterLab
   * Useful extensions + integrated TensorBoard support
 * VNC edition with full desktop environment and various RL libraries
-  * Virtual desktop (VNC) is accessed through web interface, no VNC client required
+  * [Virtual desktop](https://github.com/NVAITC/ai-lab/blob/master/INSTRUCTIONS.md#2-virtual-desktop) is accessed through web interface, no VNC client required
 
 This image can be used with NVIDIA GPUs on workstation or cloud instances, and via JupyterHub deployments.
 
