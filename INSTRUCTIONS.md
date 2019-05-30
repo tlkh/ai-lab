@@ -106,9 +106,32 @@ You will be able to access the Jupyter notebook interface at `localhost:8888` as
 
 ![new desktop](images/new_desktop.jpg)
 
-**Please note that first start-up can take a while.** It might appear to freeze at a black screen. After about 1 min you will get your virtual desktop.
+**Please note that first start-up can take a while!**
+
+It might appear to freeze at a black screen. After about 1 min you will get your virtual desktop.
 
 ![virtual desktop](images/desktop.jpg)
+
+**Note regarding sudo password**
+
+The default user and password is both `jovyan`.
+
+If it matters to you, you can change the password by creating a new Docker image with the current one as the base. An example Dockerfile is as follows:
+
+```Dockerfile
+# create and build this Dockerfile
+
+FROM nvaitc/ai-lab:0.8
+LABEL maintainer="You <you@yourdomain.com>"
+
+USER root
+
+RUN echo "jovyan\njovyan\n" | (passwd jovyan)
+
+# Switch back to jovyan to avoid accidental container runs as root
+
+USER $NB_UID
+```
 
 ## Additional Notes
 
