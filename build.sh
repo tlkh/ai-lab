@@ -2,6 +2,8 @@
 
 TAG=0.8 
 
+cd src
+
 echo -e "\nBuilding images\n"
 
 docker build . -f base.Dockerfile -t nvaitc/ai-lab:$TAG-base

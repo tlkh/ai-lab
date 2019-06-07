@@ -24,6 +24,8 @@ RUN conda install -c pytorch --quiet --yes \
       'fastai' \
       'dataclasses' && \
     pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
+    pip uninstall pillow -y && \
+      CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     conda clean -tipsy && \
     conda build purge-all && \
     rm -rf /tmp/* && \
@@ -86,9 +88,9 @@ RUN cd $HOME && \
 
 USER $NB_UID
 
-RUN pip install --no-cache-dir \
-      dask-xgboost xgboost dask_labextension && \
-    conda install -c nvidia/label/cuda10.0 -c rapidsai/label/cuda10.0 \
+RUN conda install \
+      -c nvidia/label/cuda10.0 \
+      -c rapidsai/label/cuda10.0 \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
       'numpy=1.16.1' \
@@ -100,6 +102,12 @@ RUN pip install --no-cache-dir \
       'dask-cudf' \
       'dask-cuml' \
       'nvstrings' && \
+    conda install \
+      -c rapidsai/label/xgboost \
+      'xgboost' \
+      'dask-xgboost' && \
+    pip install --no-cache-dir \
+      dask_labextension && \
     jupyter labextension install dask-labextension && \
     conda clean -tipsy && \
     conda build purge-all && \

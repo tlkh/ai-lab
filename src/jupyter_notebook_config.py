@@ -19,8 +19,6 @@ nb_password = os.getenv("NB_PASSWD", "")
 
 c.NotebookApp.password = passwd(nb_password)
 
-print("Login password is", nb_password)
-
 c.FileContentsManager.delete_to_trash = False
 
 # Generate a self-signed certificate
