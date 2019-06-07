@@ -24,7 +24,7 @@ docker pull nvaitc/ai-lab:0.8
 **Running an interactive shell (`bash`)**
 
 ```bash
-nvidia-docker run --rm -it nvaitc/ai-lab bash
+nvidia-docker run --rm -it nvaitc/ai-lab:0.8 bash
 ```
 
 **Run Jupyter Notebook**
@@ -54,7 +54,7 @@ nvidia-docker run --rm \
 
 For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
 
-This will include instructions to address common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
+[INSTRUCTIONS.md](INSTRUCTIONS.md) contains full instructions and addresses common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
 
 If you have any ideas or suggestions, please feel free to open an issue.
 
@@ -112,3 +112,5 @@ If you would like to use NGC containers in an AI Lab like container, there is an
 * Please visit the documentation site for help using and contributing to this image and others.
 * [Jupyter Docker Stacks on ReadTheDocs](http://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
 * [Selecting an Image :: Core Stacks :: jupyter/base-notebook](http://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-base-notebook)
+
+![GitHub contributors](https://img.shields.io/github/contributors/nvaitc/ai-lab.svg) ![GitHub](https://img.shields.io/github/license/nvaitc/ai-lab.svg)
