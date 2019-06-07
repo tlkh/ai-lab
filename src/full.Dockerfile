@@ -206,10 +206,6 @@ RUN cd $HOME && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-USER root
-
-RUN echo "jovyan\njovyan\n" | (passwd jovyan)
-
 # Switch back to jovyan to avoid accidental container runs as root
 
 USER $NB_UID

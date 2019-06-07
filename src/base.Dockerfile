@@ -185,7 +185,10 @@ RUN fix-permissions /etc/jupyter/ && \
 
 USER root
 
-RUN echo "jovyan\njovyan\n" | (passwd jovyan)
+ENV NB_PASSWD="" \
+    SUDO_PASSWD=jovyan
+
+RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd jovyan)
 
 # Switch back to jovyan to avoid accidental container runs as root
 
