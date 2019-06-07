@@ -1,6 +1,6 @@
 ![header image](images/ai-lab-header.jpg)
 
-[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![GitHub last commit](https://img.shields.io/github/last-commit/nvaitc/ai-lab.svg)
+[![](https://images.microbadger.com/badges/version/nvaitc/ai-lab:0.8.svg)](https://microbadger.com/images/nvaitc/ai-lab:0.8) [![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab:0.8-vnc.svg)](https://microbadger.com/images/nvaitc/ai-lab:0.8-vnc) [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![GitHub last commit](https://img.shields.io/github/last-commit/nvaitc/ai-lab.svg)
 
 All-in-one AI development container for rapid prototyping, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with a wide range of machine learning and deep learning tasks by pulling and running the container on your workstation, on the cloud or within JupyterHub. 
 
