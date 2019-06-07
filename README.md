@@ -12,7 +12,7 @@ All-in-one AI development container for rapid prototyping, compatible with the n
 
 ## Using the AI Lab Container
 
-This image can be used together with NVIDIA GPUs on workstation, servers, cloud instances. It can also be used via JupyterHub deployments as no additional ports are required things like for TensorBoard.
+This image can be used together with NVIDIA GPUs on workstation, servers, cloud instances. It can also be used via JupyterHub deployments as no additional ports are required things like for TensorBoard. Please note that the following instructions assume you already have the NVIDIA drivers and container runtime already installed. If not, here are some [quick instructions](INSTRUCTIONS.md#pre-requisites).
 
 **Pulling the container**
 

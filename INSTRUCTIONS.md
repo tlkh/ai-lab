@@ -24,7 +24,7 @@ These instructions will apply to any workstation/server running Ubuntu 16.04 or 
 
 ## Pre-requisites
 
-You will need to have CUDA>=9.2, NVIDIA drivers>=396, Docker and the NVIDIA Container Runtime (nvidia-docker) installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself)
+You will need to have NVIDIA drivers>=410, Docker and the NVIDIA Container Runtime (`nvidia-docker`) installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself all the time)
 
 ```bash
 sudo su root
