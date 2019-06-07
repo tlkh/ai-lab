@@ -3,10 +3,9 @@ unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 [ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
 xsetroot -solid grey
-xterm -geometry 80x24+10+10 -ls -title "Terminal 1" &
+xterm -geometry 80x24+10+10 -ls -title "Terminal" &
 sleep 1s
 xset s off
 xset s noblank
 xset -dpms
 dbus-launch startxfce4 &
-

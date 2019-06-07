@@ -42,6 +42,7 @@ RUN apt-get update && \
     libxext-dev \
     libx11-dev \
     x11proto-gl-dev && \
+    rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 WORKDIR /opt/
@@ -112,7 +113,7 @@ USER $NB_USER
 RUN pip install --no-cache-dir \
     keras-rl pyopengl \
     gym[atari] ray[rllib] roboschool \
-    jupyter-vscode-server==0.0.4 pysc2 \
+    jupyter-vscode-server pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
     rm -rf /tmp/* && \
@@ -155,8 +156,8 @@ RUN jupyter serverextension enable  --py --sys-prefix nbnovnc && \
 
 USER root
 
-ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1119-vsc1.33.1/code-server1.1119-vsc1.33.1-linux-x64.tar.gz" \
-    CODESERVER="code-server1.1119-vsc1.33.1-linux-x64"
+ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1140-vsc1.33.1/code-server1.1140-vsc1.33.1-linux-x64.tar.gz" \
+    CODESERVER="code-server1.1140-vsc1.33.1-linux-x64"
 
 RUN wget ${CODESERVER_URL} && \
     tar xvf ${CODESERVER}.tar.gz && \

@@ -1,43 +1,37 @@
 ![header image](images/ai-lab-header.jpg)
 
-[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) [![](https://img.shields.io/badge/vulnerabilities%20%28snyk.io%29-0-brightgreen.svg)](https://img.shields.io/snyk/vulnerabilities/github/nvaitc/ai-lab/test/requirements.txt.svg?label=vulnerabilities%20%28snyk.io%29)
+[![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab.svg)](https://microbadger.com/images/nvaitc/ai-lab "Get your own image badge on microbadger.com") [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![GitHub last commit](https://img.shields.io/github/last-commit/nvaitc/ai-lab.svg)
 
-All-in-one AI development container for rapid prototyping, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with a wide range of machine learning and deep learning tasks by pulling and running the container on your workstation, on the cloud or within JupyterHub.
+All-in-one AI development container for rapid prototyping, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with a wide range of machine learning and deep learning tasks by pulling and running the container on your workstation, on the cloud or within JupyterHub. 
 
-## What's Included
+## What's included?
 
-* CUDA 10.0 + cuDNN 7.5 (Ubuntu 18.04.1 base)
-* Packages and libraries
-  * Deep Learning: TensorFlow, PyTorch, fast.ai, Keras, Autokeras
-  * ML: `scikit-learn`, XGBoost, `lightgbm`
-  * RAPIDS: cuDF, cuML, cuGraph
-  * CV & NLP: `opencv-contrib-python`, `nltk`, `spacy`, `flair`
-  * Distributed: OpenMPI, Horovod, Dask
-* Jupyter Notebook and JupyterLab
-  * Useful extensions + integrated TensorBoard support
-* VNC edition with full desktop environment and various RL libraries
-  * Virtual desktop (VNC) is access through Jupyter web interface, no VNC client required
+![frameworks](images/frameworks.jpg)
 
-This image can be used with NVIDIA GPUs on workstation or cloud instances, and via JupyterHub deployments.
+![ide](images/ide.jpg)
 
 ## Using the AI Lab Container
 
-Pulling the container:
+This image can be used together with NVIDIA GPUs on workstation, servers, cloud instances. It can also be used via JupyterHub deployments as no additional ports are required things like for TensorBoard.
+
+**Pulling the container**
 
 ```bash
 docker pull nvaitc/ai-lab:0.8
 # 0.6 is the last version supporting driver < 410
 ```
 
-Running an interactive shell (`bash`)
+**Running an interactive shell (`bash`)**
 
 ```bash
 nvidia-docker run --rm -it nvaitc/ai-lab bash
 ```
 
-Run Jupyter Notebook with the following options:
+**Run Jupyter Notebook**
 
-* forward port 8888 to your host machine
+The additional command line flags define the following options:
+
+* forward port `8888` to your host machine
 * mount `/home/$USER` as the working directory (`/home/jovyan`)
 
 ```bash
@@ -56,6 +50,8 @@ nvidia-docker run --rm \
  -e JUPYTER_ENABLE_LAB=yes \
  nvaitc/ai-lab:0.8
 ```
+### Additional Instructions
+
 For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
 
 This will include instructions to address common questions on [deploying to public cloud (GCP/AWS)](INSTRUCTIONS.md#public-cloud-gcp--aws-etc), as well as using [PyTorch DataLoader](INSTRUCTIONS.md#pytorch-dataloader) or troubleshooting [permission issues](INSTRUCTIONS.md#permission-issues) with some setups.
@@ -66,7 +62,7 @@ If you have any ideas or suggestions, please feel free to open an issue.
 
 **1. Can I modify/build this container myself?**
 
-Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. Some packages, like RAPIDS and `pillow-simd`, are built from source.
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. 
 
 Should you only require some extra packages, you can build your own Docker image using `nvaitc/ai-lab` as the base image. For example, to add the MXNet framework into container:
 
