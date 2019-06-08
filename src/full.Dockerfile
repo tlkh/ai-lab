@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:0.8-base
+FROM nvaitc/ai-lab:0.9-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -123,8 +123,8 @@ RUN conda install \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://s3-ap-southeast-1.amazonaws.com/nvaitc/tensorflow_gpu-1.13.1%2Bnv-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow_gpu-1.13.1+nv-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://nvaitc.s3-ap-southeast-1.amazonaws.com/tensorflow-1.14.0rc1-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-1.14.0rc1-cp36-cp36m-linux_x86_64.whl
 
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
@@ -156,9 +156,9 @@ USER root
 
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.2.tar.gz && \
-    tar zxf openmpi-3.1.2.tar.gz && \
-    cd openmpi-3.1.2 && \
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.tar.gz && \
+    tar zxf openmpi-4.0.1.tar.gz && \
+    cd openmpi-4.0.1 && \
     ./configure --enable-orterun-prefix-by-default && \
     make -j $(nproc) all && \
     make install && \

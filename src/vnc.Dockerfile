@@ -1,7 +1,7 @@
-# nvidia/cuda
-# https://hub.docker.com/r/nvidia/cuda
-FROM nvaitc/ai-lab:0.8
-#FROM nvaitc/ai-lab:latest
+# builds the extended container
+# with VNC and VS Code dev environments
+
+FROM nvaitc/ai-lab:0.9
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
