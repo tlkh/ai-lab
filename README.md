@@ -50,6 +50,14 @@ nvidia-docker run --rm \
  -e JUPYTER_ENABLE_LAB=yes \
  nvaitc/ai-lab:0.8
 ```
+**Run Batch Job**
+
+It is also perfectly possible to run a batch job with this container, be it on a workstation or as part of a larger cluster with a scheduler that can schedule Docker containers.
+
+```bash
+nvidia-docker run --rm bash nvaitc/ai-lab:0.9 -c 'echo "Hello world!" && python3 script.py'
+```
+
 ### Additional Instructions
 
 For extended instructions, please take a look at: [INSTRUCTIONS.md](INSTRUCTIONS.md).
