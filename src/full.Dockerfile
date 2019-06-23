@@ -50,34 +50,15 @@ RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-# facet
-
-USER root
-
-RUN cd /opt/ && git clone --depth 1 https://github.com/PAIR-code/facets
-
-USER $NB_UID
-
-RUN cd /opt/facets/ && jupyter nbextension install facets-dist/ --sys-prefix && \
-    export PYTHONPATH=$PYTHONPATH:/opt/facets/facets_overview/python/ && \
-    npm cache clean --force && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /tmp/* && \
-    rm -rf $HOME/.cache && \
-    rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
-
 # nvtop
 
 USER root
 
-RUN cd $HOME && \
+RUN cd /tmp/ && \
     git clone https://github.com/Syllo/nvtop.git && \
     mkdir -p nvtop/build && cd nvtop/build && \
     cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
     make && make install && \
-    cd .. && rm -rf nvtop && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
@@ -123,8 +104,8 @@ RUN conda install \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://nvaitc.s3-ap-southeast-1.amazonaws.com/tensorflow-1.14.0rc1-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-1.14.0rc1-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://nvaitc.s3-ap-southeast-1.amazonaws.com/tensorflow-1.14.0-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-1.14.0-cp36-cp36m-linux_x86_64.whl
 
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
@@ -202,11 +183,10 @@ RUN ldconfig && \
 USER $NB_UID
 
 RUN cd $HOME && \
-    pip uninstall urllib3 -y && \
-    git clone https://github.com/NVAITC/autokeras.git && \
+    pip uninstall requests urllib3 -y && \
+    git clone https://github.com/keras-team/autokeras && \
     cd autokeras/ && python setup.py install && \
     cd .. && rm -rf autokeras && \
-    pip uninstall requests urllib3 -y && \
     pip install requests urllib3 && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ai_lab_gui",
-    version="0.0.3",
+    version="0.0.4",
     author="Timothy Liu",
     author_email="timothyl@nvidia.com",
     description="Beginner's GUI for the AI Lab container",

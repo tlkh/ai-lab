@@ -30,7 +30,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" target="_blank" href="https://nvaitc.github.io/guided-labs/ai-lab-setup/#0">
+                            <a class="nav-link" target="_blank"
+                                href="https://nvaitc.github.io/guided-labs/ai-lab-setup/#0">
                                 <i class="fas fa-external-link-alt"></i> Walkthrough
                             </a>
                         </li>
@@ -67,7 +68,7 @@
                                     <li>Libraries <span class="badge badge-secondary" id="display_cuda"></span> <span
                                             class="badge badge-secondary" id="display_nccl"></span>
                                     </li>
-                                    <li>Host Bindings <span class="badge badge-secondary" id="display_port">none</span> 
+                                    <li>Host Bindings <span class="badge badge-secondary" id="display_port">none</span>
                                         <span class="badge badge-secondary" id="display_vol">none</span>
                                     </li>
                                 </ul>
@@ -105,7 +106,13 @@
                                         <input type="text" class="form-control" id="inputtag1"
                                             placeholder="default: latest" aria-describedby="tagHelp">
                                         <small id="tagHelp" class="form-text text-muted">Version of the container to
-                                            use. Default is <code>latest</code></small>
+                                            use. You must specify this.</small>
+                                        <br>
+                                        <input type="text" class="form-control" id="inputpswd1"
+                                            placeholder="default: latest" aria-describedby="pswdHelp">
+                                        <small id="pswdHelp" class="form-text text-muted">Jupyter server password. You
+                                            are highly encouraged to specify this to prevent unauthorised users from
+                                            accessing your Jupyter server. Leave blank for no authentication.</small>
                                     </div>
                                     <button type="button" id="startContainer"
                                         class="btn btn-outline-success btn-block"><i id="play_icon"

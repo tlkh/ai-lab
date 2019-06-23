@@ -13,7 +13,7 @@ class DockerCTL(object):
     def pull_cnt(self, tag):
         self.client.images.pull(self.cnt_name+":"+tag)
 
-    def start_cnt(self, port, vol, tag):
+    def start_cnt(self, port, vol, tag, passwd=""):
         try:
             container = self.client.containers.get("ai-lab-gui")
             self.stop_cnt()
@@ -25,8 +25,8 @@ class DockerCTL(object):
         ports_dict = {'8888/tcp': port}
         vols_dict = {vol: {'bind': '/home/jovyan', 'mode': 'rw'}}
         container = self.client.containers.run(cnt_name, auto_remove=True, detach=True,
-                                               name="ai-lab-gui",
-                                               ports=ports_dict, remove=True, shm_size="1g",
+                                               name="ai-lab-gui", environment=['NB_PASSWD="'+passwd+'"']
+                                               ports=ports_dict, remove=True, shm_size="2g",
                                                volumes=vols_dict)
         return container
 
@@ -60,8 +60,9 @@ def start_server():
         port = flask.request.args.get("port")
         vol = flask.request.args.get("vol")
         tag = flask.request.args.get("tag")
+        passwd = flask.request.args.get("passwd")
 
-        container = dctl.start_cnt(port, vol, tag)
+        container = dctl.start_cnt(port, vol, tag, passwd)
 
         print("[INFO  ] Started container")
 

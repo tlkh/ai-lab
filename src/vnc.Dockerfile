@@ -113,7 +113,7 @@ USER $NB_USER
 RUN pip install --no-cache-dir \
     keras-rl pyopengl \
     gym[atari] ray[rllib] roboschool \
-    jupyter-vscode-server pysc2 \
+    jupyter-vscode-server jedi pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
     rm -rf /tmp/* && \

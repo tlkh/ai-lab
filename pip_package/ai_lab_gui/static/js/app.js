@@ -2,6 +2,7 @@
 var inputport1 = document.getElementById("inputport1");
 var inputvolume1 = document.getElementById("inputvolume1");
 var inputtag1 = document.getElementById("inputtag1");
+var inputpswd1 = document.getElementById("inputpswd1");
 
 var display_port = document.getElementById("display_port");
 var display_vol = document.getElementById("display_vol");
@@ -55,6 +56,7 @@ document.getElementById("startContainer").onclick = function () {
     if (tag_version == "") {
         tag_version = "latest";
     }
+    var user_pswd = inputpswd.value;
     var volume_mount = inputvolume1.value;
     if (volume_mount == "") {
         alert("Volume mount cannot be empty");
@@ -67,7 +69,7 @@ document.getElementById("startContainer").onclick = function () {
         Http.onreadystatechange = (e) => {
             var response = JSON.parse(Http.responseText);
             launch_button_text.innerHTML = "Launching container"
-            var path = path_root + "?port=" + port_mount + "&vol=" + volume_mount + "&tag=" + tag_version;
+            var path = path_root + "?port=" + port_mount + "&vol=" + volume_mount + "&tag=" + tag_version + "&passwd=" + user_pswd;
             console.log(path);
             post(path);
         }
@@ -90,15 +92,14 @@ function update_display() {
     Http.open("GET", url);
     Http.send();
     Http.onreadystatechange = (e) => {
-        //console.log(Http.responseText)
         var response = JSON.parse(Http.responseText);
-        display_port.innerHTML = "port:"+response["port"];
+        display_port.innerHTML = "port:" + response["port"];
         port = response["port"];
         open_nb.href = "http://" + window.location.hostname + ":" + port + "/tree"
         open_lab.href = "http://" + window.location.hostname + ":" + port + "/lab"
 
         var volume_mount = response["vol"].toString();
-        display_vol.innerHTML = "volume mount:"+volume_mount.split(":")[0];
+        display_vol.innerHTML = "volume mount:" + volume_mount.split(":")[0];
 
         var logs = response["logs"].toString().replace(/'/g, "").replace(/\\n/g, "<br>");
         display_output.innerHTML = "<pre><code>" + logs.substring(logs.length - 4000, logs.length) + "</code></pre>";
@@ -137,7 +138,7 @@ function update_display() {
         if (volume_mount == "none") {
             display_cmd.innerHTML = "No container running";
         } else {
-            display_cmd.innerHTML = "<code>nvidia-docker run --rm -p " + port + ":8888 -v " + volume_mount.split(":")[0] + ":/home/jovyan " + image + "</code>";
+            display_cmd.innerHTML = "<code>nvidia-docker run --rm --shm-size='2g' -p " + port + ":8888 -v " + volume_mount.split(":")[0] + ":/home/jovyan " + image + "</code>";
         }
 
         display_cuda.innerHTML = response["cuda"];
