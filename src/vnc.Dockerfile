@@ -156,8 +156,8 @@ RUN jupyter serverextension enable  --py --sys-prefix nbnovnc && \
 
 USER root
 
-ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1140-vsc1.33.1/code-server1.1140-vsc1.33.1-linux-x64.tar.gz" \
-    CODESERVER="code-server1.1140-vsc1.33.1-linux-x64"
+ENV CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1156-vsc1.33.1/code-server1.1156-vsc1.33.1-linux-x64.tar.gz" \
+    CODESERVER="code-server1.1156-vsc1.33.1-linux-x64"
 
 RUN wget ${CODESERVER_URL} && \
     tar xvf ${CODESERVER}.tar.gz && \

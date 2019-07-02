@@ -18,11 +18,6 @@ RUN conda install -c pytorch --quiet --yes \
       'pytorch' \
       'torchvision' \
       'cudatoolkit=10.0' && \
-    conda install -c pytorch -c fastai --quiet --yes \
-      'python=3.6' \
-      'numpy=1.16.1' \
-      'fastai' \
-      'dataclasses' && \
     pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
     pip uninstall pillow -y && \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
