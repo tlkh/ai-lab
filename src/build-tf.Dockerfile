@@ -1,4 +1,4 @@
-FROM nvaitc/ai-lab:0.9
+FROM nvaitc/ai-lab:19.07
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Install all OS dependencies
 
 RUN apt-get update && \
-    apt-get install -yq --no-install-recommends --no-upgrade \
+    apt-get install -yq \
     python3-dev \
     python3-numpy \
     python3-six \

@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:0.9-base
+FROM nvaitc/ai-lab:19.07-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -18,7 +18,12 @@ RUN conda install -c pytorch --quiet --yes \
       'pytorch' \
       'torchvision' \
       'cudatoolkit=10.0' && \
-    pip install --no-cache-dir torchtext pytorch-pretrained-bert && \
+    pip install --no-cache-dir torchtext pytorch-transformers && \
+    conda install -c pytorch -c fastai --quiet --yes \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'fastai' \
+      'dataclasses' && \
     pip uninstall pillow -y && \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     conda clean -tipsy && \
@@ -33,7 +38,8 @@ RUN conda install -c pytorch --quiet --yes \
 
 USER $NB_UID
 
-RUN git clone --depth 1 https://github.com/NVIDIA/apex && \
+RUN cd /tmp/ && \
+    git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
     pip install -v --no-cache-dir \
      --global-option="--cpp_ext" --global-option="--cuda_ext" \
@@ -54,6 +60,7 @@ RUN cd /tmp/ && \
     mkdir -p nvtop/build && cd nvtop/build && \
     cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
     make && make install && \
+    cd /tmp/ && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
@@ -97,6 +104,18 @@ RUN conda install \
 
 # install our own build of TensorFlow
 
+USER root
+
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+    protobuf-compiler \
+    libnvinfer5=5.1.5-1+cuda10.0 \
+    libnvinfer-dev=5.1.5-1+cuda10.0 \
+    && apt-get autoremove -y \
+    && apt-get clean && \
+    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
 USER $NB_UID
 
 ENV TENSORFLOW_URL=https://nvaitc.s3-ap-southeast-1.amazonaws.com/tensorflow-1.14.0-cp36-cp36m-linux_x86_64.whl \
@@ -130,6 +149,20 @@ RUN cd $HOME/ && \
 
 USER root
 
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+    openssh-client \
+    openssh-server \
+    libopenmpi-dev \
+    libomp-dev \
+    librdmacm1 \
+    libibverbs1 \
+    ibverbs-providers \
+    && apt-get autoremove -y \
+    && apt-get clean && \
+    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
     wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.tar.gz && \
@@ -139,7 +172,7 @@ RUN mkdir /tmp/openmpi && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
-    rm -rf /tmp/openmpi && \
+    cd /tmp/* && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
@@ -172,22 +205,6 @@ RUN ldconfig && \
     cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
-
-# autokeras
-
-USER $NB_UID
-
-RUN cd $HOME && \
-    pip uninstall requests urllib3 -y && \
-    git clone https://github.com/keras-team/autokeras && \
-    cd autokeras/ && python setup.py install && \
-    cd .. && rm -rf autokeras && \
-    pip install requests urllib3 && \
-    rm -rf /tmp/* && \
-    rm -rf $HOME/.cache && \
-    rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
 
 # Switch back to jovyan to avoid accidental container runs as root
 

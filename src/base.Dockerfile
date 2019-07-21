@@ -39,6 +39,8 @@ RUN apt-get update && \
     texlive-latex-base \
     texlive-latex-extra \
     texlive-xetex \
+    libjpeg-dev \
+    libpng-dev  \
     ffmpeg \
     graphviz\
     git \
@@ -48,26 +50,19 @@ RUN apt-get update && \
     unzip \
     libncurses5-dev \
     libncursesw5-dev \
-    libopenmpi-dev \
     libopenblas-base \
     libopenblas-dev \
-    libomp-dev \
-    libjpeg-dev \
-    libpng-dev \
     libboost-all-dev \
     libsdl2-dev \
-    openssh-client \
-    openssh-server \
     swig \
     pkg-config \
     g++ \
     zlib1g-dev \
-    protobuf-compiler \
-    libosmesa6-dev \
     patchelf \
-    xvfb \
     zsh \
     sudo \
+    && apt-get purge emacs -y \
+    && apt-get autoremove -y \
     && apt-get clean && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
@@ -122,22 +117,25 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
     $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
-    $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
+    #$CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     echo "Installing packages" && \
-    conda install -n root conda-build && \
+    conda install -n root conda-build=3.18.* && \
+    pip install --no-cache-dir setuptools -U && \
     conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
       'python=3.6' \
       'numpy=1.16.1' \
       'cudatoolkit=10.0' \
       'tk' \
       'tini' \
-      'blas=*=openblas' \
+      'blas=*=openblas' && \
+    conda install --quiet --yes \
       'notebook=5.7.*' \
       'jupyterhub=1.0.*' \
-      'jupyterlab=0.35.*' \
+      'jupyterlab=1.*' \
+      'widgetsnbextension' \
       'jupyter_contrib_nbextensions' \
-      'ipywidgets=7.4.*' && \
+      'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
     pip uninstall opencv-python -y && \
@@ -147,9 +145,16 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     jupyter notebook --generate-config && \
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
+    echo "Installing @jupyter-widgets/jupyterlab-manager" && \
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    jupyter labextension install jupyterlab-server-proxy && \
-    jupyter labextension install @jupyterlab/hub-extension && \
+    echo "Installing @jupyterlab/toc" && \
+    jupyter labextension install @jupyterlab/toc && \
+    echo "Installing @jupyterlab/git" && \
+    jupyter labextension install @jupyterlab/git && \
+    pip install --no-cache-dir --upgrade jupyterlab-git && \
+    jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
+    #echo "Installing jupyterlab-server-proxy" && \
+    #jupyter labextension install jupyterlab-server-proxy && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -180,15 +185,20 @@ COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
 
+COPY README.ipynb /home/$NB_USER/
+
 RUN fix-permissions /etc/jupyter/ && \
     usermod -s /bin/bash $NB_USER
 
 USER root
 
+RUN mkdir /results/ && \
+    chmod -R 777 /results/
+
 ENV NB_PASSWD="" \
     SUDO_PASSWD=jovyan
 
-RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd jovyan)
+RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
 
 # Switch back to jovyan to avoid accidental container runs as root
 

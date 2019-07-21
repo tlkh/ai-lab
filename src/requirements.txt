@@ -41,10 +41,3 @@ keract
 imgaug
 Augmentor
 textblob
-preprocessing
-flashtext
-delorean
-missingno
-callgraph
-pymagnitude
-keras-mri

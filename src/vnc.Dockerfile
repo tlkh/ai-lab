@@ -1,7 +1,7 @@
 # builds the extended container
 # with VNC and VS Code dev environments
 
-FROM nvaitc/ai-lab:0.9
+FROM nvaitc/ai-lab:19.07
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -69,12 +69,13 @@ RUN apt-get update && \
     add-apt-repository ppa:ubuntu-desktop/ubuntu-make -y && \
     apt-get update && \
     apt-get install --no-upgrade -yq \
+    xvfb libosmesa6-dev \
     mesa-common-dev libgl1-mesa-dev freeglut3-dev libglu1-mesa-dev \
     libc6-dev libglu1 libsm6 libxv1 \
     novnc supervisor xinit ubuntu-make \
     xubuntu-desktop idle3 && \
     apt-get purge -yq \
-    libreoffice* thunderbird* pidgin* \
+    libreoffice* thunderbird* pidgin* sgt-puzzles* \
     gnome* blueman* bluez* unity* cups* totem* \
     empathy* evolution* rhythmbox* shotwell* \
     account-plugin-* example-content* duplicity* \
@@ -104,7 +105,7 @@ RUN cd /opt/ && \
     git clone --depth 1 https://github.com/novnc/noVNC && \
     cd noVNC/utils && git clone --depth 1 https://github.com/novnc/websockify websockify
 
-RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
+#RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
 
 WORKDIR /home/$NB_USER
 
@@ -116,6 +117,8 @@ RUN pip install --no-cache-dir \
     jupyter-vscode-server jedi pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
+    pip uninstall opencv-python opencv-python-headless -y && \
+    pip install --no-cache-dir opencv-contrib-python -U && \ 
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
