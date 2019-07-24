@@ -55,6 +55,9 @@ RUN cd $HOME/ && \
 
 USER root
 
+ENV HOROVOD_GPU_ALLREDUCE=NCCL \
+    HOROVOD_WITH_TENSORFLOW=1
+
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
     openssh-client \
@@ -66,10 +69,7 @@ RUN apt-get update && \
     ibverbs-providers \
     && apt-get autoremove -y \
     && apt-get clean && \
-    rm -rf /tmp/* && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
-RUN mkdir /tmp/openmpi && \
+    mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
     wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.tar.gz && \
     tar zxf openmpi-4.0.1.tar.gz && \
@@ -78,17 +78,16 @@ RUN mkdir /tmp/openmpi && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
+    ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
     cd /tmp/* && \
     rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs
-
-ENV HOROVOD_GPU_ALLREDUCE=NCCL \
-    HOROVOD_WITH_TENSORFLOW=1
+USER $NB_UID
 
 RUN pip install --no-cache-dir horovod && \
     rm -rf /tmp/* && \
@@ -96,6 +95,8 @@ RUN pip install --no-cache-dir horovod && \
     rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
+
+USER root
 
 RUN ldconfig && \
     mv /usr/local/bin/mpirun /usr/local/bin/mpirun.real && \

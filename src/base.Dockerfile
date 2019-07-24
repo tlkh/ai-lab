@@ -61,7 +61,7 @@ RUN apt-get update && \
     patchelf \
     zsh \
     sudo \
-    && apt-get purge emacs -y \
+    && apt-get purge jed -y \
     && apt-get autoremove -y \
     && apt-get clean && \
     rm -rf /tmp/* && \
@@ -111,7 +111,8 @@ WORKDIR $HOME
 
 ADD requirements.txt requirements.txt
 
-RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
+RUN cd /tmp/ && \
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
@@ -153,12 +154,18 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERS
     jupyter labextension install @jupyterlab/git && \
     pip install --no-cache-dir --upgrade jupyterlab-git && \
     jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
-    #echo "Installing jupyterlab-server-proxy" && \
+    echo "Installing jupyterlab-server-proxy" && \
     #jupyter labextension install jupyterlab-server-proxy && \
+    cd /tmp/ && \
+    git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
+    cd jupyter-server-proxy/jupyterlab-server-proxy && \
+    npm install && npm run build && jupyter labextension link . && \
+    npm run build && jupyter lab build && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
     npm cache clean --force && \
+    cd /tmp/ && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
@@ -192,13 +199,12 @@ RUN fix-permissions /etc/jupyter/ && \
 
 USER root
 
-RUN mkdir /results/ && \
-    chmod -R 777 /results/
-
 ENV NB_PASSWD="" \
     SUDO_PASSWD=jovyan
 
-RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
+RUN mkdir /results/ && \
+    chmod -R 777 /results/ && \
+    echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
 
 # Switch back to jovyan to avoid accidental container runs as root
 

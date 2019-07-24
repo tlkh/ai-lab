@@ -5,6 +5,8 @@ FROM nvaitc/ai-lab:19.07
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},display
+
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -20,12 +22,12 @@ ENV CONDA_DIR=/opt/conda \
 
 ENV PATH=$CONDA_DIR/bin:$PATH \
     HOME=/home/$NB_USER \
-    TURBOVNC_VERSION=2.2.1 \
-    VIRTUALGL_VERSION=2.5.2 \
-    LIBJPEG_VERSION=1.5.2 \
+    TURBOVNC_VERSION=2.2.2 \
+    VIRTUALGL_VERSION=2.6.2 \
+    LIBJPEG_VERSION=2.0.2 \
     WEBSOCKIFY_VERSION=0.8.0 \
-    NOVNC_VERSION=1.0.0 \
-    LIBGLVND_VERSION=0.1.1
+    NOVNC_VERSION=1.1.0 \
+    LIBGLVND_VERSION=master
 
 COPY xorg.conf.nvidia-headless /etc/X11/xorg.conf
 
@@ -41,19 +43,27 @@ RUN apt-get update && \
     python \
     libxext-dev \
     libx11-dev \
+    libc6-dev \
+    libglu1 \
+    libsm6 \
+    libxv1 \
+    x11-xkb-utils \
+    xauth \
+    xfonts-base \
+    xkb-data \
     x11proto-gl-dev && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 WORKDIR /opt/
 
-RUN git clone --depth 1 --branch="${LIBGLVND_VERSION}" https://github.com/NVIDIA/libglvnd.git && \
+RUN cd /opt/ && \
+    git clone --depth 1 --branch="${LIBGLVND_VERSION}" https://github.com/NVIDIA/libglvnd.git && \
     cd libglvnd && ./autogen.sh && \
     ./configure --prefix=/usr/local --libdir=/usr/local/lib/x86_64-linux-gnu && \
     make -j install-strip && \
     find /usr/local/lib/x86_64-linux-gnu -type f -name 'lib*.la' -delete && \
     echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
-    echo '/usr/local/lib/i386-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
     ldconfig && \
     rm -rf /opt/libglvnd && \
     rm -rf /tmp/* && \
@@ -62,6 +72,8 @@ RUN git clone --depth 1 --branch="${LIBGLVND_VERSION}" https://github.com/NVIDIA
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
+COPY 10_nvidia.json /usr/local/share/glvnd/egl_vendor.d/10_nvidia.json
+
 ENV LD_LIBRARY_PATH /usr/local/lib/x86_64-linux-gnu:/usr/local/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
 RUN apt-get update && \
@@ -69,9 +81,8 @@ RUN apt-get update && \
     add-apt-repository ppa:ubuntu-desktop/ubuntu-make -y && \
     apt-get update && \
     apt-get install --no-upgrade -yq \
-    xvfb libosmesa6-dev \
+    xvfb libosmesa6-dev mesa-utils \
     mesa-common-dev libgl1-mesa-dev freeglut3-dev libglu1-mesa-dev \
-    libc6-dev libglu1 libsm6 libxv1 \
     novnc supervisor xinit ubuntu-make \
     xubuntu-desktop idle3 && \
     apt-get purge -yq \
