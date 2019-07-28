@@ -14,11 +14,12 @@ USER root
 
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
-    protobuf-compiler \
-    libnvinfer5=5.1.5-1+cuda10.0 \
-    libnvinfer-dev=5.1.5-1+cuda10.0 \
-    && apt-get autoremove -y \
-    && apt-get clean && \
+      libcudnn7-dev=7.6.0.64-1+cuda10.0 \
+      protobuf-compiler \
+      libnvinfer5=5.1.5-1+cuda10.0 \
+      libnvinfer-dev=5.1.5-1+cuda10.0 && \
+    apt-get autoremove -y && \
+    apt-get clean && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -60,15 +61,15 @@ ENV HOROVOD_GPU_ALLREDUCE=NCCL \
 
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
-    openssh-client \
-    openssh-server \
-    libopenmpi-dev \
-    libomp-dev \
-    librdmacm1 \
-    libibverbs1 \
-    ibverbs-providers \
-    && apt-get autoremove -y \
-    && apt-get clean && \
+      openssh-client \
+      openssh-server \
+      libopenmpi-dev \
+      libomp-dev \
+      librdmacm1 \
+      libibverbs1 \
+      ibverbs-providers && \
+    apt-get autoremove -y && \
+    apt-get clean && \
     mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
     wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.tar.gz && \
@@ -87,9 +88,25 @@ RUN apt-get update && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-USER $NB_UID
+USER root
 
-RUN pip install --no-cache-dir horovod && \
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-libraries-dev-$CUDA_PKG_VERSION \
+      cuda-minimal-build-$CUDA_PKG_VERSION \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    pip install --no-cache-dir horovod && \
+    apt-get remove -yq \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-libraries-dev-$CUDA_PKG_VERSION \
+      cuda-minimal-build-$CUDA_PKG_VERSION \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \

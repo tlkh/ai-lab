@@ -36,31 +36,31 @@ RUN conda install -c pytorch --quiet --yes \
 
 # apex
 
-USER $NB_UID
+USER root
 
-RUN cd /tmp/ && \
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+    cuda-nvml-dev-$CUDA_PKG_VERSION \
+    cuda-command-line-tools-$CUDA_PKG_VERSION \
+    cuda-libraries-dev-$CUDA_PKG_VERSION \
+    cuda-minimal-build-$CUDA_PKG_VERSION \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    cd /tmp/ && \
     git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
     pip install -v --no-cache-dir \
      --global-option="--cpp_ext" --global-option="--cuda_ext" \
      . && \
     cd .. && rm -rf apex && \
-    rm -rf /tmp/* && \
-    rm -rf $HOME/.cache && \
-    rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
-
-# nvtop
-
-USER root
-
-RUN cd /tmp/ && \
-    git clone https://github.com/Syllo/nvtop.git && \
-    mkdir -p nvtop/build && cd nvtop/build && \
-    cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
-    make && make install && \
-    cd /tmp/ && \
+    apt-get remove -yq \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-libraries-dev-$CUDA_PKG_VERSION \
+      cuda-minimal-build-$CUDA_PKG_VERSION \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
@@ -106,8 +106,25 @@ ENV HOROVOD_GPU_ALLREDUCE=NCCL \
     HOROVOD_WITH_TENSORFLOW=1 \
     HOROVOD_WITH_PYTORCH=1
 
-RUN pip uninstall horovod -y && \
+USER root
+
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-libraries-dev-$CUDA_PKG_VERSION \
+      cuda-minimal-build-$CUDA_PKG_VERSION \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
     pip install --no-cache-dir horovod && \
+    apt-get remove -yq \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-libraries-dev-$CUDA_PKG_VERSION \
+      cuda-minimal-build-$CUDA_PKG_VERSION \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
