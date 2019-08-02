@@ -102,7 +102,6 @@ RUN apt-get update && \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      cuda-minimal-build-$CUDA_PKG_VERSION \
       libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
     apt-get autoremove -y && \
     apt-get clean && \

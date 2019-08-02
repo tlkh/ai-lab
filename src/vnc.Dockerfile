@@ -51,9 +51,23 @@ RUN apt-get update && \
     xauth \
     xfonts-base \
     xkb-data \
-    x11proto-gl-dev && \
+    x11proto-gl-dev \
+    # install Nsight profiling tools 
+    openjdk-8-jre \
+    cuda-visual-tools-10-0 \
+    cuda-nvprof-10-0 && \
+    cd /tmp/ && \
+    wget https://developer.nvidia.com/rdp/assets/nsight-systems-2019-3-linux-deb-installer -O nsight.deb && \
+    dpkg -i nsight.deb && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    cd && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
+RUN echo 2 | update-alternatives --config java
+
+#COPY nsight-compute.desktop /usr/share/applications/nsight-compute.desktop
 
 WORKDIR /opt/
 
@@ -115,8 +129,6 @@ RUN /opt/VirtualGL/bin/vglserver_config -config +s +f +t
 RUN cd /opt/ && \
     git clone --depth 1 https://github.com/novnc/noVNC && \
     cd noVNC/utils && git clone --depth 1 https://github.com/novnc/websockify websockify
-
-#RUN chmod 777 /opt/conda/lib/python3.6/site-packages/easy-install.pth
 
 WORKDIR /home/$NB_USER
 

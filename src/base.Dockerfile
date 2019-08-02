@@ -59,7 +59,6 @@ RUN apt-get update && \
     g++ \
     zlib1g-dev \
     patchelf \
-    zsh \
     sudo \
     && apt-get purge jed -y \
     && apt-get autoremove -y \
@@ -183,9 +182,6 @@ ENTRYPOINT ["tini", "-g", "--"]
 CMD ["start-notebook.sh"]
 
 # Add local files as late as possible to avoid cache busting
-
-COPY user_setup /opt/user_setup
-ENV USER_SETUP /opt/user_setup/setup.sh
 
 COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/

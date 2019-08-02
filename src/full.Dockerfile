@@ -56,7 +56,6 @@ RUN apt-get update && \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      cuda-minimal-build-$CUDA_PKG_VERSION \
       libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
     apt-get autoremove -y && \
     apt-get clean && \
@@ -120,11 +119,26 @@ RUN apt-get update && \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      cuda-minimal-build-$CUDA_PKG_VERSION \
       libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
+
+# nvtop
+
+USER root
+
+RUN cd /tmp/ && \
+    git clone --depth 1 https://github.com/Syllo/nvtop.git && \
+    mkdir -p nvtop/build && cd nvtop/build && \
+    cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
+    make && make install && \
+    cd && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
