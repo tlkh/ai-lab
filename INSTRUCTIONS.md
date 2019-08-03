@@ -201,6 +201,10 @@ Horovod works fine, but you should add `--privileged` flag to the docker `run co
 
 Performance profiling can be done entirely within the Docker container with the VNC version of the container.
 
+![nsight](images/nsight.jpg)
+
+To launch a container with the VNC desktop environment and NVIDIA Nsight profiler tools installed, you can use the following command. Note that we need to disable some security features with `--security-opt seccomp=unconfined` to enable the system calls required for the profiling operation.
+
 ```shell
 nvidia-docker run --rm \
   --security-opt seccomp=unconfined 
