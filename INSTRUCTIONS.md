@@ -4,7 +4,7 @@ This page will give a more detailed walkthroughs on using this image.
 
 To begin **please make sure you have the [pre-requisites](#pre-requisites) already configured on your system**. Then, pull the latest version of the image with:
 
-```bash
+```shell
 docker pull nvaitc/ai-lab:19.07
 ```
 
@@ -16,17 +16,18 @@ These instructions will apply to any workstation/server running Ubuntu 16.04 or 
 * [Interactive Shell (CLI)](#0-interactive-shell-cli)
 * [Jupyter Notebook/Lab](#1-jupyter-notebook)
 * [Virtual Desktop](#2-virtual-desktop)
-* Additional Notes on specific issues
+* Additional Notes on specific topics
   * [Permission Issues](#permission-issues)
   * [PyTorch Dataloader](#pytorch-dataloader)
   * [Public Cloud (GCP/AWS etc.)](#public-cloud-gcp--aws-etc)
   * [Horovod](#horovod)
+  * [Profiling Performance with NSight](#profiling-performance-with-nsight)
 
 ## Pre-requisites
 
 You will need to have NVIDIA drivers>=410, Docker and the NVIDIA Container Runtime (`nvidia-docker`) installed. For a quick and dirty way to ensure this, run the following (no warranty provided, but I use this myself all the time)
 
-```bash
+```shell
 sudo su root
 apt install curl -y
 curl https://getcuda.ml/ubuntu.sh | bash
@@ -40,7 +41,7 @@ If you face problems, you may also view a [screen recording](https://www.youtube
 
 You can use the container in interactive mode (command line interface).
 
-```bash
+```shell
 nvidia-docker run --rm -it nvaitc/ai-lab:19.07 bash
 ```
 
@@ -52,7 +53,7 @@ Note that the default user in the container is always `jovyan`. ([Who is Jovyan?
 
 We can clone our `quickstart-notebooks` repository and play around with the sample notebooks for several deep learning frameworks.
 
-```bash
+```shell
 # clone the folder to /home/$USER/quickstart-notebooks
 git clone https://github.com/NVAITC/quickstart-notebooks
 ```
@@ -90,13 +91,13 @@ If you are facing problems and would like to view a screen recording of the proc
 
 For virtual desktop, you will need to pull the latest VNC version of the container image
 
-```bash
+```shell
 docker pull nvaitc/ai-lab:19.07-vnc
 ```
 
 Next, you will need to start the image as per normal
 
-```bash
+```shell
 nvidia-docker run --rm --ipc=host \
   -p 8888:8888 \
   -v /home/$USER/work:/home/jovyan
@@ -144,7 +145,7 @@ On some setups, you might run into permission issues as the container user (`jov
 
 For example:
 
-```
+```shell
 cd /home/$USER/
 
 # create the folder
@@ -157,9 +158,17 @@ nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-l
 
 #### PyTorch DataLoader
 
-When using PyTorch DataLoader, Docker's default shared memory allocation is too low to allow for more than a few threads, and results in killed processes. To remedy, you will need to add an additional flag (`--shm-size=1g`) to your `docker run` command to allocate 1GB of shared memory.
+When using PyTorch DataLoader, Docker's default shared memory allocation is too low to allow for more than a few threads, and results in killed processes. To remedy, you will need to add an additional flag (`--shm-size=1g`) to your `docker run` command to allocate 1GB of shared memory. An alternative would be to set `--ipc=host`.
 
-The result command would look something like `nvidia-docker run --rm --shm-size=1g -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab` .
+The result command would look something like:
+
+```shell
+nvidia-docker run --rm \
+  --shm-size=1g \
+  -p 8888:8888 \
+  -v /home/$USER/work:/home/jovyan \
+  nvaitc/ai-lab
+```
 
 #### Public Cloud (GCP / AWS etc.)
 
@@ -186,5 +195,18 @@ Since Jupyter notebook uses a non-standard port (`8888` is used by default), you
 
 #### Horovod
 
-Horovod works fine, but you should add `--privileged` to avoid some warning messages.
+Horovod works fine, but you should add `--privileged` flag to the docker `run command` to avoid some warning messages.
 
+### Profiling Performance with NSight
+
+Performance profiling can be done entirely within the Docker container with the VNC version of the container.
+
+```shell
+nvidia-docker run --rm \
+  --security-opt seccomp=unconfined 
+  --ipc=host
+  --priviledged
+  -v /home/$USER/work:/home/jovyan
+  -p 8888:8888
+  nvaitc/ai-lab:19.07-vnc
+```
