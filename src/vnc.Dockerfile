@@ -55,6 +55,7 @@ RUN apt-get update && \
     # install Nsight profiling tools 
     openjdk-8-jre \
     cuda-visual-tools-10-0 \
+    cuda-nsight-compute-10-1 \
     cuda-nvprof-10-0 && \
     cd /tmp/ && \
     wget https://developer.nvidia.com/rdp/assets/nsight-systems-2019-3-linux-deb-installer -O nsight.deb && \
@@ -101,8 +102,8 @@ RUN apt-get update && \
     xubuntu-desktop idle3 && \
     apt-get purge -yq \
     libreoffice* thunderbird* pidgin* sgt-puzzles* \
-    gnome* blueman* bluez* unity* cups* totem* \
-    empathy* evolution* rhythmbox* shotwell* \
+    gnome* blueman* bluez* unity* cups* totem* xfce4-dict* \
+    empathy* evolution* rhythmbox* shotwell* xfburn* \
     account-plugin-* example-content* duplicity* \
     ttf-arabeyes ttf-arphic-uming ttf-indic-fonts-core \
     ttf-malayalam-fonts ttf-thai-tlwg ttf-unfonts-core \
@@ -117,6 +118,7 @@ RUN apt-get update && \
     sed -i 's/$host:/unix:/g' /opt/TurboVNC/bin/vncserver && \
     apt-get autoremove -y && \
     apt-get clean && \
+    cd && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \

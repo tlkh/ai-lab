@@ -31,7 +31,6 @@ ENV TENSORFLOW_URL=https://github.com/NVAITC/tensorflow-patched/releases/downloa
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
-    pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
       jupyter-tensorboard \
       tensorflow_datasets \
@@ -39,6 +38,8 @@ RUN cd $HOME/ && \
       tensorflow-probability \
       tensorflow-model-optimization \
       && \
+    pip uninstall tensorflow tensorflow-gpu -y && \
+    pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \

@@ -102,7 +102,7 @@ nvidia-docker run --rm --ipc=host \
   -p 8888:8888 \
   -v /home/$USER/work:/home/jovyan
   nvaitc/ai-lab:19.07-vnc
-``` 
+```
 
 The `--ipc=host` flag is needed for certain applications, such as Firefox, to function properly.
 
@@ -199,11 +199,7 @@ Horovod works fine, but you should add `--privileged` flag to the docker `run co
 
 ### Profiling Performance with NSight
 
-Performance profiling can be done entirely within the Docker container with the VNC version of the container.
-
-![nsight](images/nsight.jpg)
-
-To launch a container with the VNC desktop environment and NVIDIA Nsight profiler tools installed, you can use the following command. Note that we need to disable some security features with `--security-opt seccomp=unconfined` to enable the system calls required for the profiling operation.
+Performance profiling can be done entirely within the Docker container with the VNC version of the container. To launch a container with the VNC desktop environment and NVIDIA Nsight profiling tools installed, you can use the following command. Note that we need to disable some security features with `--security-opt seccomp=unconfined` to enable the system calls required for the profiling operation.
 
 ```shell
 nvidia-docker run --rm \
@@ -214,3 +210,10 @@ nvidia-docker run --rm \
   -p 8888:8888
   nvaitc/ai-lab:19.07-vnc
 ```
+
+Here are some screenshots of the NVIDIA Nsight Compute and Nsight Systems profiling tools running in the virtual desktop environment. Nsight Compute is used to profile deep into individual GPU kernels, while Nsight Systems is used to profile overall performance.
+
+![nsight](/home/timothy/ai-lab/images/nsight_compute.jpg)
+
+![nsight](/home/timothy/ai-lab/images/nsight_system.jpg)
+
