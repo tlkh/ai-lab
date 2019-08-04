@@ -213,7 +213,7 @@ nvidia-docker run --rm \
 
 Here are some screenshots of the NVIDIA Nsight Compute and Nsight Systems profiling tools running in the virtual desktop environment. Nsight Compute is used to profile deep into individual GPU kernels, while Nsight Systems is used to profile overall performance.
 
-![nsight](/home/timothy/ai-lab/images/nsight_compute.jpg)
+![nsight](images/nsight_compute.jpg)
 
-![nsight](/home/timothy/ai-lab/images/nsight_system.jpg)
+![nsight](images/nsight_system.jpg)
 
