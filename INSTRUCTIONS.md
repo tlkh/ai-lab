@@ -100,7 +100,7 @@ Next, you will need to start the image as per normal
 ```shell
 nvidia-docker run --rm --ipc=host \
   -p 8888:8888 \
-  -v /home/$USER/work:/home/jovyan
+  -v /home/$USER/work:/home/jovyan \
   nvaitc/ai-lab:19.07-vnc
 ```
 
@@ -199,15 +199,15 @@ Horovod works fine, but you should add `--privileged` flag to the docker `run co
 
 ### Profiling Performance with NSight
 
-Performance profiling can be done entirely within the Docker container with the VNC version of the container. To launch a container with the VNC desktop environment and NVIDIA Nsight profiling tools installed, you can use the following command. Note that we need to disable some security features with `--security-opt seccomp=unconfined` to enable the system calls required for the profiling operation.
+Performance profiling can be done entirely within the Docker container with the VNC version of the container. To launch a container with the VNC desktop environment and NVIDIA Nsight profiling tools installed, you can use the following command. Note that we need to disable some security features with `--security-opt seccomp=unconfined` to enable the system calls required for the profiling operation. `--ipc=host` improves the stability of some heavy GUI applications and `--priviledged` is also recommended to be enabled if Horovod is being used.
 
 ```shell
 nvidia-docker run --rm \
-  --security-opt seccomp=unconfined 
-  --ipc=host
-  --priviledged
-  -v /home/$USER/work:/home/jovyan
-  -p 8888:8888
+  --security-opt seccomp=unconfined \
+  --ipc=host \
+  --priviledged \
+  -v /home/$USER/work:/home/jovyan \
+  -p 8888:8888 \
   nvaitc/ai-lab:19.07-vnc
 ```
 
