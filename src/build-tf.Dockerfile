@@ -10,6 +10,11 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get install -yq \
+    cuda-nvml-dev-$CUDA_PKG_VERSION \
+    cuda-command-line-tools-$CUDA_PKG_VERSION \
+    cuda-libraries-dev-$CUDA_PKG_VERSION \
+    cuda-minimal-build-$CUDA_PKG_VERSION \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
     python3-dev \
     python3-numpy \
     python3-six \
