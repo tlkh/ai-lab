@@ -1,7 +1,7 @@
 # builds the extended container
 # with VNC and VS Code dev environments
 
-FROM nvaitc/ai-lab:19.07
+FROM nvaitc/ai-lab:19.08
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -57,9 +57,6 @@ RUN apt-get update && \
     cuda-visual-tools-10-0 \
     cuda-nsight-compute-10-1 \
     cuda-nvprof-10-0 && \
-    cd /tmp/ && \
-    wget https://developer.nvidia.com/rdp/assets/nsight-systems-2019-3-linux-deb-installer -O nsight.deb && \
-    dpkg -i nsight.deb && \
     apt-get autoremove -y && \
     apt-get clean && \
     cd && \

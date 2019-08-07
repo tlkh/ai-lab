@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAG=19.07
+TAG=19.08
 
 cd src
 

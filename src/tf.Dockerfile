@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:19.07-base
+FROM nvaitc/ai-lab:19.08-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -14,7 +14,7 @@ USER root
 
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
-      libcudnn7-dev=7.6.0.64-1+cuda10.0 \
+      libcudnn7-dev=7.6.2.24-1+cuda10.0 \
       protobuf-compiler \
       libnvinfer5=5.1.5-1+cuda10.0 \
       libnvinfer-dev=5.1.5-1+cuda10.0 && \
@@ -25,8 +25,8 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/NVAITC/tensorflow-patched/releases/download/v1.14.1-patch0/tensorflow-1.14.1-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-1.14.1-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://github.com/NVAITC/tensorflow-patched/releases/download/1.14.0-patchnv1/tensorflow-1.14.0+nv-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-1.14.0+nv-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
