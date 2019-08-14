@@ -55,17 +55,16 @@ RUN apt-get update && \
     # install Nsight profiling tools 
     openjdk-8-jre \
     cuda-visual-tools-10-0 \
+    cuda-nsight-systems-10-1 \
     cuda-nsight-compute-10-1 \
     cuda-nvprof-10-0 && \
+    # set JRE 8 as default
+    echo 2 | update-alternatives --config java && \
     apt-get autoremove -y && \
     apt-get clean && \
     cd && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-
-RUN echo 2 | update-alternatives --config java
-
-#COPY nsight-compute.desktop /usr/share/applications/nsight-compute.desktop
 
 WORKDIR /opt/
 
@@ -139,7 +138,7 @@ RUN pip install --no-cache-dir \
     jupyter-vscode-server jedi pysc2 \
     python-language-server[yapf] \
     setuptools wheel && \
-    pip uninstall opencv-python opencv-python-headless -y && \
+    pip uninstall opencv-python opencv-python-headless opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python -U && \ 
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \

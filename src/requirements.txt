@@ -1,4 +1,5 @@
 autopep8
+bokeh
 pylint
 numba
 pandas
@@ -20,6 +21,7 @@ gpustat
 seaborn
 lightgbm
 imageio
+py3nvml
 GPUtil
 librosa
 inflect

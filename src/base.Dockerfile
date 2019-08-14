@@ -138,7 +138,7 @@ RUN cd /tmp/ && \
       'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
-    pip uninstall opencv-python -y && \
+    pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
     pip uninstall pillow -y && \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
@@ -153,6 +153,7 @@ RUN cd /tmp/ && \
     jupyter labextension install @jupyterlab/git && \
     pip install --no-cache-dir --upgrade jupyterlab-git && \
     jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
+    jupyter labextension install jupyterlab_bokeh && \
     echo "Installing jupyterlab-server-proxy" && \
     #jupyter labextension install jupyterlab-server-proxy && \
     cd /tmp/ && \
