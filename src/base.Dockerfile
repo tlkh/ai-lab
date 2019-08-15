@@ -151,10 +151,9 @@ RUN cd /tmp/ && \
     jupyter labextension install @jupyterlab/toc && \
     echo "Installing @jupyterlab/git" && \
     jupyter labextension install @jupyterlab/git && \
-    pip install --no-cache-dir --upgrade jupyterlab-git jupyterlab-nvdashboard && \
+    pip install --no-cache-dir --upgrade jupyterlab-git && \
     jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
     jupyter labextension install jupyterlab_bokeh && \
-    jupyter labextension install jupyterlab-nvdashboard && \
     echo "Installing jupyterlab-server-proxy" && \
     #jupyter labextension install jupyterlab-server-proxy && \
     cd /tmp/ && \
