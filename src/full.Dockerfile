@@ -28,6 +28,10 @@ RUN conda install -c pytorch --quiet --yes \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     conda clean -tipsy && \
     conda build purge-all && \
+    find $CONDA_DIR -type f,l -name '*.a' -delete && \
+    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
+    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
+    rm -rf $CONDA_DIR/pkgs && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
@@ -90,9 +94,13 @@ RUN conda install \
       'dask-xgboost' && \
     pip install --no-cache-dir \
       dask_labextension && \
-    jupyter labextension install dask-labextension && \
+    jupyter labextension install dask-labextension && jupyter lab clean && \
     conda clean -tipsy && \
     conda build purge-all && \
+    find $CONDA_DIR -type f,l -name '*.a' -delete && \
+    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
+    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
+    rm -rf $CONDA_DIR/pkgs && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /tmp/* && \

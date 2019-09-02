@@ -15,7 +15,6 @@ nltk
 pydot
 pyyaml
 msgpack
-gensim
 spacy
 gpustat
 seaborn

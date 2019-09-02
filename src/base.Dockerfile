@@ -160,10 +160,15 @@ RUN cd /tmp/ && \
     git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
     cd jupyter-server-proxy/jupyterlab-server-proxy && \
     npm install && npm run build && jupyter labextension link . && \
-    npm run build && jupyter lab build && \
+    npm run build && jupyter lab build && jupyter lab clean && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
+    find $CONDA_DIR -type f,l -name '*.a' -delete && \
+    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
+    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
+    find $CONDA_DIR/lib/python*/site-packages/bokeh/server/static -type f,l -name '*.js' -not -name '*.min.js' -delete && \
+    rm -rf $CONDA_DIR/pkgs && \
     npm cache clean --force && \
     cd /tmp/ && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \

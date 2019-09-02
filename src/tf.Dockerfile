@@ -43,8 +43,12 @@ RUN cd $HOME/ && \
     rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \
+    jupyter lab clean && \
     conda clean -tipsy && \
     conda build purge-all && \
+    find $CONDA_DIR -type f,l -name '*.a' -delete && \
+    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
+    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /tmp/* && \
