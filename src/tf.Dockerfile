@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:19.08-base
+FROM nvaitc/ai-lab:19.09-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -14,7 +14,7 @@ USER root
 
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
-      libcudnn7-dev=7.6.2.24-1+cuda10.0 \
+      libcudnn7-dev=${CUDNN_VERSION}-1+cuda10.0 \
       protobuf-compiler \
       libnvinfer5=5.1.5-1+cuda10.0 \
       libnvinfer-dev=5.1.5-1+cuda10.0 && \

@@ -1,4 +1,4 @@
-FROM nvaitc/ai-lab:19.08
+FROM nvaitc/ai-lab:19.09
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 

@@ -104,7 +104,7 @@ USER $NB_UID
 
 RUN fix-permissions $HOME
 
-ENV MINICONDA_VERSION 4.6.14
+ENV MINICONDA_VERSION 4.7.10
 
 WORKDIR $HOME
 
@@ -122,7 +122,8 @@ RUN cd /tmp/ && \
     echo "Installing packages" && \
     conda install -n root conda-build=3.18.* && \
     pip install --no-cache-dir setuptools -U && \
-    conda install -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults  --quiet --yes \
+    conda install --quiet --yes \
+      -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults \
       'python=3.6' \
       'numpy=1.16.1' \
       'cudatoolkit=10.0' \
