@@ -39,3 +39,5 @@ hyperopt
 hyperas
 imgaug
 Augmentor
+transformers
+

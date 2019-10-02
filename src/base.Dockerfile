@@ -139,6 +139,10 @@ RUN cd /tmp/ && \
       'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
+    cd /tmp/ && \
+    git clone --depth 1 https://github.com/huggingface/transformers && \
+    cd /tmp/transformers && pip install . && \
+    cd $HOME && rm -rf /tmp/* && \
     pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
     pip uninstall pillow -y && \
