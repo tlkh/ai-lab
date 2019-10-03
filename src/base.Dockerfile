@@ -13,8 +13,6 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install all OS dependencies
 
-COPY sources.list /etc/apt/
-
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends --no-upgrade \
     apt-utils && \
