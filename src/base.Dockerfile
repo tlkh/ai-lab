@@ -115,7 +115,6 @@ RUN cd /tmp/ && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
     $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
-    #$CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     echo "Installing packages" && \
     conda install -n root conda-build=3.18.* && \
@@ -139,8 +138,9 @@ RUN cd /tmp/ && \
     rm $HOME/requirements.txt && \
     cd /tmp/ && \
     git clone --depth 1 https://github.com/huggingface/transformers && \
-    cd /tmp/transformers && pip install . && \
-    cd $HOME && rm -rf /tmp/* && \
+    cd /tmp/transformers && \
+    pip install . && \
+    cd $HOME && \
     pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
     pip uninstall pillow -y && \
@@ -158,7 +158,6 @@ RUN cd /tmp/ && \
     jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
     jupyter labextension install jupyterlab_bokeh && \
     echo "Installing jupyterlab-server-proxy" && \
-    #jupyter labextension install jupyterlab-server-proxy && \
     cd /tmp/ && \
     git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
     cd jupyter-server-proxy/jupyterlab-server-proxy && \

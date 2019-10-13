@@ -5,7 +5,6 @@ import subprocess
 import os
 import errno
 import stat
-
 from jupyter_core.paths import jupyter_data_dir
 from notebook.auth import passwd
 
@@ -14,10 +13,9 @@ c.NotebookApp.ip = "0.0.0.0"
 c.NotebookApp.port = 8888
 c.NotebookApp.open_browser = False
 c.NotebookApp.token = ""
-c.NotebookApp.allow_origin="*"
+c.NotebookApp.allow_origin = "*"
 
 nb_password = os.getenv("NB_PASSWD", "")
-
 c.NotebookApp.password = passwd(nb_password)
 
 c.FileContentsManager.delete_to_trash = False

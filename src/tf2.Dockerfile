@@ -44,7 +44,8 @@ RUN cd $HOME/ && \
     jupyter tensorboard enable --sys-prefix && \
     jupyter labextension install jupyterlab_tensorboard && \
     jupyter lab clean && \
-    cd /tmp/ && git clone --depth 1 https://github.com/keras-team/keras-tuner && \
+    cd /tmp/ && \
+    git clone --depth 1 https://github.com/keras-team/keras-tuner && \
     cd keras-tuner && pip install . && cd $HOME \
     conda clean -tipsy && \
     conda build purge-all && \

@@ -18,7 +18,7 @@ RUN conda install -c pytorch --quiet --yes \
       'pytorch' \
       'torchvision' \
       'cudatoolkit=10.0' && \
-    pip install --no-cache-dir torchtext pytorch-transformers && \
+    pip install --no-cache-dir torchtext && \
     conda install -c pytorch -c fastai --quiet --yes \
       'python=3.6' \
       'numpy=1.16.1' \
