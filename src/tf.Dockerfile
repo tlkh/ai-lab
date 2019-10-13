@@ -25,8 +25,8 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/NVAITC/tensorflow-patched/releases/download/1.14.0-patchnv1/tensorflow-1.14.0+nv-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-1.14.0+nv-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0a/tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
