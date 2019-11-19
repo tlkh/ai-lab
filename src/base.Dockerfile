@@ -9,7 +9,7 @@ LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install all OS dependencies
 
@@ -102,7 +102,7 @@ USER $NB_UID
 
 RUN fix-permissions $HOME
 
-ENV MINICONDA_VERSION 4.7.10
+ENV MINICONDA_VERSION 4.7.12.1
 
 WORKDIR $HOME
 

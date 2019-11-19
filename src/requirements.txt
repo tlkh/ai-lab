@@ -21,6 +21,7 @@ seaborn
 lightgbm
 imageio
 py3nvml
+pynvml
 GPUtil
 librosa
 inflect
@@ -39,5 +40,6 @@ hyperopt
 hyperas
 imgaug
 Augmentor
-
+nvstatsrecorder
+plotly
 

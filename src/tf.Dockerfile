@@ -6,18 +6,23 @@ LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    TF_FORCE_GPU_ALLOW_GROWTH=1
 
 # install our own build of TensorFlow
 
 USER root
 
+ENV TRT_VERSION 6.0.1-1+cuda10.0
+
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
       libcudnn7-dev=${CUDNN_VERSION}-1+cuda10.0 \
       protobuf-compiler \
-      libnvinfer5=5.1.5-1+cuda10.0 \
-      libnvinfer-dev=5.1.5-1+cuda10.0 && \
+      libnvinfer6=${TRT_VERSION} libnvonnxparsers6=${TRT_VERSION} \
+      libnvparsers6=${TRT_VERSION} libnvinfer-plugin6=${TRT_VERSION} \
+      libnvinfer-dev=${TRT_VERSION} libnvonnxparsers-dev=${TRT_VERSION} \
+      libnvparsers-dev=${TRT_VERSION} libnvinfer-plugin-dev=${TRT_VERSION} && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /tmp/* && \
@@ -25,14 +30,13 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0a/tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0d/tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl.whl
     
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
-      jupyter-tensorboard \
       tensorflow_datasets \
       tensorflow-hub \
       tensorflow-probability \
@@ -41,8 +45,6 @@ RUN cd $HOME/ && \
     pip uninstall tensorflow tensorflow-gpu -y && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     rm -rf $HOME/${TENSORFLOW_FILENAME} && \
-    jupyter tensorboard enable --sys-prefix && \
-    jupyter labextension install jupyterlab_tensorboard && \
     jupyter lab clean && \
     conda clean -tipsy && \
     conda build purge-all && \
