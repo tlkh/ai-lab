@@ -7,7 +7,7 @@ LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    TF_FORCE_GPU_ALLOW_GROWTH=1
+    TF_FORCE_GPU_ALLOW_GROWTH=true
 
 # install our own build of TensorFlow
 
