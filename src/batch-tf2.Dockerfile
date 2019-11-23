@@ -10,7 +10,7 @@ LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    TF_FORCE_GPU_ALLOW_GROWTH=1
+    TF_FORCE_GPU_ALLOW_GROWTH=true
 
 ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0d/tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \
     TENSORFLOW_FILENAME=tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \ 
