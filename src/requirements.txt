@@ -2,7 +2,6 @@ autopep8
 bokeh
 pylint
 numba
-pandas
 cython
 tqdm
 matplotlib

@@ -17,23 +17,13 @@ ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0c/tensorfl
 
 RUN cd /tmp/ && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
-    pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
-      tensorflow-io \
-      tensorflow-addons \
       tensorflow_datasets \
       tensorflow-hub \
-      tensorflow-probability \
-      keras-tuner \
-      tensorflow-model-optimization \
       && \
-    git clone --depth 1 https://github.com/huggingface/transformers && \
-    cd /tmp/transformers && \
-    pip install . && \
-    cd /tmp/ && \
+    pip uninstall tensorflow tensorflow-gpu -y && \
     pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
-    pip uninstall tensorflow tensorflow-gpu -y && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
     cd $HOME && \
     rm -rf /tmp/* && \

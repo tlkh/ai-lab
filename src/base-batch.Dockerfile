@@ -1,7 +1,7 @@
 # Base image:
 # https://hub.docker.com/r/nvidia/cuda
 # Build this Dockerfile and tag as:
-# nvaitc/ai-lab:x.x-base
+# nvaitc/ai-lab:x.x-batch-base
 
 FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
 
@@ -22,7 +22,6 @@ RUN apt-get update && \
     bzip2 \
     ca-certificates \
     locales \
-    fonts-liberation \
     build-essential \
     cmake \
     jed \
@@ -31,12 +30,6 @@ RUN apt-get update && \
     libxrender1 \
     lmodern \
     netcat \
-    pandoc \
-    texlive-fonts-recommended \
-    texlive-generic-recommended \
-    texlive-latex-base \
-    texlive-latex-extra \
-    texlive-xetex \
     libjpeg-dev \
     libpng-dev  \
     ffmpeg \
@@ -68,7 +61,7 @@ RUN apt-get update && \
 
 ENV CONDA_DIR=/opt/conda \
     SHELL=/bin/bash \
-    NB_USER=jovyan \
+    NB_USER=user \
     NB_UID=1000 \
     NB_GID=100 \
     LC_ALL=en_US.UTF-8 \
@@ -82,7 +75,7 @@ ENV PATH=$CONDA_DIR/bin:$PATH \
 
 ADD fix-permissions /usr/local/bin/fix-permissions
 
-# Create jovyan user with UID=1000 and in the 'users' group
+# Create user user with UID=1000 and in the 'users' group
 # and make sure these dirs are writable by the `users` group.
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
@@ -101,6 +94,8 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 USER $NB_UID
 
 RUN fix-permissions $HOME
+
+# base Python + PyData + PyTorch
 
 ENV MINICONDA_VERSION 4.7.12.1
 
@@ -125,16 +120,11 @@ RUN cd /tmp/ && \
       'numpy=1.16.1' \
       'pandas' \
       'cudatoolkit=10.0' \
+      'pytorch' \
+      'torchvision' \
       'tk' \
       'tini' \
       'blas=*=openblas' && \
-    conda install --quiet --yes \
-      'notebook=5.7.*' \
-      'jupyterhub=1.0.*' \
-      'jupyterlab=1.*' \
-      'widgetsnbextension' \
-      'jupyter_contrib_nbextensions' \
-      'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
     cd /tmp/ && \
@@ -146,24 +136,6 @@ RUN cd /tmp/ && \
     pip install --no-cache-dir opencv-contrib-python && \
     pip uninstall pillow -y && \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
-    jupyter notebook --generate-config && \
-    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-    jupyter contrib nbextension install --sys-prefix && \
-    echo "Installing @jupyter-widgets/jupyterlab-manager" && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    echo "Installing @jupyterlab/toc" && \
-    jupyter labextension install @jupyterlab/toc && \
-    echo "Installing @jupyterlab/git" && \
-    jupyter labextension install @jupyterlab/git && \
-    pip install --no-cache-dir --upgrade jupyterlab-git && \
-    jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
-    jupyter labextension install jupyterlab_bokeh && \
-    echo "Installing jupyterlab-server-proxy" && \
-    cd /tmp/ && \
-    git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
-    cd jupyter-server-proxy/jupyterlab-server-proxy && \
-    npm install && npm run build && jupyter labextension link . && \
-    npm run build && jupyter lab build && jupyter lab clean && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
@@ -172,45 +144,90 @@ RUN cd /tmp/ && \
     find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
     find $CONDA_DIR/lib/python*/site-packages/bokeh/server/static -type f,l -name '*.js' -not -name '*.min.js' -delete && \
     rm -rf $CONDA_DIR/pkgs && \
-    npm cache clean --force && \
     cd /tmp/ && \
-    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-EXPOSE 8888
+# apex
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -yq --no-upgrade \
+    cuda-nvml-dev-$CUDA_PKG_VERSION \
+    cuda-command-line-tools-$CUDA_PKG_VERSION \
+    cuda-libraries-dev-$CUDA_PKG_VERSION \
+    cuda-minimal-build-$CUDA_PKG_VERSION \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    cd /tmp/ && \
+    git clone --depth 1 https://github.com/NVIDIA/apex && \
+    cd apex && \
+    pip install -v --no-cache-dir \
+     --global-option="--cpp_ext" --global-option="--cuda_ext" \
+     . && \
+    cd .. && rm -rf apex && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
+
+# RAPIDS
+
+USER $NB_UID
+
+RUN conda install \
+      -c nvidia/label/cuda10.0 \
+      -c rapidsai/label/cuda10.0 \
+      -c numba -c conda-forge -c defaults \
+      'python=3.6' \
+      'numpy=1.16.1' \
+      'dask' \
+      'cudf' \
+      'cuml' \
+      'cugraph' \
+      'dask-cuda' \
+      'dask-cudf' \
+      'dask-cuml' \
+      'nvstrings' && \
+    conda install \
+      -c rapidsai/label/xgboost \
+      'xgboost' \
+      'dask-xgboost' && \
+    conda clean -tipsy && \
+    conda build purge-all && \
+    find $CONDA_DIR -type f,l -name '*.a' -delete && \
+    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
+    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
+    rm -rf $CONDA_DIR/pkgs && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
 
 WORKDIR $HOME
 
 # Configure container startup
 
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start-notebook.sh"]
+ENTRYPOINT ["bash"]
 
-# Add local files as late as possible to avoid cache busting
+COPY README.txt /home/$NB_USER/
 
-COPY start.sh /usr/local/bin/
-COPY start-notebook.sh /usr/local/bin/
-COPY start-singleuser.sh /usr/local/bin/
-COPY jupyter_notebook_config.py /etc/jupyter/
-
-COPY README.ipynb /home/$NB_USER/
-
-RUN fix-permissions /etc/jupyter/ && \
-    usermod -s /bin/bash $NB_USER
+RUN usermod -s /bin/bash $NB_USER
 
 USER root
 
-ENV NB_PASSWD="" \
-    SUDO_PASSWD=jovyan
+ENV SUDO_PASSWD=volta
 
-RUN mkdir /results/ && \
-    chmod -R 777 /results/ && \
-    echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
+RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
 
-# Switch back to jovyan to avoid accidental container runs as root
+# Switch back to user to avoid accidental container runs as root
 
 USER $NB_UID

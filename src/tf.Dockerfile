@@ -30,8 +30,8 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0d/tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl.whl
+ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0a/tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow_gpu-1.14.0+nv-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
@@ -39,8 +39,6 @@ RUN cd $HOME/ && \
     pip install --no-cache-dir --ignore-installed PyYAML \
       tensorflow_datasets \
       tensorflow-hub \
-      tensorflow-probability \
-      tensorflow-model-optimization \
       && \
     pip uninstall tensorflow tensorflow-gpu -y && \
     pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
