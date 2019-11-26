@@ -23,6 +23,10 @@ These containers do not include packages such as Jupyter notebook.
 * HuggingFace Transformers
 * RAPIDS: cuDF, cuML, cuGraph, XGBoost, Dask
 
+```
+TODO: Ptflop, NVIDIA DALI
+```
+
 **`batch-tf1`: `batch-base` + TensorFlow 1.x**
 
 * TensorFlow 1.x
