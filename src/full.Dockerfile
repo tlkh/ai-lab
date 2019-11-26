@@ -1,6 +1,6 @@
 # Base image built from `tf.Dockerfile`
 
-FROM nvaitc/ai-lab:19.10-tf
+FROM nvaitc/ai-lab:19.11-tf
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
