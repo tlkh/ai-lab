@@ -226,7 +226,10 @@ USER root
 
 ENV SUDO_PASSWD=volta
 
-RUN echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
+RUN mkdir /results/ && \
+    chmod -R 777 /results/ && \
+    chmod -R 777 /home/$NB_USER/ && \
+    echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
 
 # Switch back to user to avoid accidental container runs as root
 

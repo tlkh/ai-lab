@@ -53,6 +53,7 @@ RUN apt-get update && \
     xkb-data \
     x11proto-gl-dev \
     # install Nsight profiling tools 
+    libqt5gui5 \
     openjdk-8-jre \
     cuda-visual-tools-10-0 \
     cuda-nsight-systems-10-1 \
@@ -66,6 +67,9 @@ RUN apt-get update && \
     cd && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
+# to double check
+ENV PATH /opt/nvidia/nsight-compute/2019.5.0:{${PATH}
 
 WORKDIR /opt/
 

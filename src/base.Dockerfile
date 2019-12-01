@@ -196,7 +196,6 @@ COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
-
 COPY README.ipynb /home/$NB_USER/
 
 RUN fix-permissions /etc/jupyter/ && \
@@ -204,8 +203,10 @@ RUN fix-permissions /etc/jupyter/ && \
 
 USER root
 
+COPY ld.so.conf /etc/
+
 ENV NB_PASSWD="" \
-    SUDO_PASSWD=jovyan
+    SUDO_PASSWD=volta
 
 RUN mkdir /results/ && \
     chmod -R 777 /results/ && \

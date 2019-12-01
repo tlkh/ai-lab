@@ -67,6 +67,9 @@ RUN apt-get update && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
+# to double check
+ENV PATH /opt/nvidia/nsight-compute/2019.5.0:{${PATH}
+
 WORKDIR /opt/
 
 RUN cd /opt/ && \

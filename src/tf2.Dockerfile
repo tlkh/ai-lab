@@ -42,9 +42,12 @@ RUN cd $HOME/ && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
+      tensorflow-io \
+      tensorflow-addons \
       tensorflow_datasets \
       tensorflow-hub \
       tensorflow-probability \
+      keras-tuner \
       tensorflow-model-optimization \
       && \
     pip uninstall tensorflow tensorflow-gpu -y && \
