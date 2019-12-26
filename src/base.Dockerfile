@@ -137,10 +137,6 @@ RUN cd /tmp/ && \
       'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
-    cd /tmp/ && \
-    git clone --depth 1 https://github.com/huggingface/transformers && \
-    cd /tmp/transformers && \
-    pip install . && \
     cd $HOME && \
     pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
@@ -181,7 +177,25 @@ RUN cd /tmp/ && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
+# nvtop
+
+USER root
+
+RUN cd /tmp/ && \
+    git clone --depth 1 https://github.com/Syllo/nvtop.git && \
+    mkdir -p nvtop/build && cd nvtop/build && \
+    cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
+    make && make install && \
+    cd && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions $HOME
+
 EXPOSE 8888
+
+USER $NB_UID
 
 WORKDIR $HOME
 

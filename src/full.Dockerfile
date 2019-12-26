@@ -1,6 +1,6 @@
 # Base image built from `tf.Dockerfile`
 
-FROM nvaitc/ai-lab:19.11-tf
+FROM nvaitc/ai-lab:19.11-tf2
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -131,22 +131,6 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-    rm -rf /tmp/* && \
-    rm -rf $HOME/.cache && \
-    rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
-
-# nvtop
-
-USER root
-
-RUN cd /tmp/ && \
-    git clone --depth 1 https://github.com/Syllo/nvtop.git && \
-    mkdir -p nvtop/build && cd nvtop/build && \
-    cmake .. -DNVML_RETRIEVE_HEADER_ONLINE=True && \
-    make && make install && \
-    cd && \
     rm -rf /tmp/* && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
