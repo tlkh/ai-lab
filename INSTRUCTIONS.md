@@ -5,7 +5,7 @@ This page will give a more detailed walkthroughs on using this image.
 To begin **please make sure you have the [pre-requisites](#pre-requisites) already configured on your system**. Then, pull the latest version of the image with:
 
 ```shell
-docker pull nvaitc/ai-lab:19.10
+docker pull nvaitc/ai-lab:19.11
 ```
 
 These instructions will apply to any workstation/server running Ubuntu 16.04 or Ubuntu 18.04 or close derivative distros.
@@ -42,7 +42,7 @@ If you face problems, you may also view a [screen recording](https://www.youtube
 You can use the container in interactive mode (command line interface).
 
 ```shell
-nvidia-docker run --rm -it nvaitc/ai-lab:19.10 bash
+nvidia-docker run --rm -it nvaitc/ai-lab:19.11 bash
 ```
 
 Note that the default user in the container is always `jovyan`. ([Who is Jovyan?](https://github.com/jupyter/docker-stacks/issues/358)) 
@@ -64,7 +64,7 @@ Launch the container in that folder and map port 8888:
 nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER/quickstart-notebooks:/home/jovyan \
- nvaitc/ai-lab:19.10
+ nvaitc/ai-lab:19.11
 ```
 
 **Here is a breakdown of the command**
@@ -92,7 +92,7 @@ If you are facing problems and would like to view a screen recording of the proc
 For virtual desktop, you will need to pull the latest VNC version of the container image
 
 ```shell
-docker pull nvaitc/ai-lab:19.10-vnc
+docker pull nvaitc/ai-lab:19.11-vnc
 ```
 
 Next, you will need to start the image as per normal
@@ -101,7 +101,7 @@ Next, you will need to start the image as per normal
 nvidia-docker run --rm --ipc=host \
   -p 8888:8888 \
   -v /home/$USER/work:/home/jovyan \
-  nvaitc/ai-lab:19.10-vnc
+  nvaitc/ai-lab:19.11-vnc
 ```
 
 The `--ipc=host` flag is needed for certain applications, such as Firefox, to function properly.
@@ -125,7 +125,7 @@ If it matters to you, you can change the password by creating a new Docker image
 ```Dockerfile
 # create and build this Dockerfile
 
-FROM nvaitc/ai-lab:19.10
+FROM nvaitc/ai-lab:19.11
 LABEL maintainer="You <you@yourdomain.com>"
 
 USER root
@@ -153,7 +153,7 @@ mkdir work
 chmod -R 775 work
 
 # mount folder in container
-nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab:19.10
+nvidia-docker run --rm -p 8888:8888 -v /home/$USER/work:/home/jovyan nvaitc/ai-lab:19.11
 ```
 
 #### PyTorch DataLoader
@@ -208,7 +208,7 @@ nvidia-docker run --rm \
   --priviledged \
   -v /home/$USER/work:/home/jovyan \
   -p 8888:8888 \
-  nvaitc/ai-lab:19.10-vnc
+  nvaitc/ai-lab:19.11-vnc
 ```
 
 Here are some screenshots of the NVIDIA Nsight Compute and Nsight Systems profiling tools running in the virtual desktop environment. Nsight Compute is used to profile deep into individual GPU kernels, while Nsight Systems is used to profile overall performance.
