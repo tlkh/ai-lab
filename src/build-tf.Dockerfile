@@ -14,7 +14,7 @@ RUN apt-get update && \
     cuda-command-line-tools-$CUDA_PKG_VERSION \
     cuda-libraries-dev-$CUDA_PKG_VERSION \
     cuda-minimal-build-$CUDA_PKG_VERSION \
-    libnccl-dev=$NCCL_VERSION-1+cuda10.0 \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.1 \
     python3-dev \
     python3-numpy \
     python3-six \

@@ -161,7 +161,7 @@ RUN apt-get update && \
     cuda-command-line-tools-$CUDA_PKG_VERSION \
     cuda-libraries-dev-$CUDA_PKG_VERSION \
     cuda-minimal-build-$CUDA_PKG_VERSION \
-    libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     cd /tmp/ && \
     git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
@@ -183,8 +183,8 @@ RUN apt-get update && \
 USER $NB_UID
 
 RUN conda install \
-      -c nvidia/label/cuda10.0 \
-      -c rapidsai/label/cuda10.0 \
+      -c nvidia/label/cuda10.1 \
+      -c rapidsai/label/cuda10.1 \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
       'numpy=1.16.1' \

@@ -101,13 +101,13 @@ RUN apt-get update && \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
       cuda-minimal-build-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     pip install --no-cache-dir horovod && \
     apt-get remove -yq \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \

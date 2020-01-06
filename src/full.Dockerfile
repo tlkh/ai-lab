@@ -17,7 +17,7 @@ RUN conda install -c pytorch --quiet --yes \
       'numpy=1.16.1' \
       'pytorch' \
       'torchvision' \
-      'cudatoolkit=10.0' && \
+      'cudatoolkit=10.1' && \
     pip install --no-cache-dir torchtext && \
     conda install -c pytorch -c fastai --quiet --yes \
       'python=3.6' \
@@ -48,7 +48,7 @@ RUN apt-get update && \
     cuda-command-line-tools-$CUDA_PKG_VERSION \
     cuda-libraries-dev-$CUDA_PKG_VERSION \
     cuda-minimal-build-$CUDA_PKG_VERSION \
-    libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     cd /tmp/ && \
     git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
@@ -60,7 +60,7 @@ RUN apt-get update && \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
@@ -75,8 +75,8 @@ RUN apt-get update && \
 USER $NB_UID
 
 RUN conda install \
-      -c nvidia/label/cuda10.0 \
-      -c rapidsai/label/cuda10.0 \
+      -c nvidia/label/cuda10.1 \
+      -c rapidsai/label/cuda10.1 \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
       'numpy=1.16.1' \
@@ -121,13 +121,13 @@ RUN apt-get update && \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
       cuda-minimal-build-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     pip install --no-cache-dir horovod && \
     apt-get remove -yq \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.0 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
