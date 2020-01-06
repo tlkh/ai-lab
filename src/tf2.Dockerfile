@@ -13,11 +13,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 USER root
 
-ENV TRT_VERSION 6.0.1-1+cuda10.0
+ENV TRT_VERSION 6.0.1-1+cuda10.1
 
 RUN apt-get update && \
     apt-get install -yq --no-upgrade \
-      libcudnn7-dev=${CUDNN_VERSION}-1+cuda10.0 \
+      libcudnn7-dev=${CUDNN_VERSION}-1+cuda10.1 \
       protobuf-compiler \
       libnvinfer6=${TRT_VERSION} libnvonnxparsers6=${TRT_VERSION} \
       libnvparsers6=${TRT_VERSION} libnvinfer-plugin6=${TRT_VERSION} \
