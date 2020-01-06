@@ -3,7 +3,7 @@
 # Build this Dockerfile and tag as:
 # nvaitc/ai-lab:xx.xx-batch
 
-FROM nvaitc/ai-lab:19.11-batch-base
+FROM nvaitc/ai-lab:20.01-batch-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 

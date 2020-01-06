@@ -3,7 +3,7 @@
 # Build this Dockerfile and tag as:
 # nvaitc/ai-lab:x.x-batch-base
 
-FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -119,7 +119,7 @@ RUN cd /tmp/ && \
       'python=3.6' \
       'numpy=1.16.1' \
       'pandas' \
-      'cudatoolkit=10.0' \
+      'cudatoolkit=10.1' \
       'pytorch' \
       'torchvision' \
       'tk' \
