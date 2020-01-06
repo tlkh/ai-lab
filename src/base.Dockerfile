@@ -156,10 +156,15 @@ RUN cd /tmp/ && \
     jupyter labextension install jupyterlab_bokeh && \
     echo "Installing jupyterlab-server-proxy" && \
     cd /tmp/ && \
+    git clone --depth 1  https://github.com/qrtt1/jupyter_tensorboard && \
     git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
-    cd jupyter-server-proxy/jupyterlab-server-proxy && \
+    cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
     npm install && npm run build && jupyter labextension link . && \
-    npm run build && jupyter lab build && jupyter lab clean && \
+    npm run build && jupyter lab build && \
+    cd /tmp/jupyter_tensorboard && \
+    pip --no-cache-dir install . && \
+    jupyter labextension install jupyterlab_tensorboard && \
+    jupyter lab clean && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean -tipsy && \
     conda build purge-all && \
