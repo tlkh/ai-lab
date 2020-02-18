@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:20.01-base
+FROM nvaitc/ai-lab:20.02-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 

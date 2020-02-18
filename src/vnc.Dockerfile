@@ -1,7 +1,7 @@
 # builds the extended container
 # with VNC and VS Code dev environments
 
-FROM nvaitc/ai-lab:20.01
+FROM nvaitc/ai-lab:20.02
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
