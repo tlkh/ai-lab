@@ -122,14 +122,14 @@ RUN cd /tmp/ && \
     conda install --quiet --yes \
       -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults \
       'python=3.6' \
-      'numpy=1.16.1' \
+      'numpy' \
       'pandas' \
       'cudatoolkit=10.1' \
       'tk' \
       'tini' \
       'blas=*=openblas' && \
     conda install --quiet --yes \
-      'notebook=5.7.*' \
+      'notebook=6.0.*' \
       'jupyterhub=1.0.*' \
       'jupyterlab=1.*' \
       'widgetsnbextension' \
@@ -137,6 +137,10 @@ RUN cd /tmp/ && \
       'ipywidgets=7.5.*' && \
     pip install --no-cache-dir -r $HOME/requirements.txt && \
     rm $HOME/requirements.txt && \
+    git clone --depth 1 https://github.com/huggingface/neuralcoref && \
+    cd neuralcoref && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir . && \
     cd $HOME && \
     pip uninstall opencv-python opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python && \
@@ -145,22 +149,25 @@ RUN cd /tmp/ && \
     jupyter notebook --generate-config && \
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     jupyter contrib nbextension install --sys-prefix && \
+    echo "Installing System Monitor" && \
+     pip --no-cache-dir install nbresuse && \
+     jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor && \
     echo "Installing @jupyter-widgets/jupyterlab-manager" && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     echo "Installing @jupyterlab/toc" && \
-    jupyter labextension install @jupyterlab/toc && \
+     jupyter labextension install @jupyterlab/toc && \
     echo "Installing @jupyterlab/git" && \
-    jupyter labextension install @jupyterlab/git && \
-    pip install --no-cache-dir --upgrade jupyterlab-git && \
-    jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
+     jupyter labextension install @jupyterlab/git && \
+     pip install --no-cache-dir --upgrade jupyterlab-git && \
+     jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
     jupyter labextension install jupyterlab_bokeh && \
     echo "Installing jupyterlab-server-proxy" && \
-    cd /tmp/ && \
-    git clone --depth 1  https://github.com/qrtt1/jupyter_tensorboard && \
-    git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
-    cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
-    npm install && npm run build && jupyter labextension link . && \
-    npm run build && jupyter lab build && \
+     cd /tmp/ && \
+     git clone --depth 1  https://github.com/qrtt1/jupyter_tensorboard && \
+     git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
+     cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
+     npm install && npm run build && jupyter labextension link . && \
+     npm run build && jupyter lab build && \
     cd /tmp/jupyter_tensorboard && \
     pip --no-cache-dir install . && \
     jupyter labextension install jupyterlab_tensorboard && \
@@ -227,7 +234,8 @@ COPY ld.so.conf /etc/
 ENV NB_PASSWD="" \
     SUDO_PASSWD=volta
 
-RUN mkdir /results/ && \
+RUN ldconfig && \
+    mkdir /results/ && \
     chmod -R 777 /results/ && \
     echo "${SUDO_PASSWD}\n${SUDO_PASSWD}\n" | (passwd $NB_USER)
 

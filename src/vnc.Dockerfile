@@ -52,6 +52,7 @@ RUN apt-get update && \
     xkb-data \
     x11proto-gl-dev \
     # install Nsight profiling tools 
+    libqt5x11extras5 \
     openjdk-8-jre \
     cuda-visual-tools-10-0 \
     cuda-nsight-systems-10-1 \
@@ -95,12 +96,12 @@ RUN apt-get update && \
     add-apt-repository ppa:ubuntu-desktop/ubuntu-make -y && \
     apt-get update && \
     apt-get install --no-upgrade -yq \
-    xvfb libosmesa6-dev mesa-utils \
+    xvfb libosmesa6-dev mesa-utils libgles2-mesa \
     mesa-common-dev libgl1-mesa-dev freeglut3-dev libglu1-mesa-dev \
     novnc supervisor xinit ubuntu-make \
     xubuntu-desktop idle3 && \
     apt-get purge -yq \
-    libreoffice* thunderbird* pidgin* sgt-puzzles* \
+    libreoffice* thunderbird* pidgin* sgt-puzzles* xscreensaver \
     gnome* blueman* bluez* unity* cups* totem* xfce4-dict* \
     empathy* evolution* rhythmbox* shotwell* xfburn* \
     account-plugin-* example-content* duplicity* \
@@ -135,14 +136,16 @@ WORKDIR /home/$NB_USER
 USER $NB_USER
 
 RUN pip install --no-cache-dir \
-    keras-rl pyopengl \
-    gym[atari] ray[rllib] roboschool \
+    pyopengl gym[atari] \
     jupyter-vscode-server jedi pysc2 \
-    python-language-server[yapf] \
-    setuptools wheel && \
+    python-language-server[yapf] && \
     pip uninstall opencv-python opencv-python-headless opencv-contrib-python -y && \
     pip install --no-cache-dir opencv-contrib-python -U && \ 
-    rm -rf /tmp/* && \
+    cd /tmp/ && \
+    git clone --depth 1 https://github.com/tlkh/keras-rl2.git && \
+    cd keras-rl2 && \
+    pip install --no-cache-dir . && \
+    rm -rf /tmp/* && cd && \
     rm -rf $HOME/.cache && \
     rm -rf $HOME/.node-gyp && \
     fix-permissions $CONDA_DIR && \

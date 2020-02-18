@@ -30,13 +30,12 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0c/tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0e/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \
     conda install -c pytorch --quiet --yes \
       'python=3.6' \
-      'numpy=1.16.1' \
       'pytorch' \
       'cudatoolkit=10.1' && \
     echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \

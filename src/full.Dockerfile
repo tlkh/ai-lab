@@ -14,14 +14,12 @@ USER $NB_UID
 
 RUN conda install -c pytorch --quiet --yes \
       'python=3.6' \
-      'numpy=1.16.1' \
       'pytorch' \
       'torchvision' \
       'cudatoolkit=10.1' && \
     pip install --no-cache-dir torchtext && \
     conda install -c pytorch -c fastai --quiet --yes \
       'python=3.6' \
-      'numpy=1.16.1' \
       'fastai' \
       'dataclasses' && \
     pip uninstall pillow -y && \
@@ -75,19 +73,12 @@ RUN apt-get update && \
 USER $NB_UID
 
 RUN conda install \
-      -c nvidia/label/cuda10.1 \
-      -c rapidsai/label/cuda10.1 \
+      -c nvidia \
+      -c rapidsai \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
-      'numpy=1.16.1' \
-      'dask' \
-      'cudf' \
-      'cuml' \
-      'cugraph' \
-      'dask-cuda' \
-      'dask-cudf' \
-      'dask-cuml' \
-      'nvstrings' && \
+      'rapids=0.11' \
+      'cudatoolkit=10.1' && \
     conda install \
       -c rapidsai/label/xgboost \
       'xgboost' \
@@ -122,6 +113,7 @@ RUN apt-get update && \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
       cuda-minimal-build-$CUDA_PKG_VERSION \
       libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
+    pip uninstall horovod -y && \
     pip install --no-cache-dir horovod && \
     apt-get remove -yq \
       cuda-nvml-dev-$CUDA_PKG_VERSION \

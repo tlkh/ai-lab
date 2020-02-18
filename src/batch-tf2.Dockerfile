@@ -12,8 +12,8 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive \
     TF_FORCE_GPU_ALLOW_GROWTH=true
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0c/tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-2.0.0-cp36-cp36m-linux_x86_64.whl
+ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0e/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
+    TENSORFLOW_FILENAME=tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
 
 RUN cd /tmp/ && \
     wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \

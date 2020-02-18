@@ -117,7 +117,7 @@ RUN cd /tmp/ && \
     conda install --quiet --yes \
       -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults \
       'python=3.6' \
-      'numpy=1.16.1' \
+      'numpy' \
       'pandas' \
       'cudatoolkit=10.1' \
       'pytorch' \
@@ -187,7 +187,7 @@ RUN conda install \
       -c rapidsai/label/cuda10.1 \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
-      'numpy=1.16.1' \
+      'numpy' \
       'dask' \
       'cudf' \
       'cuml' \
