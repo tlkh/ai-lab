@@ -178,40 +178,6 @@ RUN apt-get update && \
     fix-permissions $CONDA_DIR && \
     fix-permissions $HOME
 
-# RAPIDS
-
-USER $NB_UID
-
-RUN conda install \
-      -c nvidia/label/cuda10.1 \
-      -c rapidsai/label/cuda10.1 \
-      -c numba -c conda-forge -c defaults \
-      'python=3.6' \
-      'numpy' \
-      'dask' \
-      'cudf' \
-      'cuml' \
-      'cugraph' \
-      'dask-cuda' \
-      'dask-cudf' \
-      'dask-cuml' \
-      'nvstrings' && \
-    conda install \
-      -c rapidsai/label/xgboost \
-      'xgboost' \
-      'dask-xgboost' && \
-    conda clean -tipsy && \
-    conda build purge-all && \
-    find $CONDA_DIR -type f,l -name '*.a' -delete && \
-    find $CONDA_DIR -type f,l -name '*.pyc' -delete && \
-    find $CONDA_DIR -type f,l -name '*.js.map' -delete && \
-    rm -rf $CONDA_DIR/pkgs && \
-    rm -rf /tmp/* && \
-    rm -rf $HOME/.cache && \
-    rm -rf $HOME/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions $HOME
-
 WORKDIR $HOME
 
 # Configure container startup
