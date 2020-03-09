@@ -190,6 +190,8 @@ RUN usermod -s /bin/bash $NB_USER
 
 USER root
 
+COPY ld.so.conf /etc/
+
 ENV SUDO_PASSWD=volta
 
 RUN mkdir /results/ && \

@@ -30,7 +30,7 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/getcuda/releases/download/0e/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
+ENV TENSORFLOW_URL=https://github.com/tlkh/shortcuts/releases/download/0f/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
     TENSORFLOW_FILENAME=tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \

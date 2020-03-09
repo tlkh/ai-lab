@@ -3,16 +3,16 @@
 # Build this Dockerfile and tag as:
 # nvaitc/ai-lab:xx.xx-batch
 
-FROM nvaitc/ai-lab:20.01-batch-base
+FROM nvaitc/ai-lab:20.02-batch-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
-USER root
+USER $NB_UID
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TF_FORCE_GPU_ALLOW_GROWTH=true
 
-ENV TENSORFLOW_URL=https://github.com/tlkh/shortcuts/releases/download/0e/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
+ENV TENSORFLOW_URL=https://github.com/tlkh/shortcuts/releases/download/0f/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
     TENSORFLOW_FILENAME=tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
 
 RUN cd /tmp/ && \
@@ -94,3 +94,4 @@ RUN ldconfig && \
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
+USER $NB_UID
