@@ -17,7 +17,7 @@ It builds Dockerfiles (found in the `src` folder) into container images in the f
 
 ## Adding additional packages into a container
 
-You can use any of the containers as a base to build your own containers. The entire historical directory of containers can be accessed on [Docker Hub](https://hub.docker.com/r/nvaitc/ai-lab).
+You can use any of the containers as a base to build your own containers. The entire historical directory of containers can be accessed on [Docker Hub](https://hub.docker.com/r/nvaitc/ai-lab/tags).
 
 **Building your own container**
 
