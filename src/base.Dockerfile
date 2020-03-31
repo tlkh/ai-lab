@@ -23,6 +23,7 @@ RUN apt-get update && \
     ca-certificates \
     locales \
     fonts-liberation \
+    tmux \
     build-essential \
     cmake \
     jed \
@@ -58,6 +59,9 @@ RUN apt-get update && \
     zlib1g-dev \
     patchelf \
     sudo \
+    && wget https://deeplearning-mat.s3-ap-southeast-1.amazonaws.com/datacenter-gpu-manager_1.7.2_amd64.deb \
+    && dpkg -i *.deb \
+    && rm *.deb \
     && apt-get purge jed -y \
     && apt-get autoremove -y \
     && apt-get clean && \
@@ -160,16 +164,13 @@ RUN cd /tmp/ && \
      jupyter labextension install @jupyterlab/git && \
      pip install --no-cache-dir --upgrade jupyterlab-git && \
      jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
-    jupyter labextension install jupyterlab_bokeh && \
     echo "Installing jupyterlab-server-proxy" && \
+     pip install --no-cache-dir jupyter-tensorboard && \
      cd /tmp/ && \
-     git clone --depth 1  https://github.com/qrtt1/jupyter_tensorboard && \
      git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
      cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
      npm install && npm run build && jupyter labextension link . && \
      npm run build && jupyter lab build && \
-    cd /tmp/jupyter_tensorboard && \
-    pip --no-cache-dir install . && \
     jupyter labextension install jupyterlab_tensorboard && \
     jupyter lab clean && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \

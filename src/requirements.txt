@@ -17,7 +17,6 @@ msgpack
 spacy
 gpustat
 seaborn
-lightgbm
 imageio
 py3nvml
 pynvml
@@ -35,11 +34,10 @@ contextlib2
 lxml
 boto3
 keras
-hyperopt
-hyperas
 imgaug
 Augmentor
 nvstatsrecorder
 plotly
 transformers
-
+xfmers
+allennlp

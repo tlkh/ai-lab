@@ -1,6 +1,6 @@
 ![header image](images/ai-lab-header.jpg)
 
-[![](https://images.microbadger.com/badges/version/nvaitc/ai-lab:19.11.svg)](https://microbadger.com/images/nvaitc/ai-lab:19.11) [![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab:19.11-vnc.svg)](https://microbadger.com/images/nvaitc/ai-lab:19.11-vnc) [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![GitHub last commit](https://img.shields.io/github/last-commit/nvaitc/ai-lab.svg)
+[![](https://images.microbadger.com/badges/version/nvaitc/ai-lab:20.03.svg)](https://microbadger.com/images/nvaitc/ai-lab:20.03) [![](https://img.shields.io/docker/pulls/nvaitc/ai-lab.svg)](https://hub.docker.com/r/nvaitc/ai-lab) [![](https://images.microbadger.com/badges/image/nvaitc/ai-lab:20.03-vnc.svg)](https://microbadger.com/images/nvaitc/ai-lab:20.03-vnc) [![](https://img.shields.io/github/issues/nvaitc/ai-lab.svg)](Issues) ![GitHub last commit](https://img.shields.io/github/last-commit/nvaitc/ai-lab.svg)
 
 All-in-one AI development container for rapid prototyping, compatible with the nvidia-docker GPU-accelerated container runtime as well as JupyterHub. This is designed as a lighter and more portable alternative to various cloud provider "Deep Learning Virtual Machines". Get up and running with a wide range of machine learning and deep learning tasks by pulling and running the container on your workstation, on the cloud or within JupyterHub. 
 
@@ -17,13 +17,13 @@ This image can be used together with NVIDIA GPUs on workstation, servers, cloud 
 **Pulling the container**
 
 ```bash
-docker pull nvaitc/ai-lab:19.11
+docker pull nvaitc/ai-lab:20.03
 ```
 
 **Running an interactive shell (`bash`)**
 
 ```bash
-nvidia-docker run --rm -it nvaitc/ai-lab:19.11 bash
+nvidia-docker run --rm -it nvaitc/ai-lab:20.03 bash
 ```
 
 **Run Jupyter Notebook**
@@ -37,24 +37,27 @@ The additional command line flags define the following options:
 nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER:/home/jovyan \
- nvaitc/ai-lab:19.11
+ nvaitc/ai-lab:20.03
 ```
 
-Run JupyterLab by setting `JUPYTER_ENABLE_LAB=yes`, or replacing `tree` with `lab` in the browser address bar
+Run **JupyterLab** by replacing `tree` with `lab` in the browser address bar.
+
+There is a default **blank** password for the Jupyter interface. To set your own password, pass it as an environment variable `NB_PASSWD` as follows:
 
 ```bash
 nvidia-docker run --rm \
  -p 8888:8888 \
  -v /home/$USER:/home/jovyan \
- -e JUPYTER_ENABLE_LAB=yes \
- nvaitc/ai-lab:19.11
+ -e NB_PASSWD='mypassword' \
+ nvaitc/ai-lab:20.03
 ```
+
 **Run Batch Job**
 
 It is also perfectly possible to run a batch job with this container, be it on a workstation or as part of a larger cluster with a scheduler that can schedule Docker containers.
 
 ```bash
-nvidia-docker run --rm bash nvaitc/ai-lab:19.11 -c 'echo "Hello world!" && python3 script.py'
+nvidia-docker run --rm bash nvaitc/ai-lab:20.03 -c 'echo "Hello world!" && python3 script.py'
 ```
 
 ### Additional Instructions
@@ -69,27 +72,11 @@ If you have any ideas or suggestions, please feel free to open an issue.
 
 **1. Can I modify/build this container myself?**
 
-Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 50 minutes of time to build this container from scratch. 
+Sure! The `Dockerfile` is provided in this repository. All you need is a fast internet connection and about 1h of time to build this container from scratch. 
 
-Should you only require some extra packages, you can build your own Docker image using `nvaitc/ai-lab` as the base image. For example, to add the MXNet framework into container:
+Should you only require some extra packages, you can build your own Docker image using `nvaitc/ai-lab` as the base image. 
 
-```Dockerfile
-# create and build this Dockerfile
-
-FROM nvaitc/ai-lab:19.11
-LABEL maintainer="You <you@yourdomain.com>"
-
-# you need to use root user for apt-get or make install
-#USER root
-#RUN apt-get update && apt-get install some-package
-
-# use notebook user for pip/conda
-USER $NB_UID
-RUN pip install --no-cache-dir mxnet-cu92mkl
-
-# always switch back to notebook user at the end
-USER $NB_UID
-```
+For a detailed guide, check out [BUILD.md](BUILD.md).
 
 **2. Do you support MXNet/`some-package`?**
 
@@ -97,15 +84,27 @@ See **Point 1** above to see how to add MXNet/`some-package` into the container.
 
 **3. Do you support multi-node or multi-GPU tasks?**
 
-Multi-GPU has been tested with Keras `multi_gpu_model` and Horovod, and it works as expected. However, I have not yet validated multi-node tasks (eg. OpenMPI and Horovod) but the packages are installed. I intend to pay more attention to this in the future.
+Multi-GPU has been tested with tf.distribute and Horovod, and it works as expected. Multi-node has not been tested.
 
 **4. Can I get hardware accelerated GUI (OpenGL) applications?**
 
-Yes! Be sure to pull the `vnc` version of the container e.g. `nvaitc/ai-lab:19.11-vnc` and use the "New" menu in Jupyter Notebook to launch a new **VNC Desktop**. This will allow you to use a virtual desktop interface. Next, start your application adding `vglrun` in front of the application command (e.g.  `vglrun glxgears`). You can see a video of SuperTuxKart running in the VNC desktop [here](https://www.youtube.com/watch?v=2q18cxxQuhk).
+Yes! Be sure to pull the `vnc` version of the container e.g. `nvaitc/ai-lab:20.03-vnc` and use the "New" menu in Jupyter Notebook to launch a new **VNC Desktop**. This will allow you to use a virtual desktop interface. Next, you need to allow the container to access your host X server (this may be a security concern for some people).
+
+```shell
+xhost +local:root
+nvidia-docker --rm run \
+ -e "DISPLAY" \
+ -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+ -p 8888:8888 \
+ -v /home/$USER:/home/jovyan \
+ nvaitc/ai-lab:20.03-vnc
+```
+
+Next, start your application adding `vglrun` in front of the application command (e.g.  `vglrun glxgears`). You can see a video of SuperTuxKart running in the VNC desktop [here](https://www.youtube.com/watch?v=2q18cxxQuhk).
 
 **5. How does this contrast with NGC containers?**
 
-NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDIA tuned, tested, certified, and maintained containers for deep learning and HPC frameworks that take full advantage of NVIDIA GPUs on supported systems, such as [NVIDIA DGX products](https://www.nvidia.com/en-sg/data-center/dgx-systems/). **We recommend the use of NGC containers for mission critical and production workloads.**
+NVIDIA GPU Cloud ([NGC](https://www.nvidia.com/en-sg/gpu-cloud/)) features NVIDIA tuned, tested, certified, and maintained containers for deep learning and HPC frameworks that take full advantage of NVIDIA GPUs on supported systems, such as [NVIDIA DGX products](https://www.nvidia.com/en-sg/data-center/dgx-systems/). **We recommend the use of NGC containers for performance critical and production workloads.**
 
 The AI Lab container was designed for students and researchers. The container is primarily designed to create a frictionless experience (by including all frameworks) during the initial prototyping and exploration phase, with a focus on iteration with fast feedback and less focus on deciding on specific approaches or frameworks. **This is not an official NVIDIA product!**
 
@@ -118,6 +117,15 @@ The container supports compute capability 6.0, 6.1, 7.0, 7.5:
 * Pascal (P100, GTX 10-series)
 * Volta (V100, Titan V)
 * Turing (T4, RTX 20-series)
+
+**7. Any detailed system requirements?**
+
+1. Ubuntu 18.04+, or a close derivative distro
+2. NVIDIA drivers (>=418, or >=410 Tesla-ready driver)
+3. NVIDIA container runtime (`nvidia-docker`)
+4. NVIDIA Pascal, Volta or Turing GPU
+   * If you have a GTX 10-series or newer GPU, you're fine
+   * K80 and GTX 9-series cards are **not** supported
 
 ## Support
 
