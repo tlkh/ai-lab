@@ -46,3 +46,4 @@ After which, we can build the Dockerfile:
 ```shell
 docker build . -f mxnet.Dockerfile -t myCustomMxNet:latest
 ```
+Where `-f` points to the Dockerfile and `-t` defines the name of the output container.
