@@ -25,9 +25,3 @@ docker push nvaitc/ai-lab:$TAG-base
 docker push nvaitc/ai-lab:$TAG-tf2
 docker push nvaitc/ai-lab:$TAG
 docker push nvaitc/ai-lab:$TAG-vnc
-
-docker push nvcr.io/nvidian/sae/ai-lab:$TAG-base
-#docker push nvcr.io/nvidian/sae/ai-lab:$TAG-tf
-docker push nvcr.io/nvidian/sae/ai-lab:$TAG-tf2
-docker push nvcr.io/nvidian/sae/ai-lab:$TAG
-docker push nvcr.io/nvidian/sae/ai-lab:$TAG-vnc
