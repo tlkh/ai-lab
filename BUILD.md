@@ -1,6 +1,6 @@
 ## Building the containers
 
-The main build script can be executed with:
+The main [build script](https://github.com/NVAITC/ai-lab/blob/master/build.sh) can be executed with:
 
 ```shell
 bash build.sh
@@ -10,10 +10,10 @@ It builds Dockerfiles (found in the `src` folder) into container images in the f
 
 | Dockerfile      | Container                | Remarks                     |
 | --------------- | ------------------------ | --------------------------- |
-| base.Dockerfile | nvaitc/ai-lab:YY.MM-base | Ubuntu+Conda+Jupyter+PyData |
-| tf2.Dockerfile  | nvaitc/ai-lab:YY.MM-tf2  | ++ TensorFlow 2.x           |
-| full.Dockerfile | nvaitc/ai-lab:YY.MM      | ++ PyTorch, RAPIDS          |
-| vnc.Dockerfile  | nvaitc/ai-lab:YY.MM-vnc  | ++ VNC Desktop, VirtualGL   |
+| [base.Dockerfile](https://github.com/NVAITC/ai-lab/blob/master/src/base.Dockerfile) | nvaitc/ai-lab:YY.MM-base | Ubuntu+Conda+Jupyter+PyData |
+| [tf2.Dockerfile](https://github.com/NVAITC/ai-lab/blob/master/src/tf2.Dockerfile) | nvaitc/ai-lab:YY.MM-tf2  | ++ TensorFlow 2.x           |
+| [full.Dockerfile](https://github.com/NVAITC/ai-lab/blob/master/src/full.Dockerfile) | nvaitc/ai-lab:YY.MM      | ++ PyTorch, RAPIDS          |
+| [vnc.Dockerfile](https://github.com/NVAITC/ai-lab/blob/master/src/vnc.Dockerfile) | nvaitc/ai-lab:YY.MM-vnc  | ++ VNC Desktop, VirtualGL   |
 
 ## Adding additional packages into a container
 
