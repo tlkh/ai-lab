@@ -22,7 +22,7 @@ ENV CONDA_DIR=/opt/conda \
 
 ENV PATH=$CONDA_DIR/bin:$PATH \
     HOME=/home/$NB_USER \
-    TURBOVNC_VERSION=2.2.3 \
+    TURBOVNC_VERSION=2.2.4 \
     VIRTUALGL_VERSION=2.6.3 \
     LIBJPEG_VERSION=2.0.3 \
     WEBSOCKIFY_VERSION=0.9.0 \
@@ -54,11 +54,11 @@ RUN apt-get update && \
     # install Nsight profiling tools 
     libqt5x11extras5 \
     openjdk-8-jre \
-    cuda-visual-tools-10-0 \
+    cuda-visual-tools-10-1 \
     cuda-nsight-systems-10-1 \
     cuda-nsight-compute-10-1 \
-    cuda-cupti-10-0 \
-    cuda-nvprof-10-0 && \
+    cuda-cupti-10-1 \
+    cuda-nvprof-10-1 && \
     # set JRE 8 as default
     echo 2 | update-alternatives --config java && \
     apt-get autoremove -y && \
@@ -68,7 +68,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # to double check
-ENV PATH /opt/nvidia/nsight-compute/2019.5.0:{${PATH}
+ENV PATH /opt/nvidia/nsight-compute:{${PATH}
 
 WORKDIR /opt/
 
