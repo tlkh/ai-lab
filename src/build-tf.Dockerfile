@@ -1,4 +1,4 @@
-FROM nvaitc/ai-lab:20.02-tf2
+FROM nvaitc/ai-lab:20.04-tf2
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -26,7 +26,7 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ENV BAZEL_URL https://github.com/bazelbuild/bazel/releases/download/0.27.1/bazel-0.27.1-installer-linux-x86_64.sh
+ENV BAZEL_URL https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-installer-linux-x86_64.sh
 
 RUN wget ${BAZEL_URL} -O bazel.sh && \
     chmod +x bazel.sh && \

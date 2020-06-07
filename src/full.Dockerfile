@@ -1,6 +1,6 @@
 # Base image built from `tf.Dockerfile`
 
-FROM nvaitc/ai-lab:20.03-tf2
+FROM nvaitc/ai-lab:20.06-tf2
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -77,7 +77,7 @@ RUN conda install \
       -c rapidsai \
       -c numba -c conda-forge -c defaults \
       'python=3.6' \
-      'rapids=0.11' \
+      'rapids=0.13' \
       'cudatoolkit=10.1' && \
     conda install \
       -c rapidsai/label/xgboost \

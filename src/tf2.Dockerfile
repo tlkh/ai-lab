@@ -1,6 +1,6 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:20.03-base
+FROM nvaitc/ai-lab:20.06-base
 
 LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
 
@@ -29,18 +29,14 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 USER $NB_UID
-
-ENV TENSORFLOW_URL=https://github.com/tlkh/shortcuts/releases/download/0f/tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl \
-    TENSORFLOW_FILENAME=tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
     
 RUN cd $HOME/ && \
     conda install -c pytorch --quiet --yes \
       'python=3.6' \
       'pytorch' \
       'cudatoolkit=10.1' && \
-    echo -c "Downloading ${TENSORFLOW_FILENAME} from ${TENSORFLOW_URL}" && \
-    wget -O ${TENSORFLOW_FILENAME} ${TENSORFLOW_URL} && \
     pip install --no-cache-dir --ignore-installed PyYAML \
+      tensorflow-gpu \
       tensorflow-io \
       tensorflow-addons \
       tensorflow_datasets \
@@ -49,13 +45,7 @@ RUN cd $HOME/ && \
       keras-tuner \
       tensorflow-model-optimization \
       && \
-    pip uninstall tensorflow tensorflow-gpu -y && \
-    pip install --no-cache-dir ${TENSORFLOW_FILENAME} && \
-    rm -rf $HOME/${TENSORFLOW_FILENAME} && \
     jupyter lab clean && \
-    cd /tmp/ && \
-    git clone --depth 1 https://github.com/keras-team/keras-tuner && \
-    cd keras-tuner && pip install . && cd $HOME \
     conda clean -tipsy && \
     conda build purge-all && \
     find $CONDA_DIR -type f,l -name '*.a' -delete && \
