@@ -1,50 +1,27 @@
 # Base image built from `base.Dockerfile`
 
-FROM nvaitc/ai-lab:20.06-base
+FROM tlkh/ai-lab:20.12-base
 
-LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
+LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TF_FORCE_GPU_ALLOW_GROWTH=true
 
-# install our own build of TensorFlow
-
-USER root
-
-ENV TRT_VERSION 6.0.1-1+cuda10.1
-
-RUN apt-get update && \
-    apt-get install -yq --no-upgrade \
-      libcudnn7-dev=${CUDNN_VERSION}-1+cuda10.1 \
-      protobuf-compiler \
-      libnvinfer6=${TRT_VERSION} libnvonnxparsers6=${TRT_VERSION} \
-      libnvparsers6=${TRT_VERSION} libnvinfer-plugin6=${TRT_VERSION} \
-      libnvinfer-dev=${TRT_VERSION} libnvonnxparsers-dev=${TRT_VERSION} \
-      libnvparsers-dev=${TRT_VERSION} libnvinfer-plugin-dev=${TRT_VERSION} && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /tmp/* && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+# install conda TensorFlow
 
 USER $NB_UID
     
 RUN cd $HOME/ && \
-    conda install -c pytorch --quiet --yes \
-      'python=3.6' \
-      'pytorch' \
-      'cudatoolkit=10.1' && \
-    pip install --no-cache-dir --ignore-installed PyYAML \
+    conda install -c anaconda -c pytorch --quiet --yes \
+      'python=3.7' \
+      'cudatoolkit=10.1' \
       tensorflow-gpu \
-      tensorflow-io \
-      tensorflow-addons \
-      tensorflow_datasets \
       tensorflow-hub \
       tensorflow-probability \
-      keras-tuner \
-      tensorflow-model-optimization \
-      && \
+      tensorflow-tensorboard \
+      tensorflow-datasets && \
     jupyter lab clean && \
     conda clean -tipsy && \
     conda build purge-all && \

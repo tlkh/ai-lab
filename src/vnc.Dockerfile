@@ -1,9 +1,9 @@
 # builds the extended container
 # with VNC and VS Code dev environments
 
-FROM nvaitc/ai-lab:20.06
+FROM tlkh/ai-lab:20.12
 
-LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
+LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},display
 
@@ -22,9 +22,9 @@ ENV CONDA_DIR=/opt/conda \
 
 ENV PATH=$CONDA_DIR/bin:$PATH \
     HOME=/home/$NB_USER \
-    TURBOVNC_VERSION=2.2.4 \
-    VIRTUALGL_VERSION=2.6.3 \
-    LIBJPEG_VERSION=2.0.3 \
+    TURBOVNC_VERSION=2.2.5 \
+    VIRTUALGL_VERSION=2.6.4 \
+    LIBJPEG_VERSION=2.0.6 \
     WEBSOCKIFY_VERSION=0.9.0 \
     LIBGLVND_VERSION=master
 
@@ -109,10 +109,9 @@ RUN apt-get update && \
     ttf-malayalam-fonts ttf-thai-tlwg ttf-unfonts-core \
     ppp* wvdial* transmission* \
     && \
-    cd /tmp && \
-    curl -fsSL -O https://svwh.dl.sourceforge.net/project/turbovnc/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
-        -O https://svwh.dl.sourceforge.net/project/libjpeg-turbo/${LIBJPEG_VERSION}/libjpeg-turbo-official_${LIBJPEG_VERSION}_amd64.deb \
-        -O https://svwh.dl.sourceforge.net/project/virtualgl/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb && \
+    curl -fsSL -O https://udomain.dl.sourceforge.net/project/turbovnc/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
+        -O https://udomain.dl.sourceforge.net/project/libjpeg-turbo/${LIBJPEG_VERSION}/libjpeg-turbo-official_${LIBJPEG_VERSION}_amd64.deb \
+        -O https://udomain.dl.sourceforge.net/project/virtualgl/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb && \
     dpkg -i *.deb && \
     sed -i 's/$host:/unix:/g' /opt/TurboVNC/bin/vncserver && \
     apt-get autoremove -y && \
@@ -203,3 +202,36 @@ COPY Xvnc-session /etc/X11/
 RUN chmod 777 /etc/X11/Xvnc-session
 
 USER $NB_UID
+
+COPY nbnovnc /opt/nbnovnc
+
+RUN cd /opt/ && \
+    pip install --no-cache-dir jupyter jupyterlab --upgrade && \
+    git clone --depth 1 https://github.com/novnc/websockify && \
+    git clone --depth 1 https://github.com/jupyterhub/jupyter-server-proxy && \
+    cd /opt/jupyter-server-proxy && \
+    pip install --no-cache-dir -e . && \
+    jupyter serverextension enable --sys-prefix jupyter_server_proxy && \
+    jupyter labextension install @jupyterlab/server-proxy && \
+    cd /opt/websockify && \
+    python setup.py install && \
+    cd /opt/nbnovnc && \
+    pip install --no-cache-dir . && \
+    cd /opt/nbnovnc/jupyterlab-plugin && \
+    npm install && \
+    npm run build && \
+    jupyter labextension link . && \
+    jupyter lab build && \
+    cd /opt/ && \
+    rm -rf /opt/.cache *.whl && \
+    rm -rf websockify && \
+    rm -rf /tmp/* && \
+    rm -rf $HOME/.cache && \
+    rm -rf $HOME/.node-gyp
+
+RUN jupyter serverextension enable  --py --sys-prefix nbnovnc && \
+    jupyter nbextension     install --py --sys-prefix nbnovnc && \
+    jupyter nbextension     enable  --py --sys-prefix nbnovnc && \
+    jupyter serverextension enable jupyterlab
+
+ENV JUPYTER_ENABLE_LAB=yes

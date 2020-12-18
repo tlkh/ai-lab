@@ -1,0 +1,28 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-TextEditorIcon",
+  "jupyter.lab.setting-icon-label": "Desktop",
+  "title": "Desktop",
+  "description": "Virtual desktop settings.",
+  "definitions": {
+    "virtualDesktopConfig":  {
+       "properties": {
+          "url": {
+             "type": "string"
+          }
+       },
+       "additionalProperties": false,
+       "type": "object"
+    }
+  },
+  "properties": {
+    "virtualDesktopConfig":  {
+      "title": "VNC Url",
+      "description": "Url of virtual desktop",
+      "default": {
+        "url": ""
+      }
+    }
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

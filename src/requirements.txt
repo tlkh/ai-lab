@@ -33,11 +33,12 @@ transliterate
 contextlib2
 lxml
 boto3
-keras
 imgaug
 Augmentor
 nvstatsrecorder
 plotly
 transformers
+datasets
 xfmers
 allennlp
+streamlit

@@ -1,8 +1,8 @@
 # Base image built from `tf.Dockerfile`
 
-FROM nvaitc/ai-lab:20.06-tf2
+FROM tlkh/ai-lab:20.12-tf2
 
-LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
+LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
 USER root
 
@@ -13,13 +13,12 @@ ENV DEBIAN_FRONTEND noninteractive
 USER $NB_UID
 
 RUN conda install -c pytorch --quiet --yes \
-      'python=3.6' \
-      'pytorch' \
-      'torchvision' \
+      'python=3.7' \
+      pytorch torchvision torchaudio \
       'cudatoolkit=10.1' && \
-    pip install --no-cache-dir torchtext && \
+    pip install --no-cache-dir torchtext pytorch-lightning['extra'] && \
     conda install -c pytorch -c fastai --quiet --yes \
-      'python=3.6' \
+      'python=3.7' \
       'fastai' \
       'dataclasses' && \
     pip uninstall pillow -y && \
@@ -76,8 +75,8 @@ RUN conda install \
       -c nvidia \
       -c rapidsai \
       -c numba -c conda-forge -c defaults \
-      'python=3.6' \
-      'rapids=0.13' \
+      'python=3.7' \
+      'rapids-blazing=0.17' \
       'cudatoolkit=10.1' && \
     conda install \
       -c rapidsai/label/xgboost \

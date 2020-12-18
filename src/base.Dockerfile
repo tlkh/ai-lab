@@ -5,7 +5,7 @@
 
 FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04 
 
-LABEL maintainer="Timothy Liu <timothyl@nvidia.com>"
+LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
 USER root
 
@@ -59,9 +59,6 @@ RUN apt-get update && \
     zlib1g-dev \
     patchelf \
     sudo \
-    && wget https://deeplearning-mat.s3-ap-southeast-1.amazonaws.com/datacenter-gpu-manager_1.7.2_amd64.deb \
-    && dpkg -i *.deb \
-    && rm *.deb \
     && apt-get purge jed -y \
     && apt-get autoremove -y \
     && apt-get clean && \
@@ -124,11 +121,10 @@ RUN cd /tmp/ && \
     conda install -n root conda-build=3.18.* && \
     pip install --no-cache-dir setuptools -U && \
     conda install --quiet --yes \
-      -c nvidia -c numba -c pytorch -c conda-forge -c rapidsai -c defaults \
-      'python=3.6' \
+      -c nvidia -c numba -c pytorch -c conda-forge -c defaults \
+      'python=3.7' \
       'numpy' \
       'pandas' \
-      'cudatoolkit=10.1' \
       'tk' \
       'tini' \
       'blas=*=openblas' && \
