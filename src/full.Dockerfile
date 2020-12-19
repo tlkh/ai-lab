@@ -15,12 +15,8 @@ USER $NB_UID
 RUN conda install -c pytorch --quiet --yes \
       'python=3.7' \
       pytorch torchvision torchaudio \
-      'cudatoolkit=10.1' && \
+      'cudatoolkit=10.2' && \
     pip install --no-cache-dir torchtext pytorch-lightning['extra'] && \
-    conda install -c pytorch -c fastai --quiet --yes \
-      'python=3.7' \
-      'fastai' \
-      'dataclasses' && \
     pip uninstall pillow -y && \
       CC="cc -mavx2" pip install -U --force-reinstall --no-cache-dir pillow-simd && \
     conda clean -tipsy && \
@@ -45,7 +41,7 @@ RUN apt-get update && \
     cuda-command-line-tools-$CUDA_PKG_VERSION \
     cuda-libraries-dev-$CUDA_PKG_VERSION \
     cuda-minimal-build-$CUDA_PKG_VERSION \
-    libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
+    libnccl-dev=$NCCL_VERSION-1+cuda10.2 && \
     cd /tmp/ && \
     git clone --depth 1 https://github.com/NVIDIA/apex && \
     cd apex && \
@@ -57,7 +53,7 @@ RUN apt-get update && \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.2 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
@@ -77,7 +73,7 @@ RUN conda install \
       -c numba -c conda-forge -c defaults \
       'python=3.7' \
       'rapids-blazing=0.17' \
-      'cudatoolkit=10.1' && \
+      'cudatoolkit=10.2' && \
     conda install \
       -c rapidsai/label/xgboost \
       'xgboost' \
@@ -111,14 +107,14 @@ RUN apt-get update && \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
       cuda-minimal-build-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.2 && \
     pip uninstall horovod -y && \
     pip install --no-cache-dir horovod && \
     apt-get remove -yq \
       cuda-nvml-dev-$CUDA_PKG_VERSION \
       cuda-command-line-tools-$CUDA_PKG_VERSION \
       cuda-libraries-dev-$CUDA_PKG_VERSION \
-      libnccl-dev=$NCCL_VERSION-1+cuda10.1 && \
+      libnccl-dev=$NCCL_VERSION-1+cuda10.2 && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \

@@ -3,7 +3,7 @@
 # Build this Dockerfile and tag as:
 # nvaitc/ai-lab:x.x-base
 
-FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04 
+FROM nvidia/cuda:10.2-cudnn7-runtime-ubuntu18.04 
 
 LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
@@ -118,17 +118,13 @@ RUN cd /tmp/ && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     echo "Installing packages" && \
-    conda install -n root conda-build=3.18.* && \
-    pip install --no-cache-dir setuptools -U && \
     conda install --quiet --yes \
-      -c nvidia -c numba -c pytorch -c conda-forge -c defaults \
+      'conda-build' \
       'python=3.7' \
       'numpy' \
       'pandas' \
       'tk' \
       'tini' \
-      'blas=*=openblas' && \
-    conda install --quiet --yes \
       'notebook=6.0.*' \
       'jupyterhub=1.0.*' \
       'jupyterlab=1.*' \
