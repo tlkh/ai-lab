@@ -1,20 +1,24 @@
 # Base image built from `tf.Dockerfile`
 
-FROM tlkh/ai-lab:20.12-tf2
+FROM tlkh/ai-lab:20.12-base
 
 LABEL maintainer="Timothy Liu <timothy_liu@mymail.sutd.edu.sg>"
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    TF_FORCE_GPU_ALLOW_GROWTH=true
 
-# pytorch
+# install conda TensorFlow and PyTorch
 
 USER $NB_UID
 
-RUN conda install -c pytorch --quiet --yes \
+RUN conda install -c anaconda -c pytorch --quiet --yes \
       'python=3.7' \
       pytorch torchvision torchaudio \
+      tensorflow-gpu \
+      tensorflow-hub \
+      tensorflow-datasets \
       'cudatoolkit=10.2' && \
     pip install --no-cache-dir torchtext pytorch-lightning['extra'] && \
     pip uninstall pillow -y && \
